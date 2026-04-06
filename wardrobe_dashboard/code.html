@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#203600",
+                    "primary-fixed": "#ffe088",
+                    "primary-fixed-dim": "#e9c349",
+                    "on-background": "#e5e2e1",
+                    "on-primary-fixed": "#241a00",
+                    "on-surface": "#e5e2e1",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-secondary": "#611205",
+                    "on-primary-fixed-variant": "#574500",
+                    "on-secondary-fixed": "#3e0500",
+                    "surface-variant": "#353534",
+                    "surface-container": "#201f1f",
+                    "secondary": "#ffb4a5",
+                    "surface-dim": "#131313",
+                    "secondary-fixed-dim": "#ffb4a5",
+                    "error-container": "#93000a",
+                    "inverse-primary": "#735c00",
+                    "tertiary-fixed": "#a5fa00",
+                    "tertiary-container": "#82c600",
+                    "on-error": "#690005",
+                    "background": "#131313",
+                    "secondary-container": "#802918",
+                    "tertiary": "#96e400",
+                    "on-tertiary-container": "#304d00",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#314f00",
+                    "primary": "#f2ca50",
+                    "on-secondary-fixed-variant": "#802918",
+                    "inverse-surface": "#e5e2e1",
+                    "on-primary-container": "#554300",
+                    "primary-container": "#d4af37",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#112000",
+                    "outline-variant": "#4d4635",
+                    "surface-container-low": "#1c1b1b",
+                    "secondary-fixed": "#ffdad3",
+                    "surface-bright": "#393939",
+                    "on-surface-variant": "#d0c5af",
+                    "outline": "#99907c",
+                    "surface-tint": "#e9c349",
+                    "inverse-on-surface": "#313030",
+                    "tertiary-fixed-dim": "#90db00",
+                    "on-secondary-container": "#ff9a85",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-primary": "#3c2f00",
+                    "surface": "#131313"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<nav class="bg-[#131313] flex justify-between items-center w-full px-6 py-4 fixed top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#d4af37] hover:opacity-80 transition-opacity cursor-pointer" data-icon="menu">menu</span>
+<span class="text-xl font-bold tracking-tighter text-[#d4af37] font-headline">Digital Lesela Sete</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity cursor-pointer" data-icon="search">search</span>
+</div>
+</nav>
+<main class="pt-24 px-6 max-w-7xl mx-auto">
+<!-- Header -->
+<header class="mb-10">
+<h1 class="text-5xl font-extrabold font-headline tracking-tight text-on-background mb-2">My Wardrobe</h1>
+<p class="text-on-surface-variant/60 font-medium">Curating your digital legacy, one piece at a time.</p>
+</header>
+<!-- Filter Chips -->
+<div class="flex gap-3 overflow-x-auto pb-8 no-scrollbar scroll-smooth">
+<button class="bg-primary text-on-primary px-8 py-3 rounded-full font-semibold text-sm transition-all active:scale-95 whitespace-nowrap">All Items</button>
+<button class="bg-surface-container-high text-on-surface-variant px-8 py-3 rounded-full font-semibold text-sm hover:bg-surface-container-highest transition-all active:scale-95 whitespace-nowrap border border-outline-variant/10">Tops</button>
+<button class="bg-surface-container-high text-on-surface-variant px-8 py-3 rounded-full font-semibold text-sm hover:bg-surface-container-highest transition-all active:scale-95 whitespace-nowrap border border-outline-variant/10">Bottoms</button>
+<button class="bg-surface-container-high text-on-surface-variant px-8 py-3 rounded-full font-semibold text-sm hover:bg-surface-container-highest transition-all active:scale-95 whitespace-nowrap border border-outline-variant/10">Shoes</button>
+<button class="bg-surface-container-high text-on-surface-variant px-8 py-3 rounded-full font-semibold text-sm hover:bg-surface-container-highest transition-all active:scale-95 whitespace-nowrap border border-outline-variant/10">Accessories</button>
+</div>
+<!-- Main Content: Wardrobe Gallery (Asymmetric Grid) -->
+<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+<!-- Wardrobe Item 1 -->
+<div class="group relative flex flex-col gap-4">
+<div class="aspect-[3/4] overflow-hidden rounded-xl bg-surface-container-lowest relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="luxury camel hair overcoat hanging against a dark textured studio wall with soft dramatic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEv4ITeeuVMN8IM407FpWiZa1Ev9Ef7ToNPN9ThH58TBiWca6WVxJIrXrlR-UGlviUS58A4HnjcLKZ-KmHdyPIqgBwV4k7qavDOXF7hPJasgDFpf3154T9mN82lJ8je2sHWwKRE96CUF646BreJrIcyT3hzCDj1oJlWkfB0DY3IiXuh6K8wdvk3PSH4vAYC6hNRZAwfJQzo1ksL855wqWaKaUnKuTwTulRBfTjf1Xk3CbSVoSK2Z2HNdK9PGDdEXEwoFdYLDOSc5ek"/>
+<div class="absolute top-4 left-4 bg-surface-container-low/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_#96e400]"></span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface">Clean</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline font-bold text-on-background text-lg">Legacy Camel Coat</h3>
+<p class="text-on-surface-variant/50 text-xs uppercase tracking-tighter">Outerwear • Loro Piana</p>
+</div>
+</div>
+<!-- Wardrobe Item 2 -->
+<div class="group relative flex flex-col gap-4 mt-8 md:mt-0">
+<div class="aspect-[3/4] overflow-hidden rounded-xl bg-surface-container-lowest relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="crisp white silk button down shirt professionally lit in a minimalist luxury boutique setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxv9o92BVTYQCLpHcn8JHxZ5Q-Is6oTEf8MgceCR4wkZJs4vcxM2K6PY5zj3a7wDwXWMPhZPtYmURgnQihsoAyRTuKiJAA9xNhzqC1upy9A2it4HxwHnMagjZaAsBJGLfcl4vdHJgs-G7WbYZVotW6yudjwrDDGdu734qgZ96OppM8Gcpb6tD3h3IX2mHeA3zGRRJu66ZyQJaBn7-rxc9vCdaXwJNPawnB4TrOwxYhp533yj1x4nIKyxRxvXsTvkU7IxC6ZsOiqr7z"/>
+<div class="absolute top-4 left-4 bg-surface-container-low/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#ffb4a5]"></span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface">In the Wash</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline font-bold text-on-background text-lg">Silk Atelier Shirt</h3>
+<p class="text-on-surface-variant/50 text-xs uppercase tracking-tighter">Tops • Maison Sete</p>
+</div>
+</div>
+<!-- Wardrobe Item 3 (Bento Style Variation) -->
+<div class="group relative flex flex-col gap-4 lg:row-span-2">
+<div class="h-full overflow-hidden rounded-xl bg-surface-container-lowest relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="vibrant designer sneakers displayed on a dark obsidian pedestal with sharp studio lighting and reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeQYKS3sOZQhaWTznEp1zlU4pTR3AxNwfsZy2NtFHigi3r0C3wFOAaSsJ8g9OUXIHAkd_um3b1NDa3Kq-KwH8RJskv5jobZArFRucOI5moki0lFca8-38lo6HUjDljFZvGeEM9PhBR8ZgBT2IlvG0yseaZZ3a0mkiuMMhgqf4bMsRcfwUgL74qEzJiCtqVXbK9L4qVkR2WoqNJAfgiAQKvUCQhQlV7fFstkPk6FNE3971_zhEfk_8929JjloE2uN_TpdlSqT-ohbLV"/>
+<div class="absolute top-4 left-4 bg-surface-container-low/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_#96e400]"></span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface">Clean</span>
+</div>
+</div>
+<div class="pb-4">
+<h3 class="font-headline font-bold text-on-background text-lg">Neon Runner V2</h3>
+<p class="text-on-surface-variant/50 text-xs uppercase tracking-tighter">Footwear • AI Performance</p>
+</div>
+</div>
+<!-- Wardrobe Item 4 -->
+<div class="group relative flex flex-col gap-4">
+<div class="aspect-[3/4] overflow-hidden rounded-xl bg-surface-container-lowest relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="high-end dark selvedge denim jeans laid flat on a rustic wooden surface with warm atmospheric lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrOi8A855JdSrx1JFY-C6pwIXLeniPondhR_-NWMJ5stQJEZJoUGkeMKAO4L35FydG-Rn-q8jWkSXdNCEel_K7c_lEVgm3HE3dMPbrUGFGB2rpF1pFUsU9eKS0EU559U49Iay8TmrTAbw0s78oTsLAo9jecaZCUB3tMy7-klDORfA5g-phVTmY-XjW4YLicSTidZ4wUlWUen3c3e4XHK2bx7Wp76Fwr7E-C89Bg2Onc8oOnKHEqijLmoLFjcSyFzov3JU9pTumINIz"/>
+<div class="absolute top-4 left-4 bg-surface-container-low/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_#96e400]"></span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface">Clean</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline font-bold text-on-background text-lg">Indigo Raw Denim</h3>
+<p class="text-on-surface-variant/50 text-xs uppercase tracking-tighter">Bottoms • Curator Series</p>
+</div>
+</div>
+<!-- Wardrobe Item 5 -->
+<div class="group relative flex flex-col gap-4">
+<div class="aspect-[1/1] overflow-hidden rounded-xl bg-surface-container-lowest relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="minimalist white luxury watch on a clean charcoal surface with soft shadows and high-end finish" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0avwfEfNwws8xtsNbIXQUV2giHoglTOjMoZWFuy-t_1jM_B49xNGm3OxWUJpCVQ4ZhwrWGmkuOSg5pSC-hRcxykcDTUQlECc5EaoMXfxZEzL8IRS7ZpwRmJ2ZMjnGeUMD3f8B13sLqWhnP5w6_6Lduc_q4FPAsML8FiSi12cJdVPcAGIxiZHFKxCugFkCSf0X7p6oTPM9f362cFUE0eJXuCovhS2QgFRDhZT7aL8plt2Er8f4DzG7AoSSMoDm00JwVdkufuiR3IhC"/>
+<div class="absolute top-4 left-4 bg-surface-container-low/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_#96e400]"></span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface">Clean</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline font-bold text-on-background text-lg">Pebble Timepiece</h3>
+<p class="text-on-surface-variant/50 text-xs uppercase tracking-tighter">Accessories • Edition 01</p>
+</div>
+</div>
+<!-- Wardrobe Item 6 -->
+<div class="group relative flex flex-col gap-4 md:col-span-2 lg:col-span-1">
+<div class="aspect-[4/5] overflow-hidden rounded-xl bg-surface-container-lowest relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="two black luxury t-shirts folded neatly on a slate surface with elegant textures and moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoozysYdhEqVm3kRFR5kp6kPuyP4ctX7isr2w_2RiNrhrxo4F7xPvJG9HPgQS9V0VBaPcKkdyO45Ix0G1heSoYTdQyy5eosq1FEpSTpN0I1QiamxwbmQ8A_HpGyk9uAWjvGqbMjQMPFcWJ_MCWW9VF3VdyzdNFwOcrl4KyBPFf2mvs1AqNJk3RwTGkE9vXmVWUdROPub7hy8mkUzKf789cabstwJxNDCbTQXZB_DHAEwdQmsPdgvQGRpBSG300-NeHiFqYDtB8uHjO"/>
+<div class="absolute top-4 left-4 bg-surface-container-low/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#ffb4a5]"></span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface">In the Wash</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline font-bold text-on-background text-lg">Heavyweight Tee Duo</h3>
+<p class="text-on-surface-variant/50 text-xs uppercase tracking-tighter">Tops • Essential Line</p>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB: Add to Closet -->
+<button class="fixed bottom-28 right-6 w-16 h-16 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-[0_8px_32px_rgba(212,175,55,0.3)] flex items-center justify-center active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-300" data-icon="add">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-[#1c1b1b]/80 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-32px_32px_rgba(0,0,0,0.4)]">
+<a class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home_app_logo">home_app_logo</span>
+<span class="text-[10px] font-medium tracking-wide uppercase font-label">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#d4af37] bg-[#2a2a2a] rounded-full px-4 py-2 scale-90 transition-all duration-300" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="checkroom" style="font-variation-settings: 'FILL' 1;">checkroom</span>
+<span class="text-[10px] font-medium tracking-wide uppercase font-label">Closet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1 text-[#96e400]" data-icon="auto_awesome">auto_awesome</span>
+<span class="text-[10px] font-medium tracking-wide uppercase font-label">Generate</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] font-medium tracking-wide uppercase font-label">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="text-[10px] font-medium tracking-wide uppercase font-label">Profile</span>
+</a>
+</nav>
+<!-- Background Decoration: Subtle African Pattern -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[-1]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuClst09RkpEhDx3CWUeswWl-w1ro5Rv5EkwmkCyZ4PggC-OGrbdbs2mJHWA_OEiZmEAyRzA9NUTmI7sMlIKlJb_VrdwfeipO-LztQE_X_qGJJjwz0pACH4bwXLrck-uuQ9U64Uvsc7K3xB94-oi769eJGpFh4h9P_el9R7Uw5hkFghwXLIbSV4k3bL9nJPikorjSofL1I6BKMdArHR4PPeOkS85GaDFAtYxQQ4dNFktxNwVMsYvLxkquKCD5ZzsWdp2iZsluqKYw4UH');"></div>
+</body></html>

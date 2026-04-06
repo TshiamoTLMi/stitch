@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Digital Lesela Sete - Outfit Generator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#203600",
+                        "primary-fixed": "#ffe088",
+                        "primary-fixed-dim": "#e9c349",
+                        "on-background": "#e5e2e1",
+                        "on-primary-fixed": "#241a00",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-secondary": "#611205",
+                        "on-primary-fixed-variant": "#574500",
+                        "on-secondary-fixed": "#3e0500",
+                        "surface-variant": "#353534",
+                        "surface-container": "#201f1f",
+                        "secondary": "#ffb4a5",
+                        "surface-dim": "#131313",
+                        "secondary-fixed-dim": "#ffb4a5",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#735c00",
+                        "tertiary-fixed": "#a5fa00",
+                        "tertiary-container": "#82c600",
+                        "on-error": "#690005",
+                        "background": "#131313",
+                        "secondary-container": "#802918",
+                        "tertiary": "#96e400",
+                        "on-tertiary-container": "#304d00",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#314f00",
+                        "primary": "#f2ca50",
+                        "on-secondary-fixed-variant": "#802918",
+                        "inverse-surface": "#e5e2e1",
+                        "on-primary-container": "#554300",
+                        "primary-container": "#d4af37",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#112000",
+                        "outline-variant": "#4d4635",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed": "#ffdad3",
+                        "surface-bright": "#393939",
+                        "on-surface-variant": "#d0c5af",
+                        "outline": "#99907c",
+                        "surface-tint": "#e9c349",
+                        "inverse-on-surface": "#313030",
+                        "tertiary-fixed-dim": "#90db00",
+                        "on-secondary-container": "#ff9a85",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-highest": "#353534",
+                        "on-primary": "#3c2f00",
+                        "surface": "#131313"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-[#131313] docked full-width top-0 z-50 flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#d4af37]">menu</span>
+<h1 class="text-xl font-bold tracking-tighter text-[#d4af37]">Digital Lesela Sete</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#e5e2e1]">notifications</span>
+</div>
+</header>
+<main class="max-w-md mx-auto px-6 space-y-10 mt-6">
+<!-- Weather Widget -->
+<section class="bg-surface-container-low rounded-xl p-5 flex items-center justify-between overflow-hidden relative">
+<div class="z-10">
+<p class="text-sm text-on-surface-variant font-medium uppercase tracking-wider">Current Forecast</p>
+<h3 class="text-2xl font-bold text-on-surface">Johannesburg: 24°C, Sunny</h3>
+</div>
+<div class="z-10">
+<span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">wb_sunny</span>
+</div>
+<!-- Subtle texture -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD_V4J7uxd1OwX8DSnIJ6qQddeRq57DGFkysGcNMJCRBSwbY1LW7IY2z-TB0IUrfyhKw1AMJKtcuPnnBLCdDcC1nSzoKEB4de_1E4WPdCaBJrs53TCL01uNbCx3danlB53Ej2sHF2-nmL9JVCF1y-jU-yFlBnwKNPpns9_7Zmuu2iXlSGyrSD22N4wF0-MHcF6vBlyKEEa0-ldxBPoUh9V0QjkbmTaIVBm-xFTh_Li70bJjnLfmWbfO3wHRXFgHRq9hSuEzp2mCeI12');"></div>
+</section>
+<!-- AI Scanning Pulse Section -->
+<section class="flex flex-col items-center justify-center py-4">
+<div class="relative">
+<!-- AI Stylist Pulse Component -->
+<div class="w-48 h-48 rounded-full bg-surface-container-highest/20 flex items-center justify-center backdrop-blur-xl relative">
+<div class="absolute inset-0 rounded-full border-2 border-tertiary/20 animate-ping"></div>
+<div class="w-32 h-32 rounded-full bg-surface-variant flex items-center justify-center shadow-[0_0_40px_rgba(150,228,0,0.2)]">
+<span class="material-symbols-outlined text-tertiary text-6xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+</div>
+<div class="mt-6 text-center">
+<p class="text-tertiary font-medium text-sm tracking-widest uppercase">AI Stylist Ready</p>
+<p class="text-on-surface-variant text-xs mt-1">Select your preferences below</p>
+</div>
+</div>
+</section>
+<!-- Section 1: Occasion -->
+<section class="space-y-4">
+<div class="flex justify-between items-end">
+<h2 class="text-3xl font-bold tracking-tight">What's the Occasion?</h2>
+<span class="text-primary text-sm font-medium">View All</span>
+</div>
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+<!-- Work -->
+<div class="flex-shrink-0 w-32 h-44 rounded-xl bg-surface-container-low overflow-hidden relative group transition-transform active:scale-95">
+<img alt="Work" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="Sophisticated professional work attire with blazer and neutral tones in a modern office lighting setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkNNyt24LF3iB1aQa48sMJg2Uc0PQlR8pKAfQNOTnKF_tV_o_Sgj7XW_fXx7YPYXdrx3RgIo1WEb-w8hUbWFK4AOHb-q1q7i41wFkAj-UOKKf4NFIrVBq8dQ5fxc5ZLct5k0CMj6E-9SAlquKM0OCBv4lX0O6xd377gbXJIWewx3l2tqV8c82J76A_C7RBX2Z-FKO7nmAlTm1529eQ_npPTaNf0Nr2GDBQAwPn054lOIwe4d6TPFFU-mw8Ewx1rtRSwe3NQp-t41Sm"/>
+<div class="absolute bottom-4 left-4">
+<p class="text-on-surface font-bold">Work</p>
+</div>
+</div>
+<!-- Date -->
+<div class="flex-shrink-0 w-32 h-44 rounded-xl bg-surface-container-low overflow-hidden relative group transition-transform active:scale-95">
+<img alt="Date" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="Romantic evening date aesthetic with soft candlelight reflecting off elegant evening wear and wine glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFqNfmwnX-mb7rg7Sofyd6nvMuarDp3aTUXSdV35tMrhtk9FL3I_-0bWYdIUYOWqYyrMXOVc3sUMHlpeS35b4zXFgWg1wK2s77deEzKoZ_Id3JrnRB2C0CLuK9CvBfvAYfRJRnZtP6HwxNHxQNda8268KTYLnSptWTTHacLJJBL6gbK_LWoZV_KTqCpYUR_NCLkIXstONuFlfRf6yXxqTLmjP3soejYJHEfHgYbrGmlm3_om0PeY9Cs9Pgzp-QJOiaE16HkfOL2lpM"/>
+<div class="absolute bottom-4 left-4">
+<p class="text-on-surface font-bold">Date</p>
+</div>
+</div>
+<!-- Groove -->
+<div class="flex-shrink-0 w-32 h-44 rounded-xl bg-surface-container-low overflow-hidden relative group transition-transform active:scale-95">
+<img alt="Groove" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="Vibrant night club atmosphere with neon lights and high-energy party fashion street style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2eDMTyP3NEEu2QZoCmMY9BPGFzz82tB9lZoHXhPp9rsNQ5u-iO3zENr00LDw0VPti-QHKQ1R0BuoLEvcp5-1eTxnE0Gpp9t5TkCBWzfDhkw3E0LjIcFWiPyfaEUZuhj45-CxrQuzt3af19EHDAyy46YNUvYQ1ZJW4aKNxOIfDQuOtYja_mq6ixl8-JHQ8ccXR-qftD9__hH01R6Gt9jDh44m1QjW0nPqe9drL2g1VqEbTb7lQ_Mdsxu2GWZUv0NWX6Ao1hDBFmlRR"/>
+<div class="absolute bottom-4 left-4">
+<p class="text-on-surface font-bold">Groove</p>
+</div>
+</div>
+<!-- Braai -->
+<div class="flex-shrink-0 w-32 h-44 rounded-xl bg-surface-container-low overflow-hidden relative group transition-transform active:scale-95">
+<img alt="Braai" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" data-alt="Casual South African braai setting with golden hour sunlight and relaxed summer garden party clothing" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsqsuSeSsiJuFvxNjsmmC6BWmrM3qXZAeS5mToMq59nAa4N4zq5_Jf_sr00QFQC2W-vT_Jm62aXfcL0cQu1INe6VglEE1LzYmbJ4JXmV5YsDsCp_lH-T495pNDx5oHTvdfR4B3j-CJU_FrTI-NwheBB0WG5EAaEr8CnUqdW9ORa3lz7ZEvKC6YBikseYAfD2gmG37PHamb1TgWK3DhvE7sSNSyMqwI54KBYk77fRoAHC-1ZVZeC5tbEtKBNndN3lJVxkzx4S3L6B-W"/>
+<div class="absolute bottom-4 left-4">
+<p class="text-on-surface font-bold">Braai</p>
+</div>
+</div>
+<!-- Event -->
+<div class="flex-shrink-0 w-32 h-44 rounded-xl bg-surface-container-low overflow-hidden relative group transition-transform active:scale-95 border-2 border-primary/40">
+<img alt="Event" class="w-full h-full object-cover opacity-100" data-alt="Luxury formal gala event with dramatic lighting and high-end couture fashion on a red carpet" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAed4fSmjOzoCcm6hYfUhTKAKbtw0MiIGls0xGY5PZOY70dhf8hj2LQYAqS3O5_-Ov8qi1Ye0WRxaYOCP8wwKSscNJjQm3d1otATEHUNvbhiXOUliE0SNUsthZCX688OA4Z7sdmG6cP2hI72PntZ2or-RuZuccUWEHookNngCajykhbrIEQI6WkT90VBmI8RxoZ9eIuVR5hpCVvM4s0Z7dmg8xFlj4c4szADUONmHf8TdZBCme9OXPIFY8OK4QQ34Sboa92bdJQ_vSH"/>
+<div class="absolute bottom-4 left-4">
+<p class="text-on-surface font-bold">Event</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Mood -->
+<section class="space-y-4">
+<h2 class="text-3xl font-bold tracking-tight">What's the Mood?</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Minimal -->
+<div class="bg-surface-container rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-2 border border-outline-variant/10 transition-all hover:bg-surface-container-high active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">filter_vintage</span>
+<p class="text-on-surface font-medium">Minimal</p>
+</div>
+<!-- Clean Drip -->
+<div class="bg-surface-container rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-2 border border-primary/30 bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
+<p class="text-on-surface font-medium">Clean Drip</p>
+</div>
+<!-- Street Flex -->
+<div class="bg-surface-container rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-2 border border-outline-variant/10 transition-all hover:bg-surface-container-high active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">styler</span>
+<p class="text-on-surface font-medium">Street Flex</p>
+</div>
+<!-- Soft Life -->
+<div class="bg-surface-container rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-2 border border-outline-variant/10 transition-all hover:bg-surface-container-high active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">weekend</span>
+<p class="text-on-surface font-medium">Soft Life</p>
+</div>
+</div>
+</section>
+<!-- Large CTA -->
+<div class="pt-6">
+<button class="w-full py-6 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold text-lg shadow-[0_10px_40px_rgba(212,175,55,0.3)] hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">magic_button</span>
+                Find My Fit
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-[#1c1b1b]/80 backdrop-blur-xl shadow-[0_-32px_32px_rgba(0,0,0,0.4)] rounded-t-[3rem]">
+<!-- Home -->
+<div class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors">
+<span class="material-symbols-outlined" data-icon="home_app_logo">home_app_logo</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Home</span>
+</div>
+<!-- Closet -->
+<div class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors">
+<span class="material-symbols-outlined" data-icon="checkroom">checkroom</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Closet</span>
+</div>
+<!-- Generate (Active) -->
+<div class="flex flex-col items-center justify-center text-[#d4af37] bg-[#2a2a2a] rounded-full px-4 py-2 scale-90 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Generate</span>
+</div>
+<!-- Events -->
+<div class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Events</span>
+</div>
+<!-- Profile -->
+<div class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Profile</span>
+</div>
+</nav>
+</body></html>

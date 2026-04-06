@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#ffb4a5",
+                    "background": "#131313",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-container": "#304d00",
+                    "surface-dim": "#131313",
+                    "on-tertiary-fixed-variant": "#314f00",
+                    "surface-container": "#201f1f",
+                    "on-error": "#690005",
+                    "outline": "#99907c",
+                    "on-primary-fixed": "#241a00",
+                    "tertiary-container": "#82c600",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-primary": "#3c2f00",
+                    "primary-container": "#d4af37",
+                    "on-secondary-container": "#ff9a85",
+                    "on-secondary-fixed-variant": "#802918",
+                    "on-primary-container": "#554300",
+                    "inverse-on-surface": "#313030",
+                    "tertiary": "#96e400",
+                    "primary": "#f2ca50",
+                    "surface": "#131313",
+                    "on-secondary": "#611205",
+                    "surface-variant": "#353534",
+                    "secondary": "#ffb4a5",
+                    "outline-variant": "#4d4635",
+                    "on-surface": "#e5e2e1",
+                    "surface-container-low": "#1c1b1b",
+                    "on-background": "#e5e2e1",
+                    "secondary-fixed": "#ffdad3",
+                    "on-tertiary-fixed": "#112000",
+                    "inverse-primary": "#735c00",
+                    "secondary-container": "#802918",
+                    "on-secondary-fixed": "#3e0500",
+                    "primary-fixed-dim": "#e9c349",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary-fixed-variant": "#574500",
+                    "surface-bright": "#393939",
+                    "on-surface-variant": "#d0c5af",
+                    "surface-tint": "#e9c349",
+                    "tertiary-fixed-dim": "#90db00",
+                    "inverse-surface": "#e5e2e1",
+                    "on-tertiary": "#203600",
+                    "primary-fixed": "#ffe088",
+                    "tertiary-fixed": "#a5fa00",
+                    "error-container": "#93000a",
+                    "error": "#ffb4ab"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(28, 27, 27, 0.6);
+            backdrop-filter: blur(24px);
+        }
+        .premium-gradient {
+            background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%);
+        }
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            transform: translateY(-1.5rem) scale(0.85);
+            color: #f2ca50;
+        }
+        .floating-label {
+            transition: all 0.2s ease-out;
+            pointer-events: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col selection:bg-primary/30">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#131313] flex justify-between items-center px-6 h-20">
+<div class="flex items-center">
+<button class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition-opacity text-[#e5e2e1]">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="text-xl font-bold text-[#d4af37] uppercase tracking-widest font-headline">
+            Digital Lesela Sete
+        </div>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-24 pb-12 px-6 flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Background Decorative Element (Top-Right) -->
+<div class="absolute -top-20 -right-20 w-96 h-96 opacity-20 pointer-events-none">
+<img alt="High fashion editorial shot" class="w-full h-full object-cover rounded-full grayscale" data-alt="Close-up of luxury fashion fabrics and high-end designer accessories with soft dramatic shadows and editorial lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCBLBGlA8wRKGXbZGhUpAXZmYmGsEcuUThPkopzsDsPePtYiBdF7bP4CpB4bou4Fb211msxAygL-XLnFM8Ly6_tqunvKnBZhUnW069L3a9kVEoUPg5wnuOIOch4qpOklVhvAe7HtScsdMc6-seZ2KvUh_hi8FdIcnZy5x7FiKoZczsJVzH_Ck14OWlMb7atAtXTMNnjXIKgifpQgkIdqIf35HhuhP5oj6RZzwsb_Gz_OyXDvn4F-EI_rxIrQ17VEQgg4c9gC1YmdmH"/>
+</div>
+<!-- Content Container -->
+<div class="w-full max-w-md z-10 space-y-12">
+<!-- Header Section -->
+<div class="text-center space-y-4">
+<h1 class="font-headline text-display-lg font-extrabold tracking-tighter text-on-surface leading-tight">
+                    Create Your <br/><span class="text-primary">Style DNA</span>
+</h1>
+<p class="text-on-surface-variant font-body text-sm tracking-wide opacity-80 uppercase">
+                    Your digital atelier awaits
+                </p>
+</div>
+<!-- Form Section -->
+<form class="space-y-6">
+<!-- Full Name -->
+<div class="relative group">
+<input class="w-full h-16 bg-surface-container-low rounded-full px-8 pt-4 pb-1 text-on-surface border-none focus:ring-0 focus:bg-surface-container-highest transition-all duration-300" id="name" placeholder=" " type="text"/>
+<label class="absolute left-8 top-5 text-on-surface-variant/60 floating-label" for="name">Full Name</label>
+</div>
+<!-- Email -->
+<div class="relative group">
+<input class="w-full h-16 bg-surface-container-low rounded-full px-8 pt-4 pb-1 text-on-surface border-none focus:ring-0 focus:bg-surface-container-highest transition-all duration-300" id="email" placeholder=" " type="email"/>
+<label class="absolute left-8 top-5 text-on-surface-variant/60 floating-label" for="email">Email Address</label>
+</div>
+<!-- Password -->
+<div class="relative group">
+<input class="w-full h-16 bg-surface-container-low rounded-full px-8 pt-4 pb-1 text-on-surface border-none focus:ring-0 focus:bg-surface-container-highest transition-all duration-300" id="password" placeholder=" " type="password"/>
+<label class="absolute left-8 top-5 text-on-surface-variant/60 floating-label" for="password">Password</label>
+<button class="absolute right-6 top-5 text-on-surface-variant/40 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<!-- Primary CTA -->
+<div class="pt-4">
+<button class="w-full h-16 premium-gradient rounded-full text-on-primary font-bold text-lg uppercase tracking-widest shadow-xl shadow-primary/10 hover:opacity-90 active:scale-[0.98] transition-all duration-200" type="submit">
+                        Build My Closet
+                    </button>
+</div>
+</form>
+<!-- Footer Link -->
+<div class="text-center pt-8">
+<p class="text-on-surface-variant text-sm">
+                    Already have an account? 
+                    <a class="text-primary font-semibold ml-1 hover:underline decoration-2 underline-offset-4" href="#">Login</a>
+</p>
+</div>
+</div>
+<!-- Background Decorative Element (Bottom-Left) -->
+<div class="absolute -bottom-32 -left-32 w-[30rem] h-[30rem] opacity-10 pointer-events-none">
+<div class="w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/30 via-transparent to-transparent"></div>
+</div>
+<!-- Pattern Overlay -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0K71MXomWxLGRCKGiylcW7jBkk2OaCreo2T6phyqVZ793RQNb6d73xRkx1vwVxhkpRGDNdsOoLc3WCP8yaw4pz894jix-RUPeoEOvOJ2r84MHMMixHwv-en0laqAcltkzUggAXJz-bof_yDz6BTK6fw7IYnjxZ6c_d4MFmRV9nwSefxZGN-ctNwJQl2MESWDgC1WaZMv5K8n1rdQssuo_a9Z0dkHgArMagFJtMESi2hQPPlY0mQ3UtPcvOsCn6ZOCjwOJRI4hJSZs');"></div>
+</main>
+<!-- Visual Anchor: Asymmetric Image Card (Decorative) -->
+<div class="hidden lg:block fixed right-12 bottom-12 w-64 h-80 rounded-xl overflow-hidden shadow-2xl shadow-black z-0 opacity-40 hover:opacity-80 transition-opacity duration-700">
+<img alt="High-end fashion model in vibrant yellow" class="w-full h-full object-cover" data-alt="Editorial fashion photography of a model wearing luxury streetwear in a minimalist architectural setting with deep shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAE59BG6WYn0d7dy-SHmO-8xvClOmzPu9CsZDj4ANihjpyZPFy7pXfnyWg4VNFVHAIaQWa6xdBQ-lPKhkKdsqrBCGXiD3DxRz4iMpJIjVD325ZKhmflLHBUrripTiQBybQIeWxna8SKqZ_2HTMNr-Ru3STMmH4F6nu42wroHdY66y0zchNe94fQHsNP_3tL3XcSEO0z7W98hK907bOlWQvichVUfIbwLDBBvrCp5wLah_IsTPK07mTPSF0GKUhWO_pN5z7NN22Sp1xu"/>
+</div>
+</body></html>

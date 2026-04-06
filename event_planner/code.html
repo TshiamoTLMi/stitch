@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#203600",
+                    "primary-fixed": "#ffe088",
+                    "primary-fixed-dim": "#e9c349",
+                    "on-background": "#e5e2e1",
+                    "on-primary-fixed": "#241a00",
+                    "on-surface": "#e5e2e1",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-secondary": "#611205",
+                    "on-primary-fixed-variant": "#574500",
+                    "on-secondary-fixed": "#3e0500",
+                    "surface-variant": "#353534",
+                    "surface-container": "#201f1f",
+                    "secondary": "#ffb4a5",
+                    "surface-dim": "#131313",
+                    "secondary-fixed-dim": "#ffb4a5",
+                    "error-container": "#93000a",
+                    "inverse-primary": "#735c00",
+                    "tertiary-fixed": "#a5fa00",
+                    "tertiary-container": "#82c600",
+                    "on-error": "#690005",
+                    "background": "#131313",
+                    "secondary-container": "#802918",
+                    "tertiary": "#96e400",
+                    "on-tertiary-container": "#304d00",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#314f00",
+                    "primary": "#f2ca50",
+                    "on-secondary-fixed-variant": "#802918",
+                    "inverse-surface": "#e5e2e1",
+                    "on-primary-container": "#554300",
+                    "primary-container": "#d4af37",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#112000",
+                    "outline-variant": "#4d4635",
+                    "surface-container-low": "#1c1b1b",
+                    "secondary-fixed": "#ffdad3",
+                    "surface-bright": "#393939",
+                    "on-surface-variant": "#d0c5af",
+                    "outline": "#99907c",
+                    "surface-tint": "#e9c349",
+                    "inverse-on-surface": "#313030",
+                    "tertiary-fixed-dim": "#90db00",
+                    "on-secondary-container": "#ff9a85",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-primary": "#3c2f00",
+                    "surface": "#131313"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-[#131313] text-[#d4af37] docked full-width top-0 z-50 flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#d4af37]">menu</span>
+<h1 class="text-xl font-bold tracking-tighter text-[#d4af37]">Digital Lesela Sete</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#e5e2e1]">notifications</span>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant/20">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a stylish person with a minimal background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzjSYYRP0aglzWFMaWJ0Z8WvIfnZ1XvEftu9_CW9l4afO85mWANHZNsn4OtP-Py85UFYz1DT2mZyaFQuvhbyDpCDJZGMBRQJMZ3Fim3SbFYasxFCSVsPdwg8FnTJCrWrm9kDJx1m_HSgBo4O1oSsZ3YASdmCdBaXYvyi0ohIoszFBvOqAXWwt97frSLa9hn64GUh3nElSFaizx9-7fajk9pf0nmr13BBlJfdWEcDCJb6N3m1hz6frTAHflVQQetUgjo-lyq0rCQSzh"/>
+</div>
+</div>
+</header>
+<main class="px-6 pt-8 max-w-5xl mx-auto">
+<!-- Calendar Header Section -->
+<section class="mb-10">
+<div class="flex items-end justify-between mb-8">
+<div>
+<h2 class="text-4xl font-extrabold tracking-tighter text-on-background mb-1">July 2024</h2>
+<p class="text-on-surface-variant font-medium">12 Events this month</p>
+</div>
+<button class="bg-primary-container text-on-primary rounded-full px-6 py-3 font-bold flex items-center gap-2 hover:opacity-80 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-sm">calendar_add_on</span>
+                    Add Event
+                </button>
+</div>
+<!-- Horizontal Week Scroller -->
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
+<div class="flex-shrink-0 w-20 h-28 rounded-xl bg-surface-container-low flex flex-col items-center justify-center border border-outline-variant/10">
+<span class="text-xs uppercase font-bold text-on-surface-variant mb-2">Mon</span>
+<span class="text-2xl font-bold">15</span>
+</div>
+<div class="flex-shrink-0 w-20 h-28 rounded-xl bg-surface-container-low flex flex-col items-center justify-center border border-outline-variant/10">
+<span class="text-xs uppercase font-bold text-on-surface-variant mb-2">Tue</span>
+<span class="text-2xl font-bold">16</span>
+</div>
+<div class="flex-shrink-0 w-20 h-28 rounded-xl bg-primary-container flex flex-col items-center justify-center shadow-lg shadow-primary/20 scale-110 mx-2">
+<span class="text-xs uppercase font-bold text-on-primary-container mb-2">Wed</span>
+<span class="text-3xl font-extrabold text-on-primary-container">17</span>
+</div>
+<div class="flex-shrink-0 w-20 h-28 rounded-xl bg-surface-container-low flex flex-col items-center justify-center border border-outline-variant/10">
+<span class="text-xs uppercase font-bold text-on-surface-variant mb-2">Thu</span>
+<span class="text-2xl font-bold">18</span>
+</div>
+<div class="flex-shrink-0 w-20 h-28 rounded-xl bg-surface-container-low flex flex-col items-center justify-center border border-outline-variant/10">
+<span class="text-xs uppercase font-bold text-on-surface-variant mb-2">Fri</span>
+<span class="text-2xl font-bold">19</span>
+</div>
+<div class="flex-shrink-0 w-20 h-28 rounded-xl bg-surface-container-low flex flex-col items-center justify-center border border-outline-variant/10">
+<span class="text-xs uppercase font-bold text-on-surface-variant mb-2">Sat</span>
+<span class="text-2xl font-bold text-secondary">20</span>
+</div>
+<div class="flex-shrink-0 w-20 h-28 rounded-xl bg-surface-container-low flex flex-col items-center justify-center border border-outline-variant/10">
+<span class="text-xs uppercase font-bold text-on-surface-variant mb-2">Sun</span>
+<span class="text-2xl font-bold text-secondary">21</span>
+</div>
+</div>
+</section>
+<!-- AI Assistant Action -->
+<section class="mb-12">
+<div class="relative bg-surface-container-high rounded-xl p-8 overflow-hidden group">
+<div class="absolute top-0 right-0 p-12 opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-9xl text-tertiary">auto_awesome</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-tertiary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<h3 class="text-xl font-bold text-on-background">Your Stylist is Ready</h3>
+</div>
+<p class="text-on-surface-variant mb-6 max-w-md leading-relaxed">
+                        I've analyzed your upcoming events and local weather in Soweto. Let's optimize your wardrobe for the week.
+                    </p>
+<button class="bg-tertiary text-on-tertiary rounded-full px-8 py-4 font-bold flex items-center gap-3 shadow-[0_0_20px_rgba(150,228,0,0.3)] hover:shadow-[0_0_30px_rgba(150,228,0,0.5)] transition-all">
+                        Plan My Week
+                        <span class="material-symbols-outlined">bolt</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Events List -->
+<section class="space-y-6">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-2xl font-bold tracking-tight">Upcoming Events</h3>
+<span class="text-primary font-medium text-sm">See all</span>
+</div>
+<!-- Event Card 1 -->
+<div class="bg-surface-container-low rounded-xl p-5 flex items-center gap-6 group hover:bg-surface-container-high transition-colors">
+<div class="flex-shrink-0 w-24 h-32 rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="crowded stadium with vibrant atmosphere during a soccer match at sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByByQu1AWMHooWsweVZd-HK4hApAcpUMsNiD5KKyMCCZrV8eUUFa7lu_yh4aiYO2Aaus7hfSszkLdO8GobNH2WYGQYqkJzpeUDLAujW9Hnbfb0mVa0MvmC1YUz_ZCUROBFutF6Xyd8HyYvNrj1ImfkhiimaUyohiXE7vQ500K9tGBUs_1CI8-XDf15nuNA7rLsgt61EgJQkhR4OgQP5kEfURxl6-ALzwsVFII2y5ANp2wsEOBB27iBZJiGKsiB0ZFhl5QQ8uRC2EBx"/>
+</div>
+<div class="flex-grow">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[10px] uppercase tracking-widest font-bold text-primary">Saturday, 20 July</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">15:00</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Soweto Derby</h4>
+<p class="text-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> FNB Stadium
+                    </p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Style Suggestion</p>
+<div class="w-16 h-20 rounded-lg overflow-hidden ring-2 ring-primary/20 ring-offset-4 ring-offset-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="modern streetwear outfit layout with luxury jersey and premium sneakers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIX-KTkWMxnE29TW6ag_lA3j6-NS1rvTyHY2cFjdQJ3mp6dL57RrnkZfWGOubplEqTIEtb5x_wy7bUqG1Zi_MW_4pVJGQ9cXRkG3x-ZIX7_JVNQ6dzuGh6KGUfn45LVQ4gkrxwyfq2yJ8gNY1neGp3LW6As3TYvBew18PUVL8rHXOVc80G7LQAV5bYIt0xzKK0JhVcAT9xTQr-SreX40q1PgO8vCvlauy2AHj9ShVZqyTMHCtsj4AoZCB-OQKWcv1kxqrQXzAwqqy4"/>
+</div>
+</div>
+</div>
+<!-- Event Card 2 -->
+<div class="bg-surface-container-low rounded-xl p-5 flex items-center gap-6 group hover:bg-surface-container-high transition-colors">
+<div class="flex-shrink-0 w-24 h-32 rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="elegant upscale restaurant interior with warm lighting and decorative marble tables" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo7-E9qEERnmMfYizOOwRNyCJGfy-q0nxkXs07txW5iWCBvTS_IeA59XMvAjNzDAkMsnO6o48ayFQ11cmBuKMvT4ogSNSk4uT8GKu_qmECZxASt-YyIdLTvS-RCKq0rR972k453bgSGJZeeh1iH3VaP00GKJtkRlzp81EmyW4lJoMGThwC4gUUz6jLUxakHwrCIizEMgnb2MyT52trRVzE9HJW_UMRHrulEncP4IL8tynG3IUzAx9VKl_L8d3AFTUKaVizulEzZ2B4"/>
+</div>
+<div class="flex-grow">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[10px] uppercase tracking-widest font-bold text-primary">Friday, 19 July</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">20:30</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Date Night at Marble</h4>
+<p class="text-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Rosebank
+                    </p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Style Suggestion</p>
+<div class="w-16 h-20 rounded-lg overflow-hidden ring-2 ring-primary/20 ring-offset-4 ring-offset-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="crisp tailored luxury blazer and minimalist accessories layout" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0hG5imTA07HA75W4s1ko3MAmTMA0fmG73ojev8Mgv_Jp0D4eJAdhvNNqJQlaqJ0OZ4Q6Dc7gWRc-v-7AbywTGnn-CLwC6YyIYNLs-8hlntBCPn2GdPw5IbsigK0ddaX4dfd8IBiFR_87p-HPzd03xq-PUcUOcPCedU_2xmkMJEDvGkSYLXjQw3V-UrNa3ZRG7JpQzYlP4a0cnubCUvzssQc2-cLQZGARdV_XbA1HOC346JyMsxBP_1j1blhsNKsFJX_ogpy6b8ha-"/>
+</div>
+</div>
+</div>
+<!-- Event Card 3 -->
+<div class="bg-surface-container-low rounded-xl p-5 flex items-center gap-6 group hover:bg-surface-container-high transition-colors">
+<div class="flex-shrink-0 w-24 h-32 rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="sophisticated brunch table setting with gourmet food and sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7_o7TajOTDLd9uR1YQp9F2d43LRswaLZwAf8nIwI1IXWRoSnr2v54FC36Iw3bD8dnAdHr-pe3d1KX07yCs18nwztn8V4cJuICwomFAs90sTgdCxTCxGGmsGkOFe9kYtpLLuApgSoCbGPhnmLwaJpDvj2dYQZtNk9byD3rpHC1KxbDgo2BmKcU3hsdJtsA_VN0qfXMAkdLY3YSIAOS1ZLy3Dua1PVfkN6XLVtVfaxdV0lkVsDS64aDc_h9Fe6AMv-CsIRvRRnpwDUW"/>
+</div>
+<div class="flex-grow">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[10px] uppercase tracking-widest font-bold text-primary">Sunday, 21 July</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">11:00</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Networking Brunch</h4>
+<p class="text-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Sandton
+                    </p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">Style Suggestion</p>
+<div class="w-16 h-20 rounded-lg overflow-hidden ring-2 ring-primary/20 ring-offset-4 ring-offset-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="smart casual outfit with premium linen shirt and tailored chinos" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs3TwzasUiVd8cG-iGY4RnUKuFCwhJilIh-ICKwpg1BPXp6sHyG4vmPsk3LvDZvfM0LBbvTJqqjTaXd0G1BqI9CkBFSoIZp4g156Fj6mYOhmDhGAyAySj_XuVPZbO2V9hx-1GBgJ2E2l8NIJ2-c_BodVJoFg3DtXB_a7G8zcQQ8Rr9X6RV4HsfW2IPlNdBOTmmPuOiu2_keZ6-V_qknAjYCn90rtZni7NIxRev7OSKQ9zNVfTe_FUl5FsPg0NBnnEezPTJsvZik_DY"/>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-[#1c1b1b]/80 backdrop-blur-xl shadow-[0_-32px_32px_rgba(0,0,0,0.4)] rounded-t-[3rem]">
+<div class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors">
+<span class="material-symbols-outlined">home_app_logo</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors">
+<span class="material-symbols-outlined">checkroom</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Closet</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Generate</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#d4af37] bg-[#2a2a2a] rounded-full px-6 py-3 scale-90 transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Events</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium tracking-wide uppercase mt-1">Profile</span>
+</div>
+</nav>
+</body></html>
