@@ -50,7 +50,7 @@ Implemented now:
    flutter pub get
    ```
 
-3. Configure Firebase for project **Digital Lesela Sete**:
+3. Configure Firebase for project **Digital Les Sete**:
 
    ```bash
    flutterfire configure

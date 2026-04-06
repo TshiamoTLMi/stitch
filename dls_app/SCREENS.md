@@ -218,7 +218,7 @@ These are things only you can do — the code is already written and waiting:
 |---|---|---|
 | 1 | **Run `flutterfire configure`** in `dls_app/` folder | Generates real `firebase_options.dart` — without this, all Firebase calls use placeholder "REPLACE_ME" values and fail |
 | 2 | **Replace `firebase_options.dart`** REPLACE_ME values | App can't connect to Firestore or Storage until this is done |
-| 3 | **Create Firebase project** named "Digital Lesela Sete" | Needed for step 1 |
+| 3 | **Create Firebase project** named "Digital Les Sete" | Needed for step 1 |
 | 4 | **Enable Firestore + Storage** in Firebase Console | The upload pipeline and wardrobe stream won't work until these services are turned on |
 | 5 | **Set Firestore rules** (allow read/write for authenticated users OR allow all for dev) | Without rules, all reads/writes are blocked |
 | 6 | **Enable Firebase Storage** and set rules | Same as above for image uploads |

@@ -1,6 +1,12 @@
-# Digital Lesela Sete (DLS) - Project History
+# Digital Les Sete (DLS) - Project History
 
 This document records what has been implemented from project start until now.
+
+## 0. Canonical Naming (Source of Truth)
+
+- App/brand name in UI can remain `Digital Lesela Sete` where required by screen design.
+- Firebase project/database reference for setup is: `Digital Les Sete`.
+- When configuring FlutterFire, use `Digital Les Sete` as the project to bind.
 
 ## 1. Project Goal (Initial Scope)
 
@@ -174,7 +180,7 @@ Fields written:
 
 ### Manual steps still required
 
-1. Bind Firebase to the project using FlutterFire for your Firebase project (`Digital Lesela Sete`)
+1. Bind Firebase to the project using FlutterFire for your Firebase project (`Digital Les Sete`)
 2. Ensure platform-level permission entries are configured for Android/iOS
 3. Ensure Firestore + Storage rules/indexes are configured for your environment
 
@@ -184,8 +190,35 @@ Older broad-MVP files remain in `lib/` from earlier passes. They are not current
 
 ## 9. Recommended Next Steps (Post Sprint 1)
 
-1. Confirm end-to-end upload against live Firebase project `Digital Lesela Sete`
+1. Confirm end-to-end upload against live Firebase project `Digital Les Sete`
 2. Add security rules for `clothing_items`
 3. Add upload progress indicator with percentage
 4. Add delete item action in sprint dashboard if needed
 5. Start Sprint 2 scope only after Sprint 1 acceptance
+
+## 10. Latest Update (2026-04-06)
+
+### Completed in this update
+
+- End-to-end app flow is now stable:
+  - Splash/Login -> Home shell -> Closet tab -> Upload scanner -> return to closet.
+- UI references from provided HTML files are now enforced in implementation and docs.
+- Screen design was documented as a locked baseline in `SCREENS.md` to prevent redesign churn each sprint.
+- Service startup hardening added so app can run in demo mode when Firebase is not fully configured:
+  - guarded Firebase initialization in `main.dart`
+  - safer service access patterns in auth/wardrobe/event/firebase services.
+- `flutter analyze` passed clean after all edits.
+
+### Next sprint (Sprint 2) - planned scope
+
+1. Wire Closet filter chips to real category filtering.
+2. Add category selection/tagging during upload flow.
+3. Add item detail view from wardrobe card tap.
+4. Add upload progress percentage and retry behavior.
+
+### External inputs required from your side before full live validation
+
+1. Run `flutterfire configure` against Firebase project `Digital Les Sete`.
+2. Replace placeholder values in `lib/firebase_options.dart` with generated values.
+3. Ensure Firestore and Storage rules allow expected dev/test access.
+4. Add Android/iOS runtime permission entries for camera/photos.
