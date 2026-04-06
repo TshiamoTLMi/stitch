@@ -222,3 +222,44 @@ Older broad-MVP files remain in `lib/` from earlier passes. They are not current
 2. Replace placeholder values in `lib/firebase_options.dart` with generated values.
 3. Ensure Firestore and Storage rules allow expected dev/test access.
 4. Add Android/iOS runtime permission entries for camera/photos.
+
+## 11. DB Connectivity Test + Plan (2026-04-06)
+
+### Test objective
+
+Validate that this app is connected to Firebase/Firestore for project `Digital Les Sete`.
+
+### What was executed
+
+1. Verified current Firebase options file.
+2. Confirmed placeholders still exist in `lib/firebase_options.dart` (`REPLACE_ME` values).
+3. Attempted live FlutterFire binding from CLI:
+  - `flutterfire configure --project "Digital Les Sete" --platforms=android,ios,web --yes`
+4. Installed FlutterFire CLI and retried with:
+  - `flutter pub global activate flutterfire_cli`
+  - `flutter pub global run flutterfire_cli:flutterfire configure ...`
+
+### Test result
+
+- **DB connection is not yet established.**
+- Blocking issues found during live test:
+  1. `flutterfire` was initially not installed.
+  2. Official `firebase` CLI is not installed on this machine (required by FlutterFire CLI).
+  3. Project identifier passed with spaces is invalid for Firebase project id format.
+
+### Connection plan (execution order)
+
+1. Install Firebase CLI (official):
+  - `npm install -g firebase-tools`
+2. Authenticate:
+  - `firebase login`
+3. Run FlutterFire configure in `dls_app/` and select the existing Firebase project named `Digital Les Sete`.
+4. Confirm `lib/firebase_options.dart` no longer has `REPLACE_ME`.
+5. Run app and execute a smoke test:
+  - Upload one image from scanner.
+  - Verify document appears in `clothing_items` in Firestore.
+  - Verify image exists in Storage at `clothing_items/{uuid}.jpg`.
+
+### Documentation status
+
+- This DB test outcome and plan are now recorded here for sprint continuity.
