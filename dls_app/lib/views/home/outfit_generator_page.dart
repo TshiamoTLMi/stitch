@@ -57,15 +57,19 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     });
 
     if (result.isValid) {
-      await FirebaseFirestore.instance.collection('outfit_history').add({
-        'user_id': widget.userId,
-        'generated_at': Timestamp.fromDate(DateTime.now()),
-        'occasion': _occasion,
-        'mood': _mood,
-        'weather': _weather,
-        'score': result.score,
-        'outfit': result.toJson(),
-      });
+      try {
+        await FirebaseFirestore.instance.collection('outfit_history').add({
+          'user_id': widget.userId,
+          'generated_at': Timestamp.fromDate(DateTime.now()),
+          'occasion': _occasion,
+          'mood': _mood,
+          'weather': _weather,
+          'score': result.score,
+          'outfit': result.toJson(),
+        });
+      } catch (_) {
+        // Firebase not configured — skip saving to history.
+      }
     }
   }
 

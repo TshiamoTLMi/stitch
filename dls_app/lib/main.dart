@@ -12,10 +12,13 @@ import 'services/wardrobe_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (_) {
+    debugPrint('[DLS] Firebase not configured — running in demo mode.');
+  }
   runApp(const DlsBootstrap());
 }
 

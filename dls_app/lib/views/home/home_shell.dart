@@ -4,11 +4,12 @@ import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
+import '../upload_screen.dart';
+import '../wardrobe_dashboard.dart';
 import 'dashboard_page.dart';
 import 'event_planner_page.dart';
 import 'outfit_generator_page.dart';
 import 'profile_page.dart';
-import 'upload_page.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -25,24 +26,21 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthController>();
     final user = auth.user;
-
-    if (user == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
+    final userId = user?.uid ?? 'guest';
 
     if (!_boundWardrobe) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        context.read<WardrobeController>().bindStream(user.uid);
+        context.read<WardrobeController>().bindStream(userId);
       });
       _boundWardrobe = true;
     }
 
     final pages = [
-      DashboardPage(userId: user.uid),
-      UploadPage(userId: user.uid),
-      OutfitGeneratorPage(userId: user.uid),
-      EventPlannerPage(userId: user.uid),
+      DashboardPage(userId: userId),
+      const WardrobeDashboard(),
+      OutfitGeneratorPage(userId: userId),
+      EventPlannerPage(userId: userId),
       const ProfilePage(),
     ];
 
@@ -60,6 +58,34 @@ class _HomeShellState extends State<HomeShell> {
         ],
       ),
       body: SafeArea(top: false, child: pages[_index]),
+      floatingActionButton: _index == 1
+          ? GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const UploadScreen()),
+              ),
+              child: Container(
+                width: 64,
+                height: 64,
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFF2CA50), Color(0xFFD4AF37)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFD4AF37).withValues(alpha: 0.4),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.add, color: Color(0xFF3C2F00), size: 28),
+              ),
+            )
+          : null,
       bottomNavigationBar: Container(
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         decoration: BoxDecoration(

@@ -6,22 +6,20 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:uuid/uuid.dart';
 
 class FirebaseService {
-  FirebaseService({
-    FirebaseStorage? storage,
-    FirebaseFirestore? firestore,
-  })  : _storage = storage ?? FirebaseStorage.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance;
-
-  final FirebaseStorage _storage;
-  final FirebaseFirestore _firestore;
+  FirebaseStorage get _storage => FirebaseStorage.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   final Uuid _uuid = const Uuid();
 
   Stream<QuerySnapshot<Map<String, dynamic>>> streamClothingItems() {
-    return _firestore
-        .collection('clothing_items')
-        .orderBy('createdAt', descending: true)
-        .limit(50)
-        .snapshots();
+    try {
+      return _firestore
+          .collection('clothing_items')
+          .orderBy('createdAt', descending: true)
+          .limit(50)
+          .snapshots();
+    } catch (_) {
+      return const Stream.empty();
+    }
   }
 
   Future<void> uploadClothingItem(File imageFile) async {

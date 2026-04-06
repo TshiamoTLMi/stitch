@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
-import 'views/wardrobe_dashboard.dart';
+import 'views/auth/login_signup_page.dart';
 
 class DlsApp extends StatelessWidget {
   const DlsApp({super.key});
@@ -11,7 +11,7 @@ class DlsApp extends StatelessWidget {
       title: 'Digital Lesela Sete',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: WardrobeDashboard(),
+      home: const LoginSignupPage(),
     );
   }
 }

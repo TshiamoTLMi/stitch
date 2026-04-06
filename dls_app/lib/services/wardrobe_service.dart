@@ -6,20 +6,24 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../models/clothing_item.dart';
 
 class WardrobeService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  FirebaseStorage get _storage => FirebaseStorage.instance;
 
   CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection('clothing_items');
 
   Stream<List<ClothingItem>> streamItems(String userId) {
-    return _collection
-        .where('user_id', isEqualTo: userId)
-        .orderBy('created_at', descending: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map(ClothingItem.fromDoc).toList(),
-        );
+    try {
+      return _collection
+          .where('user_id', isEqualTo: userId)
+          .orderBy('created_at', descending: true)
+          .snapshots()
+          .map(
+            (snapshot) => snapshot.docs.map(ClothingItem.fromDoc).toList(),
+          );
+    } catch (_) {
+      return Stream.value([]);
+    }
   }
 
   Future<String> uploadImage({
