@@ -263,3 +263,32 @@ Validate that this app is connected to Firebase/Firestore for project `Digital L
 ### Documentation status
 
 - This DB test outcome and plan are now recorded here for sprint continuity.
+
+## 12. DB Connectivity Completion (2026-04-06)
+
+### What is now completed
+
+1. FlutterFire configuration completed successfully against project id `digital-les-sete` (display name: `digital Les Sete`).
+2. `lib/firebase_options.dart` now contains real platform config values (android/ios/web), no `REPLACE_ME` placeholders.
+3. Firebase apps are registered and visible from CLI:
+  - `dls_app (android)`
+  - `dls_app (ios)`
+  - `dls_app (web)`
+4. Firestore database visibility check passed:
+  - `projects/digital-les-sete/databases/(default)`
+5. Live DB smoke test passed via Firestore REST:
+  - temporary document created in `connectivity_smoke`
+  - temporary document deleted successfully
+6. Post-config validation passed:
+  - `flutter analyze` -> `No issues found`
+
+### Updated plan from here
+
+1. Run in-app upload smoke test from UI (Scanner -> Upload) and verify:
+  - Firestore doc appears in `clothing_items`
+  - Storage object appears in `clothing_items/{uuid}.jpg`
+2. Apply Firestore + Storage rules for controlled access (currently test path validated).
+3. Move Sprint 2 implementation:
+  - category tagging during upload
+  - filter chips wired to real filtering
+  - item details on wardrobe card tap

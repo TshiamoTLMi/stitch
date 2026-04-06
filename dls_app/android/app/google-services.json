@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "357360805758",
+    "project_id": "digital-les-sete",
+    "storage_bucket": "digital-les-sete.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:357360805758:android:54b47afe5bf7067881b52f",
+        "android_client_info": {
+          "package_name": "com.example.dls_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "357360805758-16416q15dq1b5p23si4eu9mhobh4bsu5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAT7vjCcpYLbas0PCP0gbdVCiEGDY4RIWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "357360805758-16416q15dq1b5p23si4eu9mhobh4bsu5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
