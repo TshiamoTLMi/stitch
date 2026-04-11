@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../services/firebase_service.dart';
 
@@ -410,18 +413,85 @@ class _WardrobeDetailSheet extends StatefulWidget {
 
 class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   final FirebaseService _service = FirebaseService();
+  final ImagePicker _picker = ImagePicker();
   static const _categories = ['shirt', 'outerwear', 'pants', 'shoes', 'accessory'];
   static const _statuses = ['clean', 'in_wash', 'in the wash'];
 
   late String _category;
   late String _status;
   bool _saving = false;
+  bool _replacingPhoto = false;
+  String? _localImagePath; // preview of newly selected photo before upload
 
   @override
   void initState() {
     super.initState();
     _category = ((widget.data['category'] as String?) ?? 'shirt').toLowerCase();
     _status = ((widget.data['status'] as String?) ?? 'clean').toLowerCase();
+  }
+
+  Future<void> _pickAndReplacePhoto() async {
+    final id = (widget.data['id'] as String?) ?? '';
+    if (id.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cannot replace photo: missing document id.')),
+      );
+      return;
+    }
+
+    // Let user choose camera or gallery.
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: const Color(0xFF1C1B1B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined, color: Color(0xFFF2CA50)),
+              title: const Text('Take a photo', style: TextStyle(color: Color(0xFFE5E2E1))),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined, color: Color(0xFFF2CA50)),
+              title: const Text('Choose from gallery', style: TextStyle(color: Color(0xFFE5E2E1))),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+
+    if (source == null || !mounted) return;
+
+    final picked = await _picker.pickImage(source: source, imageQuality: 90);
+    if (picked == null || !mounted) return;
+
+    setState(() {
+      _replacingPhoto = true;
+      _localImagePath = picked.path;
+    });
+
+    try {
+      await _service.replaceItemImage(id, File(picked.path));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Photo updated!')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _localImagePath = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Photo update failed: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _replacingPhoto = false);
+    }
   }
 
   Future<void> _save() async {
@@ -487,20 +557,68 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                   ),
                 ),
               ),
-              AspectRatio(
-                aspectRatio: 3 / 4,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(22)),
-                  child: imageUrl.isEmpty
-                      ? const ColoredBox(
-                          color: Color(0xFF0E0E0E),
-                          child: Center(
-                            child: Icon(Icons.image_not_supported_outlined,
-                                color: Color(0xFF353534), size: 44),
-                          ),
-                        )
-                      : Image.network(imageUrl, fit: BoxFit.cover),
-                ),
+              // ── Photo with Replace button overlay ───────────────────────
+              Stack(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 3 / 4,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(22)),
+                      child: _localImagePath != null
+                          ? Image.file(File(_localImagePath!), fit: BoxFit.cover)
+                          : imageUrl.isEmpty
+                              ? const ColoredBox(
+                                  color: Color(0xFF0E0E0E),
+                                  child: Center(
+                                    child: Icon(Icons.image_not_supported_outlined,
+                                        color: Color(0xFF353534), size: 44),
+                                  ),
+                                )
+                              : Image.network(imageUrl, fit: BoxFit.cover),
+                    ),
+                  ),
+                  // Replace photo button — bottom-right corner of image
+                  Positioned(
+                    bottom: 12,
+                    right: 12,
+                    child: GestureDetector(
+                      onTap: _replacingPhoto ? null : _pickAndReplacePhoto,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1C1B1B).withValues(alpha: 0.88),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: const Color(0xFFF2CA50).withValues(alpha: 0.5)),
+                        ),
+                        child: _replacingPhoto
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Color(0xFFF2CA50),
+                                ),
+                              )
+                            : const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.camera_alt_outlined,
+                                      color: Color(0xFFF2CA50), size: 15),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Replace Photo',
+                                    style: TextStyle(
+                                      color: Color(0xFFF2CA50),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 26),

@@ -97,6 +97,10 @@
 <span class="text-xl font-bold tracking-tighter text-[#d4af37] font-headline">Digital Lesela Sete</span>
 </div>
 <div class="flex items-center gap-4">
+<button id="notif-btn" onclick="openNotifPanel()" class="relative w-10 h-10 flex items-center justify-center hover:opacity-80 transition-opacity focus:outline-none" aria-label="Open notifications">
+  <span class="material-symbols-outlined text-[#e5e2e1]">notifications</span>
+  <span id="notif-badge" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#ffb4a5] border-[1.5px] border-[#131313]"></span>
+</button>
 <span class="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity cursor-pointer" data-icon="search">search</span>
 </div>
 </nav>
@@ -202,10 +206,43 @@
 </div>
 </section>
 </main>
-<!-- FAB: Add to Closet -->
-<button class="fixed bottom-28 right-6 w-16 h-16 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-[0_8px_32px_rgba(212,175,55,0.3)] flex items-center justify-center active:scale-95 transition-all z-50 group">
-<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-300" data-icon="add">add</span>
+<!-- FAB: Add to Closet — tapping opens camera directly -->
+<input id="fab-camera-input" type="file" accept="image/*" capture="environment" class="hidden" onchange="onFabPhotoSelected(event)" />
+<button onclick="document.getElementById('fab-camera-input').click()" class="fixed bottom-28 right-6 w-16 h-16 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-[0_8px_32px_rgba(212,175,55,0.3)] flex items-center justify-center active:scale-95 transition-all z-50 group" aria-label="Add item to closet">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-300">add</span>
 </button>
+
+<!-- Preview toast that appears after photo is taken -->
+<div id="fab-toast" class="fixed bottom-[7.5rem] right-6 z-[300] flex items-center gap-3 bg-[#201f1f] border border-[#4d4635]/40 rounded-2xl px-4 py-3 shadow-2xl opacity-0 pointer-events-none transition-all duration-300 translate-y-2 max-w-[280px]">
+  <div id="fab-thumb" class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-surface-container-high"></div>
+  <div class="flex-1 min-w-0">
+    <p class="text-[#e5e2e1] text-sm font-semibold leading-snug">Photo captured</p>
+    <p class="text-[#d0c5af] text-xs mt-0.5">Scanning with AI…</p>
+  </div>
+  <span class="material-symbols-outlined text-[#96e400] text-xl flex-shrink-0" style="font-variation-settings:'FILL' 1">auto_awesome</span>
+</div>
+
+<script>
+  function onFabPhotoSelected(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const thumb = document.getElementById('fab-thumb');
+    thumb.style.backgroundImage = 'url(' + url + ')';
+    thumb.style.backgroundSize = 'cover';
+    thumb.style.backgroundPosition = 'center';
+    const toast = document.getElementById('fab-toast');
+    toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+      toast.classList.remove('opacity-100', 'translate-y-0');
+      URL.revokeObjectURL(url);
+    }, 3500);
+    // Reset input so the same photo can be re-selected
+    e.target.value = '';
+  }
+</script>
 <!-- BottomNavBar -->
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-[#1c1b1b]/80 backdrop-blur-xl rounded-t-[3rem] shadow-[0_-32px_32px_rgba(0,0,0,0.4)]">
 <a class="flex flex-col items-center justify-center text-[#e5e2e1]/60 px-4 py-2 hover:text-[#d4af37] transition-colors" href="#">
@@ -231,4 +268,100 @@
 </nav>
 <!-- Background Decoration: Subtle African Pattern -->
 <div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[-1]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuClst09RkpEhDx3CWUeswWl-w1ro5Rv5EkwmkCyZ4PggC-OGrbdbs2mJHWA_OEiZmEAyRzA9NUTmI7sMlIKlJb_VrdwfeipO-LztQE_X_qGJJjwz0pACH4bwXLrck-uuQ9U64Uvsc7K3xB94-oi769eJGpFh4h9P_el9R7Uw5hkFghwXLIbSV4k3bL9nJPikorjSofL1I6BKMdArHR4PPeOkS85GaDFAtYxQQ4dNFktxNwVMsYvLxkquKCD5ZzsWdp2iZsluqKYw4UH');"></div>
+<!-- Notification Panel Backdrop -->
+<div id="notif-backdrop" onclick="closeNotifPanel()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+<!-- Notification Panel -->
+<aside id="notif-panel" class="fixed top-0 right-0 h-full w-full max-w-sm bg-[#1c1b1b] z-[201] translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl">
+  <div class="flex justify-between items-center px-6 py-5 border-b border-[#4d4635]/30">
+    <h2 class="text-xl font-bold text-[#e5e2e1]" style="font-family:'Plus Jakarta Sans',sans-serif">Notifications</h2>
+    <div class="flex items-center gap-3">
+      <button onclick="markAllRead()" class="text-xs font-semibold text-[#f2ca50] hover:opacity-70 transition-opacity">Mark all read</button>
+      <button onclick="closeNotifPanel()" class="w-9 h-9 rounded-full bg-[#2a2a2a] flex items-center justify-center hover:opacity-80 transition-opacity">
+        <span class="material-symbols-outlined text-[#d0c5af] text-xl">close</span>
+      </button>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto py-3 space-y-1 px-3">
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#f2ca50]/10 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#f2ca50] text-xl" style="font-variation-settings:'FILL' 1">stadium</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">Soweto Derby in 3 days</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Your outfit suggestion is ready — check it before Saturday!</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">2 hours ago</span>
+      </div>
+      <div class="notif-dot w-2 h-2 rounded-full bg-[#ffb4a5] flex-shrink-0 mt-2"></div>
+    </div>
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#ffb4a5]/10 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#ffb4a5] text-xl" style="font-variation-settings:'FILL' 1">favorite</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">Date Night at Marble — tomorrow!</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Your look is planned for 20:30. Tap to review your selection.</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">5 hours ago</span>
+      </div>
+      <div class="notif-dot w-2 h-2 rounded-full bg-[#ffb4a5] flex-shrink-0 mt-2"></div>
+    </div>
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#96e400]/10 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#96e400] text-xl" style="font-variation-settings:'FILL' 1">auto_awesome</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">New outfit generated for you</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Based on your Style DNA, we curated a fresh look for this week.</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">Yesterday</span>
+      </div>
+    </div>
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#802918]/20 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#ffb4a5] text-xl" style="font-variation-settings:'FILL' 1">water_drop</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">Rain expected Sunday in Johannesburg</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Your Networking Brunch look has been updated to match the forecast.</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">Yesterday</span>
+      </div>
+    </div>
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#353534]/50 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#99907c] text-xl" style="font-variation-settings:'FILL' 1">local_laundry_service</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">2 items need a laundry refresh</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Silk Atelier Shirt &amp; Heavyweight Tee Duo are marked "In the Wash".</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">2 days ago</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+  function openNotifPanel() {
+    const backdrop = document.getElementById('notif-backdrop');
+    const panel = document.getElementById('notif-panel');
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    backdrop.classList.add('opacity-100');
+    panel.classList.remove('translate-x-full');
+    panel.classList.add('translate-x-0');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNotifPanel() {
+    const backdrop = document.getElementById('notif-backdrop');
+    const panel = document.getElementById('notif-panel');
+    backdrop.classList.add('opacity-0', 'pointer-events-none');
+    backdrop.classList.remove('opacity-100');
+    panel.classList.add('translate-x-full');
+    panel.classList.remove('translate-x-0');
+    document.body.style.overflow = '';
+  }
+  function markAllRead() {
+    document.querySelectorAll('.notif-dot').forEach(dot => dot.style.visibility = 'hidden');
+    const badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = 'none';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNotifPanel(); });
+</script>
 </body></html>

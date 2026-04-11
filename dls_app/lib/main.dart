@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'app.dart';
 import 'controllers/auth_controller.dart';
+import 'services/notification_service.dart';
 import 'controllers/wardrobe_controller.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
   } catch (_) {
     debugPrint('[DLS] Firebase not configured — running in demo mode.');
   }
+  await NotificationService().init();
   runApp(const DlsBootstrap());
 }
 

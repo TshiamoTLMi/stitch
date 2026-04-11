@@ -99,7 +99,10 @@
 <h1 class="text-xl font-bold tracking-tighter text-[#d4af37]">Digital Lesela Sete</h1>
 </div>
 <div class="flex items-center gap-4">
-<span class="material-symbols-outlined text-[#e5e2e1]">notifications</span>
+<button id="notif-btn" onclick="openNotifPanel()" class="relative w-10 h-10 flex items-center justify-center hover:opacity-80 transition-opacity focus:outline-none" aria-label="Open notifications">
+  <span class="material-symbols-outlined text-[#e5e2e1]">notifications</span>
+  <span id="notif-badge" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#ffb4a5] border-[1.5px] border-[#131313]"></span>
+</button>
 <div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant/20">
 <img class="w-full h-full object-cover" data-alt="close-up portrait of a stylish person with a minimal background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzjSYYRP0aglzWFMaWJ0Z8WvIfnZ1XvEftu9_CW9l4afO85mWANHZNsn4OtP-Py85UFYz1DT2mZyaFQuvhbyDpCDJZGMBRQJMZ3Fim3SbFYasxFCSVsPdwg8FnTJCrWrm9kDJx1m_HSgBo4O1oSsZ3YASdmCdBaXYvyi0ohIoszFBvOqAXWwt97frSLa9hn64GUh3nElSFaizx9-7fajk9pf0nmr13BBlJfdWEcDCJb6N3m1hz6frTAHflVQQetUgjo-lyq0rCQSzh"/>
 </div>
@@ -273,4 +276,105 @@
 <span class="text-[10px] font-medium tracking-wide uppercase mt-1">Profile</span>
 </div>
 </nav>
+<!-- Notification Panel Backdrop -->
+<div id="notif-backdrop" onclick="closeNotifPanel()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+<!-- Notification Panel -->
+<aside id="notif-panel" class="fixed top-0 right-0 h-full w-full max-w-sm bg-[#1c1b1b] z-[201] translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-2xl">
+  <div class="flex justify-between items-center px-6 py-5 border-b border-[#4d4635]/30">
+    <h2 class="text-xl font-bold text-[#e5e2e1]" style="font-family:'Plus Jakarta Sans',sans-serif">Notifications</h2>
+    <div class="flex items-center gap-3">
+      <button onclick="markAllRead()" class="text-xs font-semibold text-[#f2ca50] hover:opacity-70 transition-opacity">Mark all read</button>
+      <button onclick="closeNotifPanel()" class="w-9 h-9 rounded-full bg-[#2a2a2a] flex items-center justify-center hover:opacity-80 transition-opacity">
+        <span class="material-symbols-outlined text-[#d0c5af] text-xl">close</span>
+      </button>
+    </div>
+  </div>
+  <div class="flex-1 overflow-y-auto py-3 space-y-1 px-3">
+    <!-- Soweto Derby reminder -->
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#f2ca50]/10 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#f2ca50] text-xl" style="font-variation-settings:'FILL' 1">stadium</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">Soweto Derby in 3 days</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Your outfit suggestion is ready — check it before Saturday!</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">2 hours ago</span>
+      </div>
+      <div class="notif-dot w-2 h-2 rounded-full bg-[#ffb4a5] flex-shrink-0 mt-2"></div>
+    </div>
+    <!-- Date Night reminder -->
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#ffb4a5]/10 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#ffb4a5] text-xl" style="font-variation-settings:'FILL' 1">favorite</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">Date Night at Marble — tomorrow!</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Your look is planned for 20:30. Tap to review your selection.</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">5 hours ago</span>
+      </div>
+      <div class="notif-dot w-2 h-2 rounded-full bg-[#ffb4a5] flex-shrink-0 mt-2"></div>
+    </div>
+    <!-- AI style suggestion -->
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#96e400]/10 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#96e400] text-xl" style="font-variation-settings:'FILL' 1">auto_awesome</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">New outfit generated for you</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Based on your Style DNA, we curated a fresh look for this week.</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">Yesterday</span>
+      </div>
+    </div>
+    <!-- Weather alert -->
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#802918]/20 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#ffb4a5] text-xl" style="font-variation-settings:'FILL' 1">water_drop</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">Rain expected Sunday in Johannesburg</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Your Networking Brunch look has been updated to match the forecast.</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">Yesterday</span>
+      </div>
+    </div>
+    <!-- Laundry alert -->
+    <div class="notif-item flex items-start gap-4 px-3 py-4 rounded-xl hover:bg-[#201f1f] transition-colors cursor-pointer">
+      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#353534]/50 flex items-center justify-center mt-0.5">
+        <span class="material-symbols-outlined text-[#99907c] text-xl" style="font-variation-settings:'FILL' 1">local_laundry_service</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-[#e5e2e1] text-sm leading-snug">2 items need a laundry refresh</p>
+        <p class="text-[#d0c5af] text-xs mt-1 leading-relaxed">Silk Atelier Shirt &amp; Heavyweight Tee Duo are marked "In the Wash".</p>
+        <span class="text-[10px] text-[#f2ca50]/70 font-medium mt-1.5 block">2 days ago</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+  function openNotifPanel() {
+    const backdrop = document.getElementById('notif-backdrop');
+    const panel = document.getElementById('notif-panel');
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    backdrop.classList.add('opacity-100');
+    panel.classList.remove('translate-x-full');
+    panel.classList.add('translate-x-0');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNotifPanel() {
+    const backdrop = document.getElementById('notif-backdrop');
+    const panel = document.getElementById('notif-panel');
+    backdrop.classList.add('opacity-0', 'pointer-events-none');
+    backdrop.classList.remove('opacity-100');
+    panel.classList.add('translate-x-full');
+    panel.classList.remove('translate-x-0');
+    document.body.style.overflow = '';
+  }
+  function markAllRead() {
+    document.querySelectorAll('.notif-dot').forEach(dot => dot.style.visibility = 'hidden');
+    const badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = 'none';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNotifPanel(); });
+</script>
 </body></html>

@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/event_model.dart';
+import '../../services/calendar_sync_service.dart';
 import '../../services/event_service.dart';
 import '../../services/outfit_bot_service.dart';
 
@@ -21,8 +22,10 @@ class EventPlannerPage extends StatefulWidget {
 class _EventPlannerPageState extends State<EventPlannerPage> {
   final _eventNameController = TextEditingController();
   final _bot = OutfitBotService();
+  final _calendarSync = CalendarSyncService();
   String _occasion = 'Event';
   DateTime _date = DateTime.now().add(const Duration(days: 1));
+  bool _importingCalendar = false;
 
   static const occasions = ['Work', 'Date', 'Groove', 'Braai', 'Event'];
 
@@ -76,6 +79,44 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Event created.')));
   }
 
+  Future<void> _importFromPhoneCalendar() async {
+    if (_importingCalendar) return;
+    setState(() => _importingCalendar = true);
+
+    try {
+      final result = await _calendarSync.importUpcomingEvents(
+        userId: widget.userId,
+        eventService: context.read<EventService>(),
+        daysAhead: 120,
+      );
+
+      if (!mounted) return;
+      if (!result.permissionGranted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Calendar permission denied. Enable it to sync events.'),
+          ),
+        );
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Calendar sync done: ${result.imported} imported, ${result.skipped} skipped, ${result.failed} failed.',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Calendar sync failed. Please retry.')),
+      );
+    } finally {
+      if (mounted) setState(() => _importingCalendar = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final wardrobe = context.watch<WardrobeController>().items;
@@ -125,7 +166,30 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
                 ],
               ),
               const SizedBox(height: 6),
-              ElevatedButton(onPressed: _createEvent, child: const Text('Add Event')),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _createEvent,
+                      child: const Text('Add Event'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _importingCalendar ? null : _importFromPhoneCalendar,
+                      icon: _importingCalendar
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.calendar_month_outlined),
+                      label: Text(_importingCalendar ? 'Importing...' : 'Import Phone Calendar'),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

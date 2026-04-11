@@ -75,4 +75,33 @@ class FirebaseService {
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
+
+  /// Compresses [imageFile], uploads it to Storage, then updates the Firestore
+  /// doc so the item shows the new photo immediately.
+  Future<void> replaceItemImage(String id, File imageFile) async {
+    final compressedBytes = await FlutterImageCompress.compressWithFile(
+      imageFile.absolute.path,
+      minWidth: 1080,
+      quality: 70,
+      format: CompressFormat.jpeg,
+    );
+
+    if (compressedBytes == null || compressedBytes.isEmpty) {
+      throw Exception('Image compression failed.');
+    }
+
+    final ref = _storage.ref().child('clothing_items/$id.jpg');
+    await ref.putData(
+      compressedBytes,
+      SettableMetadata(contentType: 'image/jpeg'),
+    );
+    final newUrl = await ref.getDownloadURL();
+
+    await _firestore.collection('clothing_items').doc(id).update({
+      'imageUrl': newUrl,
+      'image_url': newUrl,
+      'updatedAt': FieldValue.serverTimestamp(),
+      'updated_at': FieldValue.serverTimestamp(),
+    });
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/event_model.dart';
+import 'notification_service.dart';
 
 class EventService {
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
@@ -26,11 +27,45 @@ class EventService {
     }
   }
 
-  Future<void> createEvent(EventModel event) {
+  Future<void> createEvent(EventModel event) async {
     try {
-      return _collection.add(event.toMap());
+      final doc = await _collection.add(event.toMap());
+      // Schedule a local reminder 1 hour before the event.
+      final saved = EventModel(
+        id: doc.id,
+        userId: event.userId,
+        name: event.name,
+        date: event.date,
+        occasion: event.occasion,
+        recommendedOutfits: event.recommendedOutfits,
+      );
+      await NotificationService().scheduleEventReminder(saved);
     } catch (_) {
-      return Future.value();
+      // Silently degrade — event still created even if notification fails.
     }
+  }
+
+  Future<bool> createEventIfMissing(EventModel event) async {
+    final sourceKey = event.sourceKey;
+    if (sourceKey != null && sourceKey.isNotEmpty) {
+      final existing = await _collection
+          .where('user_id', isEqualTo: event.userId)
+          .where('source_key', isEqualTo: sourceKey)
+          .limit(1)
+          .get();
+      if (existing.docs.isNotEmpty) {
+        return false;
+      }
+    }
+
+    await createEvent(event);
+    return true;
+  }
+
+  Future<void> deleteEvent(EventModel event) async {
+    try {
+      await _collection.doc(event.id).delete();
+      await NotificationService().cancelEventReminder(event);
+    } catch (_) {}
   }
 }
