@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
@@ -38,15 +39,38 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
       return;
     }
 
+    final wardrobe = context.read<WardrobeController>().items;
+    final suggestions = _bot.generateSuggestionsForEvent(
+      wardrobe: wardrobe,
+      occasion: _occasion,
+    );
+
     final event = EventModel(
       id: '',
       userId: widget.userId,
       name: name,
       date: _date,
       occasion: _occasion,
+      recommendedOutfits: suggestions
+          .map(
+            (s) =>
+                'Score ${s.score}: ${s.top?.category ?? '-'} + ${s.bottom?.category ?? '-'} + ${s.shoes?.category ?? '-'}',
+          )
+          .toList(),
     );
 
     await context.read<EventService>().createEvent(event);
+    try {
+      await FirebaseFirestore.instance.collection('audit_events').add({
+        'user_id': widget.userId,
+        'type': 'event_created',
+        'sprint': 5,
+        'message': 'Created event "$name" with ${event.recommendedOutfits.length} recommendation(s).',
+        'created_at': Timestamp.fromDate(DateTime.now()),
+      });
+    } catch (_) {
+      // Audit trail is best-effort in demo mode.
+    }
     _eventNameController.clear();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Event created.')));
@@ -127,10 +151,18 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
 
             return Column(
               children: events.map((event) {
-                final suggestions = _bot.generateSuggestionsForEvent(
-                  wardrobe: wardrobe,
-                  occasion: event.occasion,
-                );
+                final suggestions = event.recommendedOutfits.isNotEmpty
+                    ? event.recommendedOutfits
+                    : _bot
+                        .generateSuggestionsForEvent(
+                          wardrobe: wardrobe,
+                          occasion: event.occasion,
+                        )
+                        .map(
+                          (s) =>
+                              'Score ${s.score}: ${s.top?.category ?? '-'} + ${s.bottom?.category ?? '-'} + ${s.shoes?.category ?? '-'}',
+                        )
+                        .toList();
 
                 return Card(
                   child: Padding(
@@ -155,9 +187,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
                                 color: AppTheme.surfaceHighest,
                                 borderRadius: BorderRadius.circular(14),
                               ),
-                              child: Text(
-                                'Score ${s.score}: ${s.top?.category ?? '-'} + ${s.bottom?.category ?? '-'} + ${s.shoes?.category ?? '-'}',
-                              ),
+                              child: Text(s),
                             ),
                           ),
                       ],

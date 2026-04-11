@@ -10,12 +10,17 @@ class EventService {
 
   Stream<List<EventModel>> streamUpcomingEvents(String userId) {
     try {
-      return _collection
-          .where('user_id', isEqualTo: userId)
-          .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
-          .orderBy('date')
-          .snapshots()
-          .map((snapshot) => snapshot.docs.map(EventModel.fromDoc).toList());
+      return _collection.where('user_id', isEqualTo: userId).snapshots().map((snapshot) {
+        final now = DateTime.now();
+        final events = snapshot.docs.map(EventModel.fromDoc).where((event) {
+          final day = DateTime(event.date.year, event.date.month, event.date.day);
+          final today = DateTime(now.year, now.month, now.day);
+          return day.isAtSameMomentAs(today) || day.isAfter(today);
+        }).toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
+
+        return events;
+      });
     } catch (_) {
       return Stream.value([]);
     }

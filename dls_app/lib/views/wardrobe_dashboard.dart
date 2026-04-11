@@ -15,6 +15,37 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
   int _selectedFilter = 0;
   static const _filters = ['All Items', 'Tops', 'Bottoms', 'Shoes', 'Accessories'];
 
+  bool _matchesFilter(Map<String, dynamic> data) {
+    if (_selectedFilter == 0) return true;
+
+    final category = ((data['category'] as String?) ?? '').toLowerCase();
+    switch (_selectedFilter) {
+      case 1:
+        return ['shirt', 'top', 'tshirt', 'tee', 'outerwear', 'jacket']
+            .contains(category);
+      case 2:
+        return ['pants', 'jeans', 'trouser', 'shorts', 'skirt']
+            .contains(category);
+      case 3:
+        return ['shoe', 'shoes', 'sneaker', 'sneakers', 'boot', 'boots']
+            .contains(category);
+      case 4:
+        return ['accessory', 'watch', 'bag', 'hat', 'belt', 'jewelry']
+            .contains(category);
+      default:
+        return true;
+    }
+  }
+
+  void _openDetail(Map<String, dynamic> data) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _WardrobeDetailSheet(data: data),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -109,12 +140,24 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
             }
 
             final docs = snap.data?.docs ?? [];
+            final filtered = docs.where((d) => _matchesFilter(d.data())).toList();
+
             if (docs.isEmpty) {
               return SliverToBoxAdapter(
                 child: _EmptyState(
                   icon: Icons.checkroom_outlined,
                   title: 'Your wardrobe is empty.',
                   subtitle: 'Tap + to add your first piece.',
+                ),
+              );
+            }
+
+            if (filtered.isEmpty) {
+              return SliverToBoxAdapter(
+                child: _EmptyState(
+                  icon: Icons.tune,
+                  title: 'No items in this filter.',
+                  subtitle: 'Try a different category or add more pieces.',
                 ),
               );
             }
@@ -129,8 +172,14 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
                   childAspectRatio: 0.70,
                 ),
                 delegate: SliverChildBuilderDelegate(
-                  (context, i) => _WardrobeCard(data: docs[i].data()),
-                  childCount: docs.length,
+                  (context, i) {
+                    final data = filtered[i].data();
+                    return GestureDetector(
+                      onTap: () => _openDetail(data),
+                      child: _WardrobeCard(data: data),
+                    );
+                  },
+                  childCount: filtered.length,
                 ),
               ),
             );
@@ -191,6 +240,16 @@ class _WardrobeCard extends StatelessWidget {
                               ),
                             ),
                           ),
+                    errorBuilder: (_, __, ___) => const ColoredBox(
+                      color: Color(0xFF0E0E0E),
+                      child: Center(
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          color: Color(0xFF353534),
+                          size: 36,
+                        ),
+                      ),
+                    ),
                   ),
           ),
 
@@ -323,5 +382,269 @@ class _EmptyState extends StatelessWidget {
       ),
     );
   }
+}
+
+class _WardrobeDetailSheet extends StatefulWidget {
+  const _WardrobeDetailSheet({required this.data});
+
+  final Map<String, dynamic> data;
+
+  @override
+  State<_WardrobeDetailSheet> createState() => _WardrobeDetailSheetState();
+}
+
+class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
+  final FirebaseService _service = FirebaseService();
+  static const _categories = ['shirt', 'outerwear', 'pants', 'shoes', 'accessory'];
+  static const _statuses = ['clean', 'in the wash'];
+
+  late String _category;
+  late String _status;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _category = ((widget.data['category'] as String?) ?? 'shirt').toLowerCase();
+    _status = ((widget.data['status'] as String?) ?? 'clean').toLowerCase();
+  }
+
+  Future<void> _save() async {
+    final id = (widget.data['id'] as String?) ?? '';
+    if (id.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cannot edit item: missing document id.')),
+      );
+      return;
+    }
+
+    setState(() => _saving = true);
+    try {
+      await _service.updateClothingItem(id, category: _category, status: _status);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item updated.')),
+      );
+      Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Update failed. Please retry.')),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = (widget.data['imageUrl'] as String?) ?? '';
+    final createdAt = widget.data['createdAt'];
+
+    String createdLabel = 'Unknown date';
+    if (createdAt is Timestamp) {
+      final d = createdAt.toDate().toLocal();
+      createdLabel =
+          '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    }
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.only(top: 40),
+        decoration: const BoxDecoration(
+          color: Color(0xFF1C1B1B),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 10, bottom: 14),
+                  width: 44,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4D4635),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              AspectRatio(
+                aspectRatio: 3 / 4,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(22)),
+                  child: imageUrl.isEmpty
+                      ? const ColoredBox(
+                          color: Color(0xFF0E0E0E),
+                          child: Center(
+                            child: Icon(Icons.image_not_supported_outlined,
+                                color: Color(0xFF353534), size: 44),
+                          ),
+                        )
+                      : Image.network(imageUrl, fit: BoxFit.cover),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 26),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _capitalizeWord(_category),
+                      style: const TextStyle(
+                        color: Color(0xFFE5E2E1),
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.6,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _DetailRow(label: 'Status', value: _capitalizeWord(_status)),
+                    const SizedBox(height: 8),
+                    _DetailRow(label: 'Added On', value: createdLabel),
+                    const SizedBox(height: 8),
+                    _DetailRow(
+                      label: 'Document ID',
+                      value: (widget.data['id'] as String?) ?? 'Unknown',
+                    ),
+                    const SizedBox(height: 14),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2A2A2A),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              const SizedBox(
+                                width: 92,
+                                child: Text(
+                                  'Category',
+                                  style: TextStyle(
+                                    color: Color(0xFFD0C5AF),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: _category,
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  ),
+                                  items: _categories
+                                      .map((c) => DropdownMenuItem(value: c, child: Text(_capitalizeWord(c))))
+                                      .toList(),
+                                  onChanged: _saving
+                                      ? null
+                                      : (v) => setState(() => _category = v ?? _category),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              const SizedBox(
+                                width: 92,
+                                child: Text(
+                                  'Status',
+                                  style: TextStyle(
+                                    color: Color(0xFFD0C5AF),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: _status,
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  ),
+                                  items: _statuses
+                                      .map((s) => DropdownMenuItem(value: s, child: Text(_capitalizeWord(s))))
+                                      .toList(),
+                                  onChanged: _saving
+                                      ? null
+                                      : (v) => setState(() => _status = v ?? _status),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _saving ? null : _save,
+                              child: _saving
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                  : const Text('Save Changes'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 98,
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xFFD0C5AF),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              color: Color(0xFFE5E2E1),
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+String _capitalizeWord(String text) {
+  if (text.isEmpty) return text;
+  return text[0].toUpperCase() + text.substring(1).toLowerCase();
 }
 

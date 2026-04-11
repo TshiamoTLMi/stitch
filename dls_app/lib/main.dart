@@ -7,7 +7,9 @@ import 'controllers/auth_controller.dart';
 import 'controllers/wardrobe_controller.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
+import 'services/demo_data_service.dart';
 import 'services/event_service.dart';
+import 'services/outfit_history_service.dart';
 import 'services/wardrobe_service.dart';
 
 Future<void> main() async {
@@ -32,6 +34,8 @@ class DlsBootstrap extends StatelessWidget {
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<WardrobeService>(create: (_) => WardrobeService()),
         Provider<EventService>(create: (_) => EventService()),
+        Provider<OutfitHistoryService>(create: (_) => OutfitHistoryService()),
+        Provider<DemoDataService>(create: (_) => DemoDataService()),
         ChangeNotifierProvider<AuthController>(
           create: (context) => AuthController(context.read<AuthService>()),
         ),

@@ -229,14 +229,17 @@ These are things only you can do — the code is already written and waiting:
 
 ## Sprint Roadmap
 
+Process audit tracking reference:
+- `AUDIT_TRACKING_PLAN.md`
+
 | Sprint | Focus | Screens affected |
 |---|---|---|
 | **Sprint 1** ✅ | Upload pipeline + wardrobe grid (Firestore stream) | Screen 4 (Upload), Screen 3 (Closet) |
-| **Sprint 2** | Category tagging on upload, filter chips wired, item detail view | Screen 3, Screen 4 |
-| **Sprint 3** | Real Firebase Auth (email + Google sign-in), protected routes | Screen 1 (Login), HomeShell auth guard |
-| **Sprint 4** | Outfit generator with real wardrobe data, save history | Screen 5 (Generate) |
-| **Sprint 5** | Event planner with outfit suggestions wired to wardrobe | Screen 6 (Events) |
-| **Sprint 6** | Profile / Style DNA with real user data, AI caption display | Screen 7 (Profile) |
+| **Sprint 2** ✅ | Category tagging on upload, filter chips wired, item detail view | Screen 3, Screen 4 |
+| **Sprint 3** ✅ | Real Firebase Auth (email + Google sign-in), protected routes | Screen 1 (Login), HomeShell auth guard |
+| **Sprint 4** ✅ | Outfit generator with real wardrobe data, save history | Screen 5 (Generate) |
+| **Sprint 5** ✅ | Event planner with outfit suggestions wired to wardrobe | Screen 6 (Events) |
+| **Sprint 6** ✅ | Profile / Style DNA with real user data, AI caption display | Screen 7 (Profile) |
 | **Sprint 7** | Polish pass — animations, transitions, performance, offline mode | All screens |
 
 ---
@@ -254,3 +257,81 @@ These are things only you can do — the code is already written and waiting:
 | `profile_style_dna/code.html` | Screen 7 — Profile |
 | `sign_up/code.html` | Sprint 3 — Sign Up page |
 | `aura_noir_elite/DESIGN.md` | Global design system tokens |
+
+---
+
+## Sprint 2 Action Plan (Current)
+
+### Completed
+- Category tagging in upload screen (selector shown during review stage before upload).
+- Functional filtering in closet chips (All/Tops/Bottoms/Shoes/Accessories).
+- Item detail bottom sheet on wardrobe card tap.
+- Quick edit action in item detail sheet (category/status update + save).
+- Upload retry feedback state and resilient image fallback handling.
+
+### Next
+1. Run a full in-app smoke test with one real upload and verify Firestore + Storage records.
+2. Add Firestore/Storage production-safe rules for authenticated access.
+3. Start Sprint 4 implementation (generator with fully live wardrobe history linkage).
+
+---
+
+## Sprint 3 Action Plan (Current)
+
+### Completed
+- Email/password login and sign-up wired to Firebase Auth.
+- Google sign-in implemented (web popup + mobile OAuth credential flow).
+- App-level auth gate added so unauthenticated users are routed to login and authenticated users land in Home shell.
+- Home shell no longer uses guest fallback ids; authenticated context is required.
+
+### Operational note
+1. Google sign-in requires platform console setup to work at runtime:
+  - Android SHA-1/SHA-256 in Firebase project settings.
+  - Correct OAuth consent/supported domains where applicable.
+
+---
+
+## Sprint 4 Audit Summary (2026-04-11)
+
+### Completed
+- Generator now persists results via `OutfitHistoryService`.
+- Generator now displays recent history list from `outfit_history`.
+- Caption text is stored alongside generated outfit data.
+- Generator actions produce audit trail entries in `audit_events`.
+
+### Validation
+1. `flutter analyze` passed.
+2. Data contract validated in code path for save + retrieval.
+
+---
+
+## Sprint 5 Audit Summary (2026-04-11)
+
+### Completed
+- Event records now persist recommendation payloads (`recommended_outfits`).
+- Event list renders persisted recommendations first.
+- Event creation now writes audit entries.
+- Event query hardening avoids index-precondition runtime errors.
+
+### Validation
+1. `flutter analyze` passed.
+2. Event create/read path verified at code integration level.
+
+---
+
+## Sprint 6 Audit Summary (2026-04-11)
+
+### Completed
+- Profile metrics now read live user-scoped Firestore data.
+- AI insight panel now reflects top category and latest caption.
+- Style evolution log now displays `audit_events` stream.
+- Added one-tap demo dataset generation for test readiness.
+
+### Validation
+1. `flutter analyze` passed.
+2. Android toolchain prerequisites completed for physical device testing.
+
+### Device setup progress
+1. Android cmdline-tools installed.
+2. Android SDK licenses accepted.
+3. Physical device visible to ADB but currently `unauthorized` until on-device prompt is accepted.

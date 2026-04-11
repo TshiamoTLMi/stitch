@@ -26,7 +26,12 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthController>();
     final user = auth.user;
-    final userId = user?.uid ?? 'guest';
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    final userId = user.uid;
 
     if (!_boundWardrobe) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

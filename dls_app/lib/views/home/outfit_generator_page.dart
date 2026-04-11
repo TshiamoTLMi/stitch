@@ -1,11 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/outfit_result.dart';
 import '../../services/caption_service.dart';
+import '../../services/outfit_history_service.dart';
 import '../../services/outfit_bot_service.dart';
 
 class OutfitGeneratorPage extends StatefulWidget {
@@ -57,18 +59,25 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     });
 
     if (result.isValid) {
+      await context.read<OutfitHistoryService>().saveGeneratedOutfit(
+        userId: widget.userId,
+        occasion: _occasion,
+        mood: _mood,
+        weather: _weather,
+        caption: caption,
+        result: result,
+      );
+
       try {
-        await FirebaseFirestore.instance.collection('outfit_history').add({
+        await FirebaseFirestore.instance.collection('audit_events').add({
           'user_id': widget.userId,
-          'generated_at': Timestamp.fromDate(DateTime.now()),
-          'occasion': _occasion,
-          'mood': _mood,
-          'weather': _weather,
-          'score': result.score,
-          'outfit': result.toJson(),
+          'type': 'outfit_generated',
+          'sprint': 4,
+          'message': 'Generated outfit for $_occasion / $_mood / $_weather with score ${result.score}.',
+          'created_at': Timestamp.fromDate(DateTime.now()),
         });
       } catch (_) {
-        // Firebase not configured — skip saving to history.
+        // Audit trail is best-effort in demo mode.
       }
     }
   }
@@ -193,6 +202,50 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
               ),
             ],
           ),
+        const SizedBox(height: 16),
+        const Text('Recent Outfit History', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20)),
+        const SizedBox(height: 8),
+        StreamBuilder<List<OutfitHistoryEntry>>(
+          stream: context.read<OutfitHistoryService>().streamRecentHistory(widget.userId, limit: 5),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: CircularProgressIndicator(),
+              ));
+            }
+
+            final history = snapshot.data!;
+            if (history.isEmpty) {
+              return const Card(
+                child: Padding(
+                  padding: EdgeInsets.all(14),
+                  child: Text('No outfit history yet. Generate a fit to start tracking.'),
+                ),
+              );
+            }
+
+            return Column(
+              children: history
+                  .map(
+                    (entry) => Card(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: AppTheme.surfaceHighest,
+                          child: Text('${entry.score}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                        ),
+                        title: Text('${entry.occasion} • ${entry.mood}'),
+                        subtitle: Text(
+                          '${DateFormat.yMMMd().format(entry.generatedAt)} • ${entry.weather}\n${entry.caption}',
+                        ),
+                        isThreeLine: true,
+                      ),
+                    ),
+                  )
+                  .toList(),
+            );
+          },
+        ),
       ],
     );
   }

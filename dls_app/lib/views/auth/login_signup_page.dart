@@ -1,19 +1,56 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../controllers/auth_controller.dart';
 import '../../core/theme/app_theme.dart';
-import '../home/home_shell.dart';
 
-class LoginSignupPage extends StatelessWidget {
+class LoginSignupPage extends StatefulWidget {
   const LoginSignupPage({super.key});
 
-  void _enter(BuildContext context) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const HomeShell()),
-    );
+  @override
+  State<LoginSignupPage> createState() => _LoginSignupPageState();
+}
+
+class _LoginSignupPageState extends State<LoginSignupPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLogin = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit(AuthController auth) async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || !email.contains('@')) {
+      _showError('Enter a valid email address.');
+      return;
+    }
+    if (password.length < 6) {
+      _showError('Password must be at least 6 characters.');
+      return;
+    }
+
+    if (_isLogin) {
+      await auth.signIn(email, password);
+    } else {
+      await auth.signUp(email, password);
+    }
+  }
+
+  void _showError(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthController>();
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -62,164 +99,204 @@ class LoginSignupPage extends StatelessWidget {
 
           // Content
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(height: 48),
-
-                  // â”€â”€ Brand header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primary.withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: const Text(
-                          'DIGITAL ATELIER',
-                          style: TextStyle(
-                            color: AppTheme.primary,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 2.6,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 22),
-                      const Text(
-                        'Digital\nLesela Sete',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 58,
-                          fontWeight: FontWeight.w800,
-                          height: 0.92,
-                          letterSpacing: -2.5,
-                          color: AppTheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      Text(
-                        'Your Drip, Sorted.',
-                        style: TextStyle(
-                          color: AppTheme.onSurfaceVariant.withValues(alpha: 0.8),
-                          fontSize: 17,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // â”€â”€ Auth controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                  Column(
-                    children: [
-                      // Primary CTA
-                      _GoldBorderPill(
-                        onTap: () => _enter(context),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.fingerprint, color: AppTheme.primary, size: 26),
-                            SizedBox(width: 10),
-                            Text(
-                              'Enter the Atelier',
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const SizedBox(height: 48),
+                        Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primary.withValues(alpha: 0.10),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: const Text(
+                                'DIGITAL ATELIER',
+                                style: TextStyle(
+                                  color: AppTheme.primary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 2.6,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 22),
+                            const Text(
+                              'Digital\nLesela Sete',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
+                                fontSize: 58,
+                                fontWeight: FontWeight.w800,
+                                height: 0.92,
+                                letterSpacing: -2.5,
                                 color: AppTheme.onSurface,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 16,
-                                letterSpacing: -0.2,
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            Text(
+                              'Your Drip, Sorted.',
+                              style: TextStyle(
+                                color: AppTheme.onSurfaceVariant.withValues(alpha: 0.8),
+                                fontSize: 17,
+                                letterSpacing: 0.3,
                               ),
                             ),
                           ],
                         ),
-                      ),
-
-                      const SizedBox(height: 26),
-
-                      // Divider
-                      Row(
-                        children: [
-                          const Expanded(child: Divider(color: Color(0x33D0C5AF))),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                            child: Text(
-                              'or continue with',
-                              style: TextStyle(
-                                color: AppTheme.onSurfaceVariant.withValues(alpha: 0.5),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.4,
+                        Column(
+                          children: [
+                            _GoldBorderPill(
+                              onTap: auth.isLoading ? () {} : () => _submit(auth),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.fingerprint, color: AppTheme.primary, size: 26),
+                                  const SizedBox(width: 10),
+                                  if (auth.isLoading)
+                                    const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppTheme.primary,
+                                      ),
+                                    )
+                                  else
+                                    Text(
+                                      _isLogin ? 'Login with Email' : 'Create with Email',
+                                      style: const TextStyle(
+                                        color: AppTheme.onSurface,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 16,
+                                        letterSpacing: -0.2,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                          ),
-                          const Expanded(child: Divider(color: Color(0x33D0C5AF))),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Social buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _SocialPill(
-                              label: 'Google',
-                              icon: Icons.g_mobiledata,
-                              onTap: () => _enter(context),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _SocialPill(
-                              label: 'Apple',
-                              icon: Icons.apple,
-                              onTap: () => _enter(context),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 28),
-
-                      Text.rich(
-                        TextSpan(
-                          text: "Don't have an account? ",
-                          style: TextStyle(
-                            color: AppTheme.onSurfaceVariant.withValues(alpha: 0.7),
-                            fontSize: 14,
-                          ),
-                          children: const [
-                            TextSpan(
-                              text: 'Sign up.',
-                              style: TextStyle(
-                                color: AppTheme.primary,
-                                fontWeight: FontWeight.w800,
+                            const SizedBox(height: 14),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: AppTheme.surfaceLow.withValues(alpha: 0.9),
+                                borderRadius: BorderRadius.circular(22),
+                              ),
+                              child: Column(
+                                children: [
+                                  TextField(
+                                    controller: _emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    decoration: const InputDecoration(hintText: 'Email address'),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  TextField(
+                                    controller: _passwordController,
+                                    obscureText: true,
+                                    decoration: const InputDecoration(hintText: 'Password'),
+                                  ),
+                                ],
                               ),
                             ),
+                            if (auth.errorMessage != null) ...[
+                              const SizedBox(height: 10),
+                              Text(
+                                auth.errorMessage!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Color(0xFFFFB4AB), fontSize: 12),
+                              ),
+                            ],
+                            const SizedBox(height: 26),
+                            Row(
+                              children: [
+                                const Expanded(child: Divider(color: Color(0x33D0C5AF))),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                                  child: Text(
+                                    'or continue with',
+                                    style: TextStyle(
+                                      color: AppTheme.onSurfaceVariant.withValues(alpha: 0.5),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 1.4,
+                                    ),
+                                  ),
+                                ),
+                                const Expanded(child: Divider(color: Color(0x33D0C5AF))),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _SocialPill(
+                                    label: auth.isLoading ? 'Please wait' : 'Google',
+                                    icon: Icons.g_mobiledata,
+                                    onTap: auth.isLoading ? () {} : auth.signInGoogle,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _SocialPill(
+                                    label: 'Apple',
+                                    icon: Icons.apple,
+                                    onTap: () => _showError('Apple sign-in is planned for later sprint.'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 28),
+                            Text.rich(
+                              TextSpan(
+                                text: _isLogin ? "Don't have an account? " : 'Already have an account? ',
+                                style: TextStyle(
+                                  color: AppTheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                  fontSize: 14,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: _isLogin ? 'Sign up.' : 'Login.',
+                                    style: const TextStyle(
+                                      color: AppTheme.primary,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: auth.isLoading ? null : () => setState(() => _isLogin = !_isLogin),
+                              child: Text(
+                                _isLogin ? 'Switch to Sign Up' : 'Switch to Login',
+                                style: const TextStyle(color: AppTheme.primary),
+                              ),
+                            ),
+                            const SizedBox(height: 22),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _FooterLink('Privacy'),
+                                const SizedBox(width: 28),
+                                _FooterLink('Terms'),
+                                const SizedBox(width: 28),
+                                _FooterLink('Help'),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
                           ],
                         ),
-                      ),
-
-                      const SizedBox(height: 22),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _FooterLink('Privacy'),
-                          const SizedBox(width: 28),
-                          _FooterLink('Terms'),
-                          const SizedBox(width: 28),
-                          _FooterLink('Help'),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-                    ],
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],
@@ -228,7 +305,7 @@ class LoginSignupPage extends StatelessWidget {
   }
 }
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Helpers
 
 class _GoldBorderPill extends StatelessWidget {
   const _GoldBorderPill({required this.onTap, required this.child});

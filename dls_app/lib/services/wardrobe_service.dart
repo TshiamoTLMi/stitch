@@ -16,7 +16,6 @@ class WardrobeService {
     try {
       return _collection
           .where('user_id', isEqualTo: userId)
-          .orderBy('created_at', descending: true)
           .snapshots()
           .map(
             (snapshot) => snapshot.docs.map(ClothingItem.fromDoc).toList(),

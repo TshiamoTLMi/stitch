@@ -7,6 +7,7 @@ class EventModel {
     required this.name,
     required this.date,
     required this.occasion,
+    this.recommendedOutfits = const <String>[],
   });
 
   final String id;
@@ -14,6 +15,7 @@ class EventModel {
   final String name;
   final DateTime date;
   final String occasion;
+  final List<String> recommendedOutfits;
 
   Map<String, dynamic> toMap() {
     return {
@@ -21,6 +23,7 @@ class EventModel {
       'name': name,
       'date': Timestamp.fromDate(date),
       'occasion': occasion,
+      'recommended_outfits': recommendedOutfits,
     };
   }
 
@@ -33,6 +36,9 @@ class EventModel {
       name: (data['name'] as String?) ?? 'Event',
       date: (data['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
       occasion: (data['occasion'] as String?) ?? 'Event',
+      recommendedOutfits: List<String>.from(
+        data['recommended_outfits'] as List? ?? const <String>[],
+      ),
     );
   }
 }

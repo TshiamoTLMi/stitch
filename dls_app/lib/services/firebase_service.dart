@@ -22,7 +22,11 @@ class FirebaseService {
     }
   }
 
-  Future<void> uploadClothingItem(File imageFile) async {
+  Future<void> uploadClothingItem(
+    File imageFile, {
+    required String category,
+    String status = 'clean',
+  }) async {
     final id = _uuid.v4();
     final compressedBytes = await FlutterImageCompress.compressWithFile(
       imageFile.absolute.path,
@@ -45,10 +49,22 @@ class FirebaseService {
 
     await _firestore.collection('clothing_items').doc(id).set({
       'id': id,
-      'category': 'shirt',
-      'status': 'clean',
+      'category': category.trim().toLowerCase(),
+      'status': status.trim().toLowerCase(),
       'imageUrl': imageUrl,
       'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> updateClothingItem(
+    String id, {
+    required String category,
+    required String status,
+  }) {
+    return _firestore.collection('clothing_items').doc(id).update({
+      'category': category.trim().toLowerCase(),
+      'status': status.trim().toLowerCase(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 }

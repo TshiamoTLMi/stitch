@@ -2,6 +2,9 @@
 
 This document records what has been implemented from project start until now.
 
+Audit/process tracking companion:
+- `AUDIT_TRACKING_PLAN.md`
+
 ## 0. Canonical Naming (Source of Truth)
 
 - App/brand name in UI can remain `Digital Lesela Sete` where required by screen design.
@@ -292,3 +295,160 @@ Validate that this app is connected to Firebase/Firestore for project `Digital L
   - category tagging during upload
   - filter chips wired to real filtering
   - item details on wardrobe card tap
+
+## 13. Sprint 2 Kickoff (2026-04-07)
+
+### Implemented now
+
+1. Category tagging added to upload flow (`lib/views/upload_screen.dart`):
+  - Added category selector before upload action.
+  - Categories currently supported: `shirt`, `outerwear`, `pants`, `shoes`, `accessory`.
+2. Upload metadata now stores selected category (`lib/services/firebase_service.dart`):
+  - `uploadClothingItem` now accepts `category` and optional `status`.
+  - Category/status are saved normalized in Firestore.
+3. Closet filter chips are now functional (`lib/views/wardrobe_dashboard.dart`):
+  - `All Items`, `Tops`, `Bottoms`, `Shoes`, `Accessories` now filter real data.
+  - Added no-results empty state for selected filters.
+4. Wardrobe item detail view added (`lib/views/wardrobe_dashboard.dart`):
+  - Tap any card to open a detail bottom sheet.
+  - Detail view shows image, category, status, added date, and document id.
+5. Validation:
+  - `flutter analyze` completed with `No issues found` after Sprint 2 changes.
+
+### Sprint 2 remaining actions
+
+1. Execute in-app UI smoke test (real upload) and verify both Firestore + Storage updates.
+2. Add optional edit/update category/status action from item detail view.
+3. Add resilient image fallback and retry controls for slow network cases.
+
+## 14. Sprint 2 Closure (2026-04-07)
+
+### Completed in closure pass
+
+1. Category tagging is fully wired from upload UI to Firestore metadata.
+2. Closet chips perform real data filtering by category groups.
+3. Item detail bottom sheet now supports editing and saving category/status.
+4. Resilience improvements applied:
+  - upload retry feedback message in scanner flow
+  - broken-image fallback renderer in wardrobe cards
+5. Validation:
+  - `flutter analyze` -> `No issues found` after closure changes.
+
+## 15. Sprint 3 Completion (2026-04-07)
+
+### Implemented
+
+1. Real email/password auth flow enabled in login screen.
+2. Google sign-in implemented in auth service:
+  - web: popup provider flow
+  - mobile: OAuth credential exchange via `google_sign_in`
+3. User profile upsert in Firestore (`users/{uid}`) on successful auth.
+4. App-level protected routing implemented:
+  - unauthenticated -> login screen
+  - authenticated -> home shell
+5. Home shell now requires authenticated user context (no guest fallback ids).
+
+### Action plan (post Sprint 2/3)
+
+1. Run end-to-end runtime smoke test:
+  - Sign up/login
+  - Google sign-in
+  - Upload one categorized item
+  - Verify Firestore and Storage writes
+2. Finalize Firebase rules for production-safe authenticated access.
+3. Begin Sprint 4 (generator + history linkage on live wardrobe data).
+
+### Runtime prerequisites note
+
+Google sign-in success at runtime depends on Firebase console platform setup (Android SHA fingerprints and related OAuth config).
+
+## 16. Sprint 3 Audit + Runtime Stabilization (2026-04-11)
+
+### Runtime issues found and fixed
+
+1. Login/sign-up render overflow under constrained viewport.
+2. Upload permission behavior mismatch on web targets.
+3. Firestore query precondition failure from index-dependent ordering.
+
+### Corrective changes
+
+1. Login screen layout corrected to a scroll-safe structure.
+2. Upload permission checks now guard web behavior and degrade gracefully.
+3. Wardrobe stream query was adjusted to avoid index-precondition runtime errors.
+
+### Validation
+
+- `flutter analyze` passed after fixes.
+
+## 17. Sprint 4 Delivery - Generator History Wiring (2026-04-11)
+
+### Implemented
+
+1. Added `lib/services/outfit_history_service.dart`:
+  - central save function for generated outfits
+  - stream for recent history retrieval
+2. Updated generator screen (`lib/views/home/outfit_generator_page.dart`):
+  - saves generated outfit through service
+  - stores caption with outfit history records
+  - shows recent generated history in UI
+3. Added audit event writes when a fit is generated.
+
+### Audit outcome
+
+- Sprint 4 objectives completed.
+- `flutter analyze` passed clean.
+
+## 18. Sprint 5 Delivery - Event Recommendation Persistence (2026-04-11)
+
+### Implemented
+
+1. Extended `EventModel` with persisted recommendations (`recommended_outfits`).
+2. Event creation now stores recommendation strings at write time.
+3. Event UI now renders persisted recommendations first, then fallback suggestions.
+4. Added audit event writes on event creation.
+5. Hardened `EventService` stream filtering/sorting in memory to reduce index dependency risk.
+
+### Audit outcome
+
+- Sprint 5 objectives completed.
+- `flutter analyze` passed clean.
+
+## 19. Sprint 6 Delivery - Profile Analytics + Demo Data (2026-04-11)
+
+### Implemented
+
+1. Profile page now computes live user metrics from Firestore:
+  - wardrobe item count
+  - outfits logged
+  - events planned
+  - derived style score
+2. AI insight text now uses real profile signals:
+  - top category concentration
+  - latest generated caption
+3. Style evolution log now reads from `audit_events`.
+4. Added `lib/services/demo_data_service.dart` and profile action button:
+  - one-tap seed for dummy wardrobe, history, events, and audit records
+  - duplicate seed prevention using `is_demo` marker
+
+### Audit outcome
+
+- Sprint 6 objectives completed.
+- `flutter analyze` passed clean.
+
+## 20. Physical Device Readiness Updates (2026-04-11)
+
+### What was added/configured
+
+1. Installed Android command-line tools package under local SDK.
+2. Accepted Android SDK licenses.
+3. Verified Android toolchain health via `flutter doctor -v`.
+
+### Current state
+
+- Android toolchain is healthy.
+- Connected Android handset is currently shown as `unauthorized` by ADB.
+- Next user action required on device: accept RSA debugging prompt, then re-run `flutter devices`.
+
+## 21. Next Step
+
+Proceed to Sprint 7 (polish, performance, offline resilience) after device authorization check and smoke validation on physical hardware.

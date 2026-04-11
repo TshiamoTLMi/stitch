@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -16,9 +17,18 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   final ImagePicker _picker = ImagePicker();
   final FirebaseService _firebaseService = FirebaseService();
+  static const List<String> _categories = [
+    'shirt',
+    'outerwear',
+    'pants',
+    'shoes',
+    'accessory',
+  ];
 
   File? _selectedImage;
   bool _isUploading = false;
+  String _selectedCategory = 'shirt';
+  String? _lastUploadError;
 
   Future<void> _pickFromCamera() async {
     final granted = await _requestCameraPermission();
@@ -28,7 +38,10 @@ class _UploadScreenState extends State<UploadScreen> {
     }
 
     final image = await _picker.pickImage(source: ImageSource.camera);
-    if (image == null) return;
+    if (image == null) {
+      _showMessage('Camera capture unavailable. Try Gallery upload.');
+      return;
+    }
 
     setState(() => _selectedImage = File(image.path));
   }
@@ -47,13 +60,19 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<bool> _requestCameraPermission() async {
+    if (kIsWeb) return true;
     final status = await Permission.camera.request();
     return status.isGranted;
   }
 
   Future<bool> _requestGalleryPermission() async {
-    final photosStatus = await Permission.photos.request();
-    if (photosStatus.isGranted) return true;
+    if (kIsWeb) return true;
+    try {
+      final photosStatus = await Permission.photos.request();
+      if (photosStatus.isGranted) return true;
+    } catch (_) {
+      // Some platforms do not support Permission.photos.
+    }
 
     final storageStatus = await Permission.storage.request();
     return storageStatus.isGranted;
@@ -68,13 +87,18 @@ class _UploadScreenState extends State<UploadScreen> {
     setState(() => _isUploading = true);
 
     try {
-      await _firebaseService.uploadClothingItem(_selectedImage!);
+      await _firebaseService.uploadClothingItem(
+        _selectedImage!,
+        category: _selectedCategory,
+      );
+      _lastUploadError = null;
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Added to your wardrobe!')),
+        SnackBar(content: Text('Added $_selectedCategory to your wardrobe!')),
       );
     } catch (e) {
+      _lastUploadError = 'Upload failed. Check network/Firebase rules and retry.';
       if (!mounted) return;
       _showMessage('Upload failed. Configure Firebase first.');
     } finally {
@@ -180,6 +204,79 @@ class _UploadScreenState extends State<UploadScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
+
+                      if (_selectedImage != null) ...[
+                        if (_lastUploadError != null) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF802918).withValues(alpha: 0.55),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Text(
+                              _lastUploadError!,
+                              style: const TextStyle(
+                                color: Color(0xFFFFDAD3),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1C1B1B).withValues(alpha: 0.94),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.sell_outlined, color: Color(0xFFD0C5AF), size: 18),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Category',
+                                style: TextStyle(
+                                  color: Color(0xFFD0C5AF),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const Spacer(),
+                              DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: _selectedCategory,
+                                  borderRadius: BorderRadius.circular(16),
+                                  dropdownColor: const Color(0xFF2A2A2A),
+                                  style: const TextStyle(
+                                    color: Color(0xFFE5E2E1),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  iconEnabledColor: const Color(0xFFF2CA50),
+                                  items: _categories
+                                      .map(
+                                        (c) => DropdownMenuItem<String>(
+                                          value: c,
+                                          child: Text(_labelForCategory(c)),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: _isUploading
+                                      ? null
+                                      : (value) {
+                                          if (value == null) return;
+                                          setState(() => _selectedCategory = value);
+                                        },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                      ],
 
                       // Control row
                       Row(
@@ -544,6 +641,23 @@ class _AiTag extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String _labelForCategory(String c) {
+  switch (c) {
+    case 'shirt':
+      return 'Tops';
+    case 'outerwear':
+      return 'Outerwear';
+    case 'pants':
+      return 'Bottoms';
+    case 'shoes':
+      return 'Shoes';
+    case 'accessory':
+      return 'Accessories';
+    default:
+      return c;
   }
 }
 

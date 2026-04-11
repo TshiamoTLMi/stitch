@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   FirebaseAuth get _auth => FirebaseAuth.instance;
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  GoogleSignIn get _google => GoogleSignIn();
 
   Stream<User?> get authState {
     try {
@@ -32,12 +35,7 @@ class AuthService {
 
     final user = credentials.user;
     if (user == null) return;
-
-    await _firestore.collection('users').doc(user.uid).set({
-      'email': user.email,
-      'created_at': Timestamp.fromDate(DateTime.now()),
-      'exclusion_tags': <String>[],
-    }, SetOptions(merge: true));
+    await _upsertUserProfile(user);
   }
 
   Future<void> signInWithEmail({
@@ -48,10 +46,49 @@ class AuthService {
   }
 
   Future<void> signInWithGoogle() async {
-    throw UnimplementedError(
-      'Add google_sign_in package and platform setup to enable this in MVP.',
+    if (kIsWeb) {
+      final provider = GoogleAuthProvider();
+      final cred = await _auth.signInWithPopup(provider);
+      final user = cred.user;
+      if (user != null) {
+        await _upsertUserProfile(user);
+      }
+      return;
+    }
+
+    final googleUser = await _google.signIn();
+    if (googleUser == null) {
+      return;
+    }
+
+    final googleAuth = await googleUser.authentication;
+    final oauthCred = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
+
+    final cred = await _auth.signInWithCredential(oauthCred);
+    final user = cred.user;
+    if (user != null) {
+      await _upsertUserProfile(user);
+    }
   }
 
-  Future<void> signOut() => _auth.signOut();
+  Future<void> signOut() async {
+    if (!kIsWeb) {
+      await _google.signOut();
+    }
+    await _auth.signOut();
+  }
+
+  Future<void> _upsertUserProfile(User user) {
+    return _firestore.collection('users').doc(user.uid).set({
+      'email': user.email,
+      'display_name': user.displayName,
+      'photo_url': user.photoURL,
+      'updated_at': Timestamp.fromDate(DateTime.now()),
+      'created_at': FieldValue.serverTimestamp(),
+      'exclusion_tags': <String>[],
+    }, SetOptions(merge: true));
+  }
 }
