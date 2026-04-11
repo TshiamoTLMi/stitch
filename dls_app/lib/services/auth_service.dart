@@ -1,11 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthService {
   FirebaseAuth get _auth => FirebaseAuth.instance;
-  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   GoogleSignIn get _google => GoogleSignIn();
 
   Stream<User?> get authState {
@@ -28,14 +27,10 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final credentials = await _auth.createUserWithEmailAndPassword(
+    await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
-
-    final user = credentials.user;
-    if (user == null) return;
-    await _upsertUserProfile(user);
   }
 
   Future<void> signInWithEmail({
@@ -48,11 +43,7 @@ class AuthService {
   Future<void> signInWithGoogle() async {
     if (kIsWeb) {
       final provider = GoogleAuthProvider();
-      final cred = await _auth.signInWithPopup(provider);
-      final user = cred.user;
-      if (user != null) {
-        await _upsertUserProfile(user);
-      }
+      await _auth.signInWithPopup(provider);
       return;
     }
 
@@ -67,11 +58,47 @@ class AuthService {
       idToken: googleAuth.idToken,
     );
 
-    final cred = await _auth.signInWithCredential(oauthCred);
-    final user = cred.user;
-    if (user != null) {
-      await _upsertUserProfile(user);
+    await _auth.signInWithCredential(oauthCred);
+  }
+
+  Future<void> signInWithApple() async {
+    if (kIsWeb) {
+      final provider = OAuthProvider('apple.com');
+      await _auth.signInWithPopup(provider);
+      return;
     }
+
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.macOS) {
+      throw FirebaseAuthException(
+        code: 'operation-not-supported',
+        message: 'Apple sign-in is only available on iOS/macOS for this build.',
+      );
+    }
+
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    final oauthCredential = OAuthProvider('apple.com').credential(
+      idToken: credential.identityToken,
+      accessToken: credential.authorizationCode,
+    );
+
+    await _auth.signInWithCredential(oauthCredential);
+  }
+
+  Future<void> signInWithMicrosoft() async {
+    final provider = OAuthProvider('microsoft.com');
+    if (kIsWeb) {
+      await _auth.signInWithPopup(provider);
+      return;
+    }
+
+    await _auth.signInWithProvider(provider);
   }
 
   Future<void> signOut() async {
@@ -79,16 +106,5 @@ class AuthService {
       await _google.signOut();
     }
     await _auth.signOut();
-  }
-
-  Future<void> _upsertUserProfile(User user) {
-    return _firestore.collection('users').doc(user.uid).set({
-      'email': user.email,
-      'display_name': user.displayName,
-      'photo_url': user.photoURL,
-      'updated_at': Timestamp.fromDate(DateTime.now()),
-      'created_at': FieldValue.serverTimestamp(),
-      'exclusion_tags': <String>[],
-    }, SetOptions(merge: true));
   }
 }

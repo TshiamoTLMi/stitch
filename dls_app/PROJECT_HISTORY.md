@@ -477,3 +477,26 @@ Proceed to Sprint 7 (polish, performance, offline resilience) after device autho
 ### Constraint
 
 Final iOS build validation cannot be completed from this Windows environment because Xcode and Apple signing are macOS-only.
+
+## 23. Sprint 7 Code QA Completion (2026-04-11)
+
+### Implemented
+
+1. Added automated service tests under `test/services/`:
+  - `outfit_bot_service_test.dart`
+  - `recommendation_service_test.dart`
+  - `caption_service_test.dart`
+2. Updated sprint and audit documentation to reflect current reality:
+  - Sprint 7 code phase complete
+  - physical device validation now the final pending gate
+3. Replaced stale setup blockers in `SCREENS.md` with current blockers focused on auth platform config, iOS provisioning, and real-device smoke tests.
+
+### Validation evidence
+
+1. `flutter analyze` to confirm static quality.
+2. `flutter test` to validate code-based QA suite.
+
+### Remaining
+
+1. Android physical smoke validation.
+2. iOS physical smoke validation on macOS/Xcode.

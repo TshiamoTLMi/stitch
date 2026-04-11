@@ -129,13 +129,11 @@ Use this checklist each sprint closeout.
 
 ## 8. Forward Process Plan
 
-### Sprint 7 Plan (next)
+### Sprint 7 Plan (final pending scope)
 
-1. Polish pass: loading transitions and screen-to-screen animation tuning.
-2. Performance pass for list rendering, image caching, and Firestore query resilience.
-3. Offline/poor-network behavior review and fallback UX hardening.
-4. Final QA matrix and pre-release checklist.
-5. iOS smoke validation and release readiness on Xcode-managed hardware.
+1. Physical Android smoke validation (real handset).
+2. Physical iOS smoke validation (macOS + Xcode managed hardware).
+3. Release hardening after physical test outcomes.
 
 ## 9. Audit Update Procedure
 
@@ -258,3 +256,24 @@ Risk status:
 
 Next action plan:
 - Open project on macOS, run `pod install`, add `GoogleService-Info.plist`, configure signing, and execute iPhone smoke test.
+
+## 15. Sprint 7 Code QA Audit (2026-04-11)
+
+Status: Complete (code phase)
+
+Implementation summary:
+- Added unit tests for outfit generation logic, recommendation logic, and caption generation.
+- Consolidated sprint tracking documentation to distinguish completed code validation from pending physical-device validation.
+
+Validation evidence:
+- `flutter analyze` passes.
+- `flutter test` passes with service-layer coverage added under `test/services/`.
+
+Risk status:
+- Physical-device behavior (camera/gallery permissions, Google sign-in runtime, end-to-end upload path) still requires on-device smoke testing.
+- iOS remains dependent on macOS/Xcode signing and `GoogleService-Info.plist` provisioning.
+
+Next action plan:
+- Execute Android physical smoke checklist.
+- Execute iOS physical smoke checklist on macOS.
+- Record outcomes and decide final release gate.

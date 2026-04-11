@@ -8,7 +8,7 @@ Current implementation status:
 - Sprint 4: Complete (generator persistence + outfit history retrieval)
 - Sprint 5: Complete (event recommendation persistence)
 - Sprint 6: Complete (profile analytics + style evolution + demo data seed)
-- Sprint 7: Next
+- Sprint 7: Code-based QA complete (physical device phase pending)
 
 Detailed implementation/audit logs:
 
@@ -16,6 +16,19 @@ Detailed implementation/audit logs:
 - `AUDIT_TRACKING_PLAN.md`
 - `SCREENS.md`
 - `IOS_SETUP.md`
+- `TOMORROW_TEST_FLOW.md`
+- `FEATURE_PLANS.md`
+- `PRE_GO_LIVE_CHECKLIST.md`
+
+## Auth + Onboarding Flow (MVP)
+
+On app launch routing now follows:
+
+1. Not authenticated -> Login
+2. Authenticated + no Firestore profile -> Onboarding
+3. Authenticated + profile exists -> Dashboard
+
+Profile document creation is intentionally delayed until onboarding completion.
 
 ## Core Features Implemented
 
@@ -125,4 +138,39 @@ Full iOS setup and validation steps are documented in `IOS_SETUP.md`.
 1. Google sign-in runtime requires Firebase OAuth/SHA setup in console.
 2. Firestore/Storage rules must be configured for your target environment.
 3. iOS builds require macOS + Xcode + CocoaPods for final device validation.
+
+## Testing Follow-Up
+
+For tomorrow's physical-device testing flow and next AI phase planning, use:
+
+- `TOMORROW_TEST_FLOW.md`
+- `FEATURE_PLANS.md`
+- `PRE_GO_LIVE_CHECKLIST.md`
+
+## Automated Test Phase (Completed in Code)
+
+Implemented automated tests:
+
+1. `test/services/outfit_bot_service_test.dart`
+	- validates empty-clean wardrobe behavior
+	- validates valid outfit generation
+	- validates category alias normalization (`tshirt`, `jeans`, `shoe`)
+2. `test/services/recommendation_service_test.dart`
+	- validates sorted deduplicated missing-item recommendations
+	- validates empty suggestions for fully covered wardrobe
+3. `test/services/caption_service_test.dart`
+	- validates template placeholder replacement
+	- validates runtime input usage in generated captions
+
+Run the code-based test suite:
+
+```bash
+flutter analyze
+flutter test
+```
+
+## Remaining Phase (Physical Devices)
+
+1. Android physical smoke test on your handset.
+2. iPhone physical smoke test on macOS/Xcode (`IOS_SETUP.md`).
 

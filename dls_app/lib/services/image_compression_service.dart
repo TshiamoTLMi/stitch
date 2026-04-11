@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image/image.dart' as img;
 
 class CompressionResult {
@@ -24,27 +25,38 @@ class ImageCompressionService {
     int jpegQuality = 75,
   }) async {
     final inputBytes = await file.readAsBytes();
-    final decoded = img.decodeImage(inputBytes);
+    return compressBytes(
+      inputBytes,
+      maxWidth: maxWidth,
+      jpegQuality: jpegQuality,
+    );
+  }
+
+  Future<CompressionResult> compressBytes(
+    Uint8List inputBytes, {
+    int maxWidth = 1080,
+    int jpegQuality = 75,
+  }) async {
+    final compressedBytes = await FlutterImageCompress.compressWithList(
+      inputBytes,
+      minWidth: maxWidth,
+      quality: jpegQuality,
+      format: CompressFormat.jpeg,
+    );
+
+    if (compressedBytes.isEmpty) {
+      throw Exception('Unable to compress image.');
+    }
+
+    final decoded = img.decodeImage(compressedBytes);
     if (decoded == null) {
       throw Exception('Unable to decode image for compression.');
     }
 
-    final resized = decoded.width > maxWidth
-        ? img.copyResize(
-            decoded,
-            width: maxWidth,
-            interpolation: img.Interpolation.average,
-          )
-        : decoded;
-
-    final compressed = Uint8List.fromList(
-      img.encodeJpg(resized, quality: jpegQuality),
-    );
-
     return CompressionResult(
-      bytes: compressed,
-      width: resized.width,
-      height: resized.height,
+      bytes: compressedBytes,
+      width: decoded.width,
+      height: decoded.height,
       format: 'jpeg',
     );
   }

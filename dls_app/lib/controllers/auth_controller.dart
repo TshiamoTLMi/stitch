@@ -33,6 +33,14 @@ class AuthController extends ChangeNotifier {
     await _run(_authService.signInWithGoogle);
   }
 
+  Future<void> signInApple() async {
+    await _run(_authService.signInWithApple);
+  }
+
+  Future<void> signInMicrosoft() async {
+    await _run(_authService.signInWithMicrosoft);
+  }
+
   Future<void> _run(Future<void> Function() action) async {
     _isLoading = true;
     _errorMessage = null;

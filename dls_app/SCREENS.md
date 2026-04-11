@@ -216,14 +216,12 @@ These are things only you can do — the code is already written and waiting:
 
 | # | What | Why it's blocking |
 |---|---|---|
-| 1 | **Run `flutterfire configure`** in `dls_app/` folder | Generates real `firebase_options.dart` — without this, all Firebase calls use placeholder "REPLACE_ME" values and fail |
-| 2 | **Replace `firebase_options.dart`** REPLACE_ME values | App can't connect to Firestore or Storage until this is done |
-| 3 | **Create Firebase project** named "Digital Les Sete" | Needed for step 1 |
-| 4 | **Enable Firestore + Storage** in Firebase Console | The upload pipeline and wardrobe stream won't work until these services are turned on |
-| 5 | **Set Firestore rules** (allow read/write for authenticated users OR allow all for dev) | Without rules, all reads/writes are blocked |
-| 6 | **Enable Firebase Storage** and set rules | Same as above for image uploads |
-| 7 | **Android**: Add `CAMERA` + `READ_MEDIA_IMAGES` to `android/app/src/main/AndroidManifest.xml` | Camera and gallery permissions will be silently denied on Android |
-| 8 | **Images / brand assets** | Splash hero image currently loads from Unsplash URL — needs a local asset if going offline |
+| 1 | **Finalize Firebase Auth platform config** (Android SHA + OAuth, iOS OAuth) | Google sign-in can fail on physical devices if console credentials are incomplete |
+| 2 | **Set production Firestore/Storage rules** | Required to safely ship beyond development settings |
+| 3 | **Add `GoogleService-Info.plist` to `ios/Runner/`** | Required for iOS Firebase and Google sign-in runtime |
+| 4 | **Run iOS setup on macOS** (`pod install`, signing/provisioning) | iPhone build/install cannot complete on Windows |
+| 5 | **Run physical smoke tests** (Android + iPhone) | Final release gate requires real-device validation |
+| 6 | **Images / brand assets** | Splash hero image currently loads from Unsplash URL — needs a local asset if going offline |
 
 ---
 
@@ -240,7 +238,7 @@ Process audit tracking reference:
 | **Sprint 4** ✅ | Outfit generator with real wardrobe data, save history | Screen 5 (Generate) |
 | **Sprint 5** ✅ | Event planner with outfit suggestions wired to wardrobe | Screen 6 (Events) |
 | **Sprint 6** ✅ | Profile / Style DNA with real user data, AI caption display | Screen 7 (Profile) |
-| **Sprint 7** | Polish pass — animations, transitions, performance, offline mode | All screens |
+| **Sprint 7** ✅ (code phase) | Automated QA + release prep docs + final physical-test handoff | All screens |
 
 ---
 
@@ -260,19 +258,17 @@ Process audit tracking reference:
 
 ---
 
-## Sprint 2 Action Plan (Current)
+## Sprint 7 Execution Status (Current)
 
 ### Completed
-- Category tagging in upload screen (selector shown during review stage before upload).
-- Functional filtering in closet chips (All/Tops/Bottoms/Shoes/Accessories).
-- Item detail bottom sheet on wardrobe card tap.
-- Quick edit action in item detail sheet (category/status update + save).
-- Upload retry feedback state and resilient image fallback handling.
+- Added code-based service tests for generator, recommendations, and caption generation.
+- Confirmed sprint docs align with current implementation state.
+- Completed repository-side iOS readiness docs and setup guidance.
 
 ### Next
-1. Run a full in-app smoke test with one real upload and verify Firestore + Storage records.
-2. Add Firestore/Storage production-safe rules for authenticated access.
-3. Start Sprint 4 implementation (generator with fully live wardrobe history linkage).
+1. Run Android physical smoke checklist end-to-end.
+2. Run iPhone smoke checklist on macOS/Xcode.
+3. Capture physical-test outcomes and close final release gate.
 
 ---
 

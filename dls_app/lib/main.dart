@@ -10,6 +10,7 @@ import 'services/auth_service.dart';
 import 'services/demo_data_service.dart';
 import 'services/event_service.dart';
 import 'services/outfit_history_service.dart';
+import 'services/profile_service.dart';
 import 'services/wardrobe_service.dart';
 
 Future<void> main() async {
@@ -36,6 +37,7 @@ class DlsBootstrap extends StatelessWidget {
         Provider<EventService>(create: (_) => EventService()),
         Provider<OutfitHistoryService>(create: (_) => OutfitHistoryService()),
         Provider<DemoDataService>(create: (_) => DemoDataService()),
+        Provider<ProfileService>(create: (_) => ProfileService()),
         ChangeNotifierProvider<AuthController>(
           create: (context) => AuthController(context.read<AuthService>()),
         ),
