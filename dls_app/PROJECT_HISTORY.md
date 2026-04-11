@@ -452,3 +452,28 @@ Google sign-in success at runtime depends on Firebase console platform setup (An
 ## 21. Next Step
 
 Proceed to Sprint 7 (polish, performance, offline resilience) after device authorization check and smoke validation on physical hardware.
+
+## 22. iOS Support Preparation (2026-04-11)
+
+### Implemented
+
+1. Added a missing iOS `Podfile` so CocoaPods dependencies can be installed on macOS.
+2. Updated `ios/Runner/Info.plist` with:
+  - camera usage description
+  - photo library usage description
+  - photo library add usage description
+  - Google Sign-In URL scheme
+3. Updated app display name on iOS to `Digital Lesela Sete`.
+4. Added dedicated iOS setup documentation in `IOS_SETUP.md`.
+5. Updated README and audit docs to include iOS readiness notes.
+
+### What remains
+
+1. Add `GoogleService-Info.plist` to `ios/Runner/` from Firebase Console.
+2. Run `pod install` on macOS.
+3. Configure Apple signing/provisioning in Xcode.
+4. Perform physical iPhone smoke validation.
+
+### Constraint
+
+Final iOS build validation cannot be completed from this Windows environment because Xcode and Apple signing are macOS-only.

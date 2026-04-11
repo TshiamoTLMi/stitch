@@ -124,6 +124,8 @@ Use this checklist each sprint closeout.
    - Mitigation: lock Firestore/Storage rules for authenticated access before production.
 3. Mobile plugin build prerequisites (Windows symlink/developer mode).
    - Mitigation: enable developer mode on Windows for plugin builds.
+4. iOS runtime validation cannot be completed on Windows.
+   - Mitigation: finish final iPhone validation on macOS with Xcode, CocoaPods, and Apple signing.
 
 ## 8. Forward Process Plan
 
@@ -133,6 +135,7 @@ Use this checklist each sprint closeout.
 2. Performance pass for list rendering, image caching, and Firestore query resilience.
 3. Offline/poor-network behavior review and fallback UX hardening.
 4. Final QA matrix and pre-release checklist.
+5. iOS smoke validation and release readiness on Xcode-managed hardware.
 
 ## 9. Audit Update Procedure
 
@@ -234,3 +237,24 @@ Risk status:
 
 Next action plan:
 - Start Sprint 7 polish immediately after final device authorization and runtime smoke confirmation.
+
+## 14. iOS Readiness Audit (2026-04-11)
+
+Status: In Progress
+
+Implementation summary:
+- Added missing `ios/Podfile` to support CocoaPods dependency installation on macOS.
+- Added iOS permission strings for camera and photo library usage in `ios/Runner/Info.plist`.
+- Added Google Sign-In URL scheme registration in `ios/Runner/Info.plist`.
+- Added iOS setup runbook in `IOS_SETUP.md`.
+
+Validation evidence:
+- Repository now contains the required iOS project metadata for permissions and CocoaPods.
+- iOS Firebase options already exist in `lib/firebase_options.dart`.
+
+Risk status:
+- `GoogleService-Info.plist` is not checked into the repo and must be added on macOS.
+- iOS signing/provisioning cannot be completed from this Windows environment.
+
+Next action plan:
+- Open project on macOS, run `pod install`, add `GoogleService-Info.plist`, configure signing, and execute iPhone smoke test.

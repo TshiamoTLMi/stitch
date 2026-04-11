@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Dls App</string>
+	<string>Digital Lesela Sete</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -24,8 +24,25 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.357360805758-467ktqtillfbefb0ksknq8o2o0to9ogi</string>
+			</array>
+		</dict>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Digital Lesela Sete uses the camera so you can capture clothing items for your wardrobe.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Digital Lesela Sete uses your photo library so you can import clothing images into your wardrobe.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Digital Lesela Sete may save generated wardrobe assets and edited media when you choose to export them.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

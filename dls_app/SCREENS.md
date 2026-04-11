@@ -288,6 +288,10 @@ Process audit tracking reference:
 1. Google sign-in requires platform console setup to work at runtime:
   - Android SHA-1/SHA-256 in Firebase project settings.
   - Correct OAuth consent/supported domains where applicable.
+2. iOS support now includes repo-side permission and URL-scheme setup, but final iPhone validation still requires:
+  - `GoogleService-Info.plist` in `ios/Runner/`
+  - `pod install` on macOS
+  - Xcode signing/provisioning
 
 ---
 

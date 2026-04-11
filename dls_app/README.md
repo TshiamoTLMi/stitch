@@ -15,6 +15,7 @@ Detailed implementation/audit logs:
 - `PROJECT_HISTORY.md`
 - `AUDIT_TRACKING_PLAN.md`
 - `SCREENS.md`
+- `IOS_SETUP.md`
 
 ## Core Features Implemented
 
@@ -100,8 +101,28 @@ flutter devices
 flutter run -d <device_id>
 ```
 
+## iOS / iPhone Support
+
+Repository-side iOS support has been prepared with:
+
+1. `ios/Podfile` added for CocoaPods dependency installation.
+2. `ios/Runner/Info.plist` updated with:
+	- camera permission text
+	- photo library permission text
+	- Google Sign-In URL scheme
+3. iOS Firebase options already present in `lib/firebase_options.dart`.
+
+Important limitation:
+
+1. Final iPhone/iPad validation must be done on macOS with Xcode.
+2. `GoogleService-Info.plist` is still required in `ios/Runner/`.
+3. Apple signing/provisioning must be configured in Xcode.
+
+Full iOS setup and validation steps are documented in `IOS_SETUP.md`.
+
 ## Current Known External Dependencies
 
 1. Google sign-in runtime requires Firebase OAuth/SHA setup in console.
 2. Firestore/Storage rules must be configured for your target environment.
+3. iOS builds require macOS + Xcode + CocoaPods for final device validation.
 
