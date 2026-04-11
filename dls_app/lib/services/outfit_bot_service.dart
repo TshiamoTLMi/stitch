@@ -15,12 +15,26 @@ class OutfitBotService {
     required String weather,
   }) {
     final cleanItems = wardrobe.where((item) => item.isClean).toList();
+    if (cleanItems.isEmpty) {
+      return OutfitResult(
+        top: null,
+        bottom: null,
+        shoes: null,
+        accessory: null,
+        score: 0,
+        reasoning: const [
+          'No clean items available.',
+          'Mark items as clean to generate outfit suggestions.',
+        ],
+      );
+    }
+
     final tops = cleanItems.where((item) => _isTop(item.category)).toList();
     final bottoms = cleanItems.where((item) => _isBottom(item.category)).toList();
     final dresses = cleanItems.where((item) => item.category == 'dress').toList();
-    final shoes = cleanItems.where((item) => item.category == 'shoes').toList();
+    final shoes = cleanItems.where((item) => _isShoes(item.category)).toList();
     final accessories =
-        cleanItems.where((item) => item.category == 'accessories' || item.category == 'hat' || item.category == 'bag').toList();
+        cleanItems.where((item) => _isAccessory(item.category)).toList();
 
     final scored = cleanItems
         .map((item) => MapEntry(item, _scoreItem(item, occasion, mood, weather)))
@@ -60,6 +74,16 @@ class OutfitBotService {
 
     if (scored.isNotEmpty) {
       reasoning.add('Top scoring piece: ${scored.first.key.category} (${scored.first.value})');
+    }
+
+    if (top == null) {
+      reasoning.add('No suitable top found.');
+    }
+    if (bottom == null) {
+      reasoning.add('No suitable bottom found.');
+    }
+    if (shoe == null) {
+      reasoning.add('No suitable shoes found.');
     }
 
     return OutfitResult(
@@ -158,7 +182,52 @@ class OutfitBotService {
   }
 
   bool _isTop(String category) =>
-      category == 'shirt' || category == 'jacket' || category == 'dress';
+      _normalizeCategory(category) == 'shirt' ||
+      _normalizeCategory(category) == 'outerwear' ||
+      _normalizeCategory(category) == 'dress';
 
-  bool _isBottom(String category) => category == 'trousers' || category == 'shorts';
+  bool _isBottom(String category) =>
+      _normalizeCategory(category) == 'pants' ||
+      _normalizeCategory(category) == 'shorts' ||
+      _normalizeCategory(category) == 'skirt';
+
+  bool _isShoes(String category) => _normalizeCategory(category) == 'shoes';
+
+  bool _isAccessory(String category) =>
+      _normalizeCategory(category) == 'accessory' ||
+      _normalizeCategory(category) == 'hat' ||
+      _normalizeCategory(category) == 'bag';
+
+  String _normalizeCategory(String category) {
+    final value = category.trim().toLowerCase();
+    switch (value) {
+      case 'top':
+      case 'tshirt':
+      case 'tee':
+      case 'shirt':
+        return 'shirt';
+      case 'jacket':
+      case 'coat':
+      case 'outerwear':
+        return 'outerwear';
+      case 'pants':
+      case 'trouser':
+      case 'trousers':
+      case 'jeans':
+      case 'bottom':
+        return 'pants';
+      case 'shoe':
+      case 'shoes':
+      case 'sneaker':
+      case 'sneakers':
+      case 'boot':
+      case 'boots':
+        return 'shoes';
+      case 'accessories':
+      case 'accessory':
+        return 'accessory';
+      default:
+        return value;
+    }
+  }
 }
