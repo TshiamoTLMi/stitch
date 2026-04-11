@@ -43,7 +43,7 @@ class _HomeShellState extends State<HomeShell> {
 
     final pages = [
       DashboardPage(userId: userId),
-      const WardrobeDashboard(),
+      WardrobeDashboard(userId: userId),
       OutfitGeneratorPage(userId: userId),
       EventPlannerPage(userId: userId),
       const ProfilePage(),

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../services/auth_service.dart';
 
@@ -41,6 +42,13 @@ class AuthController extends ChangeNotifier {
       await action();
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message ?? 'Authentication error occurred.';
+    } on PlatformException catch (e) {
+      if (e.code == 'sign_in_failed' || e.code == '10') {
+        _errorMessage =
+            'Google sign-in failed on Android. Ensure Firebase Android SHA-1/SHA-256 is configured for this app.';
+      } else {
+        _errorMessage = e.message ?? 'Platform sign-in error occurred.';
+      }
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

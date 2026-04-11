@@ -124,11 +124,16 @@ class DemoDataService {
     for (var i = 0; i < wardrobeItems.length; i++) {
       final doc = _firestore.collection('clothing_items').doc();
       final createdAt = now.subtract(Duration(days: i + 1));
+      final imageUrl = wardrobeItems[i]['image_url'];
       batch.set(doc, {
         ...wardrobeItems[i],
+        'id': doc.id,
+        'imageUrl': imageUrl,
         'user_id': userId,
         'is_demo': true,
+        'createdAt': Timestamp.fromDate(createdAt),
         'created_at': Timestamp.fromDate(createdAt),
+        'updatedAt': Timestamp.fromDate(createdAt),
         'updated_at': Timestamp.fromDate(createdAt),
       });
     }

@@ -7,73 +7,64 @@ import '../../models/clothing_item.dart';
 import '../../models/event_model.dart';
 import '../../services/event_service.dart';
 import '../../services/recommendation_service.dart';
-import '../../widgets/clothing_item_card.dart';
 
 class DashboardPage extends StatelessWidget {
   DashboardPage({super.key, required this.userId});
 
   final String userId;
   final RecommendationService _recommendationService = RecommendationService();
-  static const _filters = ['All Items', 'Tops', 'Bottoms', 'Shoes', 'Accessories'];
 
   @override
   Widget build(BuildContext context) {
     final wardrobe = context.watch<WardrobeController>().items;
+    final cleanCount = wardrobe.where((item) => item.isClean).length;
+    final washCount = wardrobe.length - cleanCount;
+    final topCategory = _topCategory(wardrobe);
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('My Wardrobe', style: Theme.of(context).textTheme.headlineMedium),
+        Text('Home', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 6),
         Text(
-          'Curating your digital legacy, one piece at a time.',
+          'Overview of your style engine and upcoming recommendations.',
           style: const TextStyle(color: AppTheme.onSurfaceVariant),
         ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 44,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, i) {
-              final selected = i == 0;
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                decoration: BoxDecoration(
-                  color: selected ? AppTheme.primary : AppTheme.surfaceHigh,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  _filters[i],
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: selected ? const Color(0xFF3C2F00) : AppTheme.onSurface,
-                  ),
-                ),
-              );
-            },
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
-            itemCount: _filters.length,
-          ),
-        ),
         const SizedBox(height: 14),
-        GridView.builder(
-          itemCount: wardrobe.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 0.64,
-          ),
-          itemBuilder: (context, index) {
-            final item = wardrobe[index];
-            return ClothingItemCard(
-              item: item,
-              onEdit: () => _showEditDialog(context, item),
-              onDelete: () => _deleteItem(context, item.id),
-            );
-          },
+        Row(
+          children: [
+            Expanded(
+              child: _metricCard(
+                label: 'Closet Items',
+                value: '${wardrobe.length}',
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _metricCard(
+                label: 'Clean Pieces',
+                value: '$cleanCount',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _metricCard(
+                label: 'In Wash',
+                value: '$washCount',
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _metricCard(
+                label: 'Top Category',
+                value: topCategory,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         StreamBuilder<List<EventModel>>(
@@ -133,73 +124,35 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Future<void> _deleteItem(BuildContext context, String id) async {
-    await context.read<WardrobeController>().deleteItem(id);
+  Widget _metricCard({required String label, required String value}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceLow,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12)),
+          const SizedBox(height: 6),
+          Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+        ],
+      ),
+    );
   }
 
-  Future<void> _showEditDialog(BuildContext context, ClothingItem item) async {
-    final categoryController = TextEditingController(text: item.category);
-    final colorController = TextEditingController(text: item.color);
-    final stylesController = TextEditingController(text: item.styleTags.join(', '));
-    String status = item.status;
+  String _topCategory(List<ClothingItem> items) {
+    if (items.isEmpty) {
+      return '-';
+    }
 
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Edit Clothing Item'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: categoryController, decoration: const InputDecoration(labelText: 'Category')),
-              const SizedBox(height: 8),
-              TextField(controller: colorController, decoration: const InputDecoration(labelText: 'Color')),
-              const SizedBox(height: 8),
-              TextField(
-                controller: stylesController,
-                decoration: const InputDecoration(labelText: 'Style tags (comma separated)'),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                initialValue: status,
-                items: const [
-                  DropdownMenuItem(value: 'clean', child: Text('clean')),
-                  DropdownMenuItem(value: 'in_wash', child: Text('in_wash')),
-                ],
-                onChanged: (value) {
-                  status = value ?? 'clean';
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final styles = stylesController.text
-                    .split(',')
-                    .map((e) => e.trim())
-                    .where((e) => e.isNotEmpty)
-                    .toList();
-
-                await context.read<WardrobeController>().updateItem(
-                      id: item.id,
-                      category: categoryController.text.trim(),
-                      color: colorController.text.trim(),
-                      styleTags: styles,
-                      status: status,
-                    );
-                if (!dialogContext.mounted) return;
-                Navigator.pop(dialogContext);
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
+    final byCount = <String, int>{};
+    for (final item in items) {
+      final key = item.category.trim().toLowerCase();
+      byCount[key] = (byCount[key] ?? 0) + 1;
+    }
+    final sorted = byCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    return sorted.first.key;
   }
 }

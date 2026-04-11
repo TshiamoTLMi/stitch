@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
 
 class WardrobeDashboard extends StatefulWidget {
-  const WardrobeDashboard({super.key});
+  const WardrobeDashboard({super.key, required this.userId});
+
+  final String userId;
 
   @override
   State<WardrobeDashboard> createState() => _WardrobeDashboardState();
@@ -116,7 +118,7 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
 
         // ── Grid / States ─────────────────────────────────────────────────
         StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: _svc.streamClothingItems(),
+          stream: _svc.streamClothingItems(userId: widget.userId),
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const SliverToBoxAdapter(
@@ -139,7 +141,16 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
               );
             }
 
-            final docs = snap.data?.docs ?? [];
+            final docs = (snap.data?.docs ?? []).toList()
+              ..sort((a, b) {
+                final aData = a.data();
+                final bData = b.data();
+                final aTs = (aData['createdAt'] ?? aData['created_at']) as Timestamp?;
+                final bTs = (bData['createdAt'] ?? bData['created_at']) as Timestamp?;
+                final aDate = aTs?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+                final bDate = bTs?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+                return bDate.compareTo(aDate);
+              });
             final filtered = docs.where((d) => _matchesFilter(d.data())).toList();
 
             if (docs.isEmpty) {
@@ -173,7 +184,11 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, i) {
-                    final data = filtered[i].data();
+                    final source = filtered[i];
+                    final data = <String, dynamic>{
+                      ...source.data(),
+                      'id': source.id,
+                    };
                     return GestureDetector(
                       onTap: () => _openDetail(data),
                       child: _WardrobeCard(data: data),
@@ -198,10 +213,10 @@ class _WardrobeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = (data['imageUrl'] as String?) ?? '';
+    final imageUrl = (data['imageUrl'] as String?) ?? (data['image_url'] as String?) ?? '';
     final category = (data['category'] as String?) ?? 'Item';
-    final status = (data['status'] as String?) ?? 'clean';
-    final isClean = status.toLowerCase() == 'clean';
+    final status = ((data['status'] as String?) ?? 'clean').toLowerCase();
+    final isClean = status == 'clean';
 
     return Container(
       decoration: BoxDecoration(
@@ -396,7 +411,7 @@ class _WardrobeDetailSheet extends StatefulWidget {
 class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   final FirebaseService _service = FirebaseService();
   static const _categories = ['shirt', 'outerwear', 'pants', 'shoes', 'accessory'];
-  static const _statuses = ['clean', 'in the wash'];
+  static const _statuses = ['clean', 'in_wash', 'in the wash'];
 
   late String _category;
   late String _status;
@@ -438,8 +453,9 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = (widget.data['imageUrl'] as String?) ?? '';
-    final createdAt = widget.data['createdAt'];
+    final imageUrl =
+      (widget.data['imageUrl'] as String?) ?? (widget.data['image_url'] as String?) ?? '';
+    final createdAt = widget.data['createdAt'] ?? widget.data['created_at'];
 
     String createdLabel = 'Unknown date';
     if (createdAt is Timestamp) {

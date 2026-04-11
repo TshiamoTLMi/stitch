@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:uuid/uuid.dart';
@@ -8,15 +9,17 @@ import 'package:uuid/uuid.dart';
 class FirebaseService {
   FirebaseStorage get _storage => FirebaseStorage.instance;
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
   final Uuid _uuid = const Uuid();
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> streamClothingItems() {
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamClothingItems({String? userId}) {
     try {
-      return _firestore
-          .collection('clothing_items')
-          .orderBy('createdAt', descending: true)
-          .limit(50)
-          .snapshots();
+      final uid = userId ?? _auth.currentUser?.uid;
+      final base = _firestore.collection('clothing_items');
+      if (uid == null || uid.isEmpty) {
+        return base.limit(200).snapshots();
+      }
+      return base.where('user_id', isEqualTo: uid).limit(200).snapshots();
     } catch (_) {
       return const Stream.empty();
     }
@@ -46,13 +49,18 @@ class FirebaseService {
     );
 
     final imageUrl = await ref.getDownloadURL();
+    final userId = _auth.currentUser?.uid;
 
     await _firestore.collection('clothing_items').doc(id).set({
       'id': id,
       'category': category.trim().toLowerCase(),
       'status': status.trim().toLowerCase(),
+      'user_id': userId,
       'imageUrl': imageUrl,
+      'image_url': imageUrl,
       'createdAt': FieldValue.serverTimestamp(),
+      'created_at': FieldValue.serverTimestamp(),
+      'updated_at': FieldValue.serverTimestamp(),
     });
   }
 
