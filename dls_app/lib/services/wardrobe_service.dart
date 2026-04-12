@@ -15,7 +15,7 @@ class WardrobeService {
   Stream<List<ClothingItem>> streamItems(String userId) {
     try {
       return _collection
-          .where('user_id', isEqualTo: userId)
+          .where('userId', isEqualTo: userId)
           .snapshots()
           .map(
             (snapshot) => snapshot.docs.map(ClothingItem.fromDoc).toList(),
@@ -31,7 +31,7 @@ class WardrobeService {
     required String extension,
   }) async {
     final ts = DateTime.now().millisecondsSinceEpoch;
-    final ref = _storage.ref('users/$userId/wardrobe/item_$ts.$extension');
+    final ref = _storage.ref('users/$userId/items/${ts}_manual.$extension');
     await ref.putData(bytes);
     return ref.getDownloadURL();
   }

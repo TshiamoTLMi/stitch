@@ -19,7 +19,7 @@ class FirebaseService {
       if (uid == null || uid.isEmpty) {
         return base.limit(200).snapshots();
       }
-      return base.where('user_id', isEqualTo: uid).limit(200).snapshots();
+      return base.where('userId', isEqualTo: uid).limit(200).snapshots();
     } catch (_) {
       return const Stream.empty();
     }
@@ -27,8 +27,16 @@ class FirebaseService {
 
   Future<void> uploadClothingItem(
     File imageFile, {
-    required String category,
+    required String parentCategory,
+    required String subcategory,
+    required String categoryType,
+    String? fit,
+    required String color,
+    required String colorGroup,
+    required List<String> styleTags,
+    required String season,
     String status = 'clean',
+    String gender = 'Unisex',
   }) async {
     final id = _uuid.v4();
     final compressedBytes = await FlutterImageCompress.compressWithFile(
@@ -42,24 +50,42 @@ class FirebaseService {
       throw Exception('Image compression failed.');
     }
 
-    final ref = _storage.ref().child('clothing_items/$id.jpg');
+    final userId = _auth.currentUser?.uid;
+    if (userId == null || userId.isEmpty) {
+      throw Exception('User not signed in.');
+    }
+
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    final ref = _storage.ref().child('users/$userId/items/${ts}_$id.jpg');
     await ref.putData(
       compressedBytes,
       SettableMetadata(contentType: 'image/jpeg'),
     );
 
     final imageUrl = await ref.getDownloadURL();
-    final userId = _auth.currentUser?.uid;
 
     await _firestore.collection('clothing_items').doc(id).set({
       'id': id,
-      'category': category.trim().toLowerCase(),
+      'parentCategory': parentCategory,
+      'subcategory': subcategory,
+      'categoryType': categoryType,
+      if (fit != null && fit.trim().isNotEmpty) 'fit': fit,
+      'color': color.trim().toLowerCase(),
+      'colorGroup': colorGroup,
+      'styleTags': styleTags,
+      'season': season,
       'status': status.trim().toLowerCase(),
-      'user_id': userId,
+      'gender': gender,
+      'userId': userId,
       'imageUrl': imageUrl,
-      'image_url': imageUrl,
       'createdAt': FieldValue.serverTimestamp(),
+
+      // Legacy compatibility fields during migration.
+      'user_id': userId,
+      'category': subcategory.trim().toLowerCase(),
+      'image_url': imageUrl,
       'created_at': FieldValue.serverTimestamp(),
+      'style_tags': styleTags,
       'updated_at': FieldValue.serverTimestamp(),
     });
   }

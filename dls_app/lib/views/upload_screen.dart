@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../core/constants/wardrobe_taxonomy.dart';
 import '../services/firebase_service.dart';
 
 class UploadScreen extends StatefulWidget {
@@ -17,18 +18,28 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   final ImagePicker _picker = ImagePicker();
   final FirebaseService _firebaseService = FirebaseService();
-  static const List<String> _categories = [
-    'shirt',
-    'outerwear',
-    'pants',
-    'shoes',
-    'accessory',
-  ];
-
   File? _selectedImage;
   bool _isUploading = false;
-  String _selectedCategory = 'shirt';
+  String _selectedParentCategory = categoryTaxonomy.keys.first;
+  String? _selectedSubcategory;
+  String? _selectedFit;
+  final TextEditingController _colorController = TextEditingController(text: 'black');
+  String _selectedSeason = seasonOptions.first;
+  String _selectedStatus = statusOptions.first;
+  String _selectedGender = genderOptions.first;
+  final List<String> _selectedStyleTags = <String>['casual'];
   String? _lastUploadError;
+
+  List<String> get _subcategoryOptions =>
+      categoryTaxonomy[_selectedParentCategory] ?? const <String>[];
+
+  bool get _needsFit => _selectedSubcategory != null && requiresFit(_selectedSubcategory!);
+
+  @override
+  void dispose() {
+    _colorController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickFromCamera() async {
     final granted = await _requestCameraPermission();
@@ -83,19 +94,49 @@ class _UploadScreenState extends State<UploadScreen> {
       _showMessage('Select an image first.');
       return;
     }
+    if (_selectedSubcategory == null || _selectedSubcategory!.isEmpty) {
+      _showMessage('Subcategory is required.');
+      return;
+    }
+    if (_needsFit && (_selectedFit == null || _selectedFit!.isEmpty)) {
+      _showMessage('Fit is required for this subcategory.');
+      return;
+    }
+    if (_selectedStyleTags.isEmpty) {
+      _showMessage('Select at least one style tag.');
+      return;
+    }
+    if (_selectedStatus.isEmpty) {
+      _showMessage('Status is required.');
+      return;
+    }
 
     setState(() => _isUploading = true);
 
     try {
       await _firebaseService.uploadClothingItem(
         _selectedImage!,
-        category: _selectedCategory,
+        parentCategory: _selectedParentCategory,
+        subcategory: _selectedSubcategory!,
+        categoryType: deriveCategoryType(
+          parentCategory: _selectedParentCategory,
+          subcategory: _selectedSubcategory!,
+        ),
+        fit: _needsFit ? _selectedFit : null,
+        color: _colorController.text.trim().isEmpty
+            ? 'black'
+            : _colorController.text.trim(),
+        colorGroup: deriveColorGroup(_colorController.text),
+        styleTags: _selectedStyleTags,
+        season: _selectedSeason,
+        status: _selectedStatus,
+        gender: _selectedGender,
       );
       _lastUploadError = null;
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Added $_selectedCategory to your wardrobe!')),
+        SnackBar(content: Text('Added $_selectedSubcategory to your wardrobe!')),
       );
     } catch (e) {
       _lastUploadError = 'Upload failed. Check network/Firebase rules and retry.';
@@ -228,49 +269,238 @@ class _UploadScreenState extends State<UploadScreen> {
 
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
                             color: const Color(0xFF1C1B1B).withValues(alpha: 0.94),
-                            borderRadius: BorderRadius.circular(999),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Row(
+                          child: Column(
                             children: [
-                              const Icon(Icons.sell_outlined, color: Color(0xFFD0C5AF), size: 18),
-                              const SizedBox(width: 8),
-                              const Text(
-                                'Category',
-                                style: TextStyle(
-                                  color: Color(0xFFD0C5AF),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                              Row(
+                                children: [
+                                  const Icon(Icons.category_outlined,
+                                      color: Color(0xFFD0C5AF), size: 18),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'Parent Category',
+                                    style: TextStyle(
+                                      color: Color(0xFFD0C5AF),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: _selectedParentCategory,
+                                      borderRadius: BorderRadius.circular(16),
+                                      dropdownColor: const Color(0xFF2A2A2A),
+                                      style: const TextStyle(
+                                        color: Color(0xFFE5E2E1),
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      iconEnabledColor: const Color(0xFFF2CA50),
+                                      items: categoryTaxonomy.keys
+                                          .map(
+                                            (c) => DropdownMenuItem<String>(
+                                              value: c,
+                                              child: Text(c),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChanged: _isUploading
+                                          ? null
+                                          : (value) {
+                                              if (value == null) return;
+                                              setState(() {
+                                                _selectedParentCategory = value;
+                                                _selectedSubcategory = null;
+                                                _selectedFit = null;
+                                              });
+                                            },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  const Icon(Icons.sell_outlined,
+                                      color: Color(0xFFD0C5AF), size: 18),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'Subcategory',
+                                    style: TextStyle(
+                                      color: Color(0xFFD0C5AF),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: _selectedSubcategory,
+                                      hint: const Text('Select'),
+                                      borderRadius: BorderRadius.circular(16),
+                                      dropdownColor: const Color(0xFF2A2A2A),
+                                      style: const TextStyle(
+                                        color: Color(0xFFE5E2E1),
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      iconEnabledColor: const Color(0xFFF2CA50),
+                                      items: _subcategoryOptions
+                                          .map(
+                                            (s) => DropdownMenuItem<String>(
+                                              value: s,
+                                              child: Text(s),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChanged: _isUploading
+                                          ? null
+                                          : (value) => setState(() {
+                                                _selectedSubcategory = value;
+                                                _selectedFit = null;
+                                              }),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (_needsFit) ...[
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.straighten_outlined,
+                                        color: Color(0xFFD0C5AF), size: 18),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Fit',
+                                      style: TextStyle(
+                                        color: Color(0xFFD0C5AF),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        value: _selectedFit,
+                                        hint: const Text('Select fit'),
+                                        borderRadius: BorderRadius.circular(16),
+                                        dropdownColor: const Color(0xFF2A2A2A),
+                                        style: const TextStyle(
+                                          color: Color(0xFFE5E2E1),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                        iconEnabledColor: const Color(0xFFF2CA50),
+                                        items: fitOptions
+                                            .map(
+                                              (f) => DropdownMenuItem<String>(
+                                                value: f,
+                                                child: Text(f),
+                                              ),
+                                            )
+                                            .toList(),
+                                        onChanged: _isUploading
+                                            ? null
+                                            : (value) => setState(() => _selectedFit = value),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                              const SizedBox(height: 8),
+                              TextField(
+                                controller: _colorController,
+                                style: const TextStyle(color: Color(0xFFE5E2E1)),
+                                decoration: const InputDecoration(
+                                  labelText: 'Color',
+                                  labelStyle: TextStyle(color: Color(0xFFD0C5AF)),
                                 ),
                               ),
-                              const Spacer(),
-                              DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: _selectedCategory,
-                                  borderRadius: BorderRadius.circular(16),
-                                  dropdownColor: const Color(0xFF2A2A2A),
-                                  style: const TextStyle(
-                                    color: Color(0xFFE5E2E1),
-                                    fontWeight: FontWeight.w700,
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: DropdownButtonFormField<String>(
+                                      value: _selectedSeason,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Season',
+                                      ),
+                                      items: seasonOptions
+                                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                                          .toList(),
+                                      onChanged: _isUploading
+                                          ? null
+                                          : (value) => setState(
+                                              () => _selectedSeason = value ?? seasonOptions.first,
+                                            ),
+                                    ),
                                   ),
-                                  iconEnabledColor: const Color(0xFFF2CA50),
-                                  items: _categories
-                                      .map(
-                                        (c) => DropdownMenuItem<String>(
-                                          value: c,
-                                          child: Text(_labelForCategory(c)),
-                                        ),
-                                      )
-                                      .toList(),
-                                  onChanged: _isUploading
-                                      ? null
-                                      : (value) {
-                                          if (value == null) return;
-                                          setState(() => _selectedCategory = value);
-                                        },
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: DropdownButtonFormField<String>(
+                                      value: _selectedStatus,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Status',
+                                      ),
+                                      items: statusOptions
+                                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                                          .toList(),
+                                      onChanged: _isUploading
+                                          ? null
+                                          : (value) => setState(
+                                              () => _selectedStatus = value ?? statusOptions.first,
+                                            ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              DropdownButtonFormField<String>(
+                                value: _selectedGender,
+                                decoration: const InputDecoration(labelText: 'Gender'),
+                                items: genderOptions
+                                    .map((g) => DropdownMenuItem(value: g, child: Text(g)))
+                                    .toList(),
+                                onChanged: _isUploading
+                                    ? null
+                                    : (value) =>
+                                        setState(() => _selectedGender = value ?? genderOptions.first),
+                              ),
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Style tags',
+                                  style: TextStyle(
+                                    color: const Color(0xFFD0C5AF).withValues(alpha: 0.95),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
+                              ),
+                              const SizedBox(height: 6),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: styleTagOptions
+                                    .map(
+                                      (tag) => FilterChip(
+                                        label: Text(tag),
+                                        selected: _selectedStyleTags.contains(tag),
+                                        onSelected: _isUploading
+                                            ? null
+                                            : (selected) => setState(() {
+                                                  if (selected) {
+                                                    _selectedStyleTags.add(tag);
+                                                  } else {
+                                                    _selectedStyleTags.remove(tag);
+                                                  }
+                                                }),
+                                      ),
+                                    )
+                                    .toList(),
                               ),
                             ],
                           ),
@@ -641,23 +871,6 @@ class _AiTag extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-String _labelForCategory(String c) {
-  switch (c) {
-    case 'shirt':
-      return 'Tops';
-    case 'outerwear':
-      return 'Outerwear';
-    case 'pants':
-      return 'Bottoms';
-    case 'shoes':
-      return 'Shoes';
-    case 'accessory':
-      return 'Accessories';
-    default:
-      return c;
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/constants/wardrobe_taxonomy.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/clothing_item.dart';
 import '../../services/wardrobe_service.dart';
@@ -91,10 +92,16 @@ class _UploadPageState extends State<UploadPage> {
       final now = DateTime.now();
       final item = ClothingItem(
         id: '',
-        category: _category,
+        parentCategory: 'Tops',
+        subcategory: _category,
+        categoryType: deriveCategoryType(parentCategory: 'Tops', subcategory: _category),
+        fit: null,
         color: _colorController.text.trim().isEmpty ? 'black' : _colorController.text.trim(),
+        colorGroup: deriveColorGroup(_colorController.text),
         styleTags: _selectedTags,
+        season: 'All Season',
         status: _status,
+        gender: 'Unisex',
         imageUrl: imageUrl,
         userId: widget.userId,
         createdAt: now,

@@ -29,12 +29,13 @@ class OutfitBotService {
       );
     }
 
-    final tops = cleanItems.where((item) => _isTop(item.category)).toList();
-    final bottoms = cleanItems.where((item) => _isBottom(item.category)).toList();
-    final dresses = cleanItems.where((item) => item.category == 'dress').toList();
-    final shoes = cleanItems.where((item) => _isShoes(item.category)).toList();
-    final accessories =
-        cleanItems.where((item) => _isAccessory(item.category)).toList();
+    final tops = cleanItems.where((item) => _isTop(item.categoryType, item.category)).toList();
+    final bottoms = cleanItems.where((item) => _isBottom(item.categoryType, item.category)).toList();
+    final dresses = cleanItems.where((item) => _isFull(item.categoryType, item.category)).toList();
+    final shoes = cleanItems.where((item) => _isShoes(item.categoryType, item.category)).toList();
+    final accessories = cleanItems
+      .where((item) => _isAccessory(item.categoryType, item.category))
+      .toList();
 
     final scored = cleanItems
         .map((item) => MapEntry(item, _scoreItem(item, occasion, mood, weather)))
@@ -73,7 +74,7 @@ class OutfitBotService {
             .clamp(0, 100);
 
     if (scored.isNotEmpty) {
-      reasoning.add('Top scoring piece: ${scored.first.key.category} (${scored.first.value})');
+      reasoning.add('Top scoring piece: ${scored.first.key.subcategory} (${scored.first.value})');
     }
 
     if (top == null) {
@@ -122,7 +123,8 @@ class OutfitBotService {
     var score = 40;
 
     final styles = item.styleTags.map((e) => e.toLowerCase()).toSet();
-    final category = item.category.toLowerCase();
+    final category = item.subcategory.toLowerCase();
+    final categoryType = item.categoryType.toLowerCase();
     final color = item.color.toLowerCase();
 
     switch (occasion) {
@@ -156,7 +158,9 @@ class OutfitBotService {
         if (cleanDripColors.any(color.contains)) score += 15;
         break;
       case 'Street Flex':
-        if (styles.contains('streetwear') || category == 'hat' || category == 'shoes') score += 15;
+        if (styles.contains('streetwear') || category.contains('hat') || categoryType == 'shoes') {
+          score += 15;
+        }
         break;
       case 'Soft Life':
         if (softLifeColors.any(color.contains) || styles.contains('casual')) score += 15;
@@ -165,38 +169,55 @@ class OutfitBotService {
 
     switch (weather) {
       case 'Rainy':
-        if (category == 'jacket' || category == 'shoes') score += 10;
+        if (category.contains('jacket') || categoryType == 'shoes') score += 10;
         break;
       case 'Cold':
-        if (category == 'jacket' || category == 'shirt' || category == 'trousers') score += 10;
+        if (category.contains('jacket') || categoryType == 'top' || category.contains('trouser')) {
+          score += 10;
+        }
         break;
       case 'Hot':
-        if (category == 'shorts' || category == 'shirt' || category == 'shoes') score += 10;
+        if (category.contains('shorts') || categoryType == 'top' || categoryType == 'shoes') {
+          score += 10;
+        }
         break;
       case 'Sunny':
-        if (category == 'shirt' || category == 'accessories') score += 6;
+        if (categoryType == 'top' || categoryType == 'accessory') score += 6;
         break;
     }
 
     return score.clamp(0, 100);
   }
 
-  bool _isTop(String category) =>
-      _normalizeCategory(category) == 'shirt' ||
-      _normalizeCategory(category) == 'outerwear' ||
-      _normalizeCategory(category) == 'dress';
+  bool _isTop(String categoryType, String fallbackCategory) {
+    if (categoryType == 'top') return true;
+    return _normalizeCategory(fallbackCategory) == 'shirt' ||
+        _normalizeCategory(fallbackCategory) == 'outerwear';
+  }
 
-  bool _isBottom(String category) =>
-      _normalizeCategory(category) == 'pants' ||
-      _normalizeCategory(category) == 'shorts' ||
-      _normalizeCategory(category) == 'skirt';
+  bool _isBottom(String categoryType, String fallbackCategory) {
+    if (categoryType == 'bottom') return true;
+    return _normalizeCategory(fallbackCategory) == 'pants' ||
+        _normalizeCategory(fallbackCategory) == 'shorts' ||
+        _normalizeCategory(fallbackCategory) == 'skirt';
+  }
 
-  bool _isShoes(String category) => _normalizeCategory(category) == 'shoes';
+  bool _isFull(String categoryType, String fallbackCategory) {
+    if (categoryType == 'full') return true;
+    return _normalizeCategory(fallbackCategory) == 'dress';
+  }
 
-  bool _isAccessory(String category) =>
-      _normalizeCategory(category) == 'accessory' ||
-      _normalizeCategory(category) == 'hat' ||
-      _normalizeCategory(category) == 'bag';
+  bool _isShoes(String categoryType, String fallbackCategory) {
+    if (categoryType == 'shoes') return true;
+    return _normalizeCategory(fallbackCategory) == 'shoes';
+  }
+
+  bool _isAccessory(String categoryType, String fallbackCategory) {
+    if (categoryType == 'accessory') return true;
+    return _normalizeCategory(fallbackCategory) == 'accessory' ||
+        _normalizeCategory(fallbackCategory) == 'hat' ||
+        _normalizeCategory(fallbackCategory) == 'bag';
+  }
 
   String _normalizeCategory(String category) {
     final value = category.trim().toLowerCase();

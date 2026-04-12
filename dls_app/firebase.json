@@ -1,1 +1,26 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"digital-les-sete","appId":"1:357360805758:android:54b47afe5bf7067881b52f","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"digital-les-sete","configurations":{"android":"1:357360805758:android:54b47afe5bf7067881b52f","ios":"1:357360805758:ios:30102698965645d881b52f","web":"1:357360805758:web:94b56a4486f607ec81b52f"}}}}}}
+{
+	"flutter": {
+		"platforms": {
+			"android": {
+				"default": {
+					"projectId": "digital-les-sete",
+					"appId": "1:357360805758:android:54b47afe5bf7067881b52f",
+					"fileOutput": "android/app/google-services.json"
+				}
+			},
+			"dart": {
+				"lib/firebase_options.dart": {
+					"projectId": "digital-les-sete",
+					"configurations": {
+						"android": "1:357360805758:android:54b47afe5bf7067881b52f",
+						"ios": "1:357360805758:ios:30102698965645d881b52f",
+						"web": "1:357360805758:web:94b56a4486f607ec81b52f"
+					}
+				}
+			}
+		}
+	},
+	"firestore": {
+		"indexes": "firestore.indexes.json"
+	}
+}
