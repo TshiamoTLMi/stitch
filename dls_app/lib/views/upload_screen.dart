@@ -139,9 +139,9 @@ class _UploadScreenState extends State<UploadScreen> {
         SnackBar(content: Text('Added $_selectedSubcategory to your wardrobe!')),
       );
     } catch (e) {
-      _lastUploadError = 'Upload failed. Check network/Firebase rules and retry.';
+      _lastUploadError = 'Upload failed: $e';
       if (!mounted) return;
-      _showMessage('Upload failed. Configure Firebase first.');
+      _showMessage('Upload failed: $e');
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }

@@ -31,9 +31,26 @@ class WardrobeService {
     required String extension,
   }) async {
     final ts = DateTime.now().millisecondsSinceEpoch;
-    final ref = _storage.ref('users/$userId/items/${ts}_manual.$extension');
-    await ref.putData(bytes);
-    return ref.getDownloadURL();
+    final paths = [
+      'users/$userId/items/${ts}_manual.$extension',
+      'clothing_items/${ts}_manual.$extension',
+    ];
+
+    Object? lastError;
+    for (final path in paths) {
+      try {
+        final ref = _storage.ref(path);
+        await ref.putData(
+          bytes,
+          SettableMetadata(contentType: 'image/jpeg'),
+        );
+        return ref.getDownloadURL();
+      } catch (e) {
+        lastError = e;
+      }
+    }
+
+    throw Exception('Image upload failed: $lastError');
   }
 
   Future<void> createItem(ClothingItem item) async {

@@ -47,18 +47,21 @@ class AuthService {
       return;
     }
 
-    final googleUser = await _google.signIn();
-    if (googleUser == null) {
-      return;
+    try {
+      final googleUser = await _google.signIn();
+      if (googleUser == null) return;
+
+      final googleAuth = await googleUser.authentication;
+      final oauthCred = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await _auth.signInWithCredential(oauthCred);
+    } catch (_) {
+      // Fallback path for devices where GoogleSignIn plugin flow fails.
+      await _auth.signInWithProvider(GoogleAuthProvider());
     }
-
-    final googleAuth = await googleUser.authentication;
-    final oauthCred = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    await _auth.signInWithCredential(oauthCred);
   }
 
   Future<void> signInWithApple() async {

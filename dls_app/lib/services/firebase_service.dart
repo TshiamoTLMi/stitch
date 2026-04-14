@@ -55,14 +55,31 @@ class FirebaseService {
       throw Exception('User not signed in.');
     }
 
-    final ts = DateTime.now().millisecondsSinceEpoch;
-    final ref = _storage.ref().child('users/$userId/items/${ts}_$id.jpg');
-    await ref.putData(
-      compressedBytes,
-      SettableMetadata(contentType: 'image/jpeg'),
-    );
+      final ts = DateTime.now().millisecondsSinceEpoch;
+      final candidatePaths = [
+        'users/$userId/items/${ts}_$id.jpg',
+        'clothing_items/$id.jpg',
+      ];
 
-    final imageUrl = await ref.getDownloadURL();
+      String? imageUrl;
+      Object? uploadError;
+      for (final path in candidatePaths) {
+        try {
+          final ref = _storage.ref().child(path);
+          await ref.putData(
+            compressedBytes,
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
+          imageUrl = await ref.getDownloadURL();
+          break;
+        } catch (e) {
+          uploadError = e;
+        }
+      }
+
+      if (imageUrl == null || imageUrl.isEmpty) {
+        throw Exception('Image upload failed: $uploadError');
+      }
 
     await _firestore.collection('clothing_items').doc(id).set({
       'id': id,
@@ -116,12 +133,12 @@ class FirebaseService {
       throw Exception('Image compression failed.');
     }
 
-    final ref = _storage.ref().child('clothing_items/$id.jpg');
-    await ref.putData(
-      compressedBytes,
-      SettableMetadata(contentType: 'image/jpeg'),
-    );
-    final newUrl = await ref.getDownloadURL();
+      final ref = _storage.ref().child('clothing_items/$id.jpg');
+      await ref.putData(
+        compressedBytes,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
+      final newUrl = await ref.getDownloadURL();
 
     await _firestore.collection('clothing_items').doc(id).update({
       'imageUrl': newUrl,

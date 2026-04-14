@@ -182,9 +182,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _openEditProfile(String userId, Map<String, dynamic> profile) async {
-    final firstNameController = TextEditingController(text: (profile['firstName'] as String?) ?? '');
-    final lastNameController = TextEditingController(text: (profile['lastName'] as String?) ?? '');
-    final nicknameController = TextEditingController(text: (profile['nickname'] as String?) ?? '');
+    final displayNameController = TextEditingController(
+      text: ((profile['nickname'] as String?) ?? '').trim().isNotEmpty
+          ? (profile['nickname'] as String?)
+          : (profile['displayName'] as String?) ?? '',
+    );
     Uint8List? pickedImageBytes;
     var isSaving = false;
 
@@ -202,20 +204,16 @@ class _ProfilePageState extends State<ProfilePage> {
             }
 
             Future<void> saveProfile() async {
-              final first = firstNameController.text.trim();
-              final last = lastNameController.text.trim();
-              final nick = nicknameController.text.trim();
-
-              if (first.isEmpty || last.isEmpty) {
+              final display = displayNameController.text.trim();
+              if (display.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('First name and last name are required.')),
+                  const SnackBar(content: Text('Display name is required.')),
                 );
                 return;
               }
 
               setSheetState(() => isSaving = true);
               try {
-                final displayName = nick.isEmpty ? '$first $last' : nick;
                 String? uploadedImageUrl;
                 if (pickedImageBytes != null) {
                   uploadedImageUrl = await context.read<ProfileService>().uploadProfileImage(
@@ -226,10 +224,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 await context.read<ProfileService>().updateProfile(
                       userId: userId,
-                      firstName: first,
-                      lastName: last,
-                      displayName: displayName,
-                      nickname: nick,
+                      displayName: display,
+                      nickname: display,
                       profileImageUrl: uploadedImageUrl,
                     );
 
@@ -262,32 +258,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     const Text('Edit Profile', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: firstNameController,
-                            textCapitalization: TextCapitalization.words,
-                            decoration: const InputDecoration(labelText: 'First Name *'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: lastNameController,
-                            textCapitalization: TextCapitalization.words,
-                            decoration: const InputDecoration(labelText: 'Last Name *'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
                     TextField(
-                      controller: nicknameController,
+                      controller: displayNameController,
                       textCapitalization: TextCapitalization.words,
                       decoration: const InputDecoration(
                         labelText: 'Display Name / Nickname',
-                        hintText: 'Optional. Overrides full name in UI.',
+                        hintText: 'How should we call you?',
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -336,9 +312,7 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
 
-    firstNameController.dispose();
-    lastNameController.dispose();
-    nicknameController.dispose();
+    displayNameController.dispose();
   }
 
   Future<void> _resetCurrentUserData(String userId) async {

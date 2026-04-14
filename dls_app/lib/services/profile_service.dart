@@ -20,12 +20,27 @@ class ProfileService {
     required String userId,
     required Uint8List imageBytes,
   }) async {
-    final ref = _storage.ref().child('users/$userId/profile.jpg');
-    await ref.putData(
-      imageBytes,
-      SettableMetadata(contentType: 'image/jpeg'),
-    );
-    return ref.getDownloadURL();
+    final attempts = [
+      'users/$userId/profile.jpg',
+      'profile_images/$userId.jpg',
+      'clothing_items/profile_$userId.jpg',
+    ];
+
+    FirebaseException? lastError;
+    for (final path in attempts) {
+      try {
+        final ref = _storage.ref().child(path);
+        await ref.putData(
+          imageBytes,
+          SettableMetadata(contentType: 'image/jpeg'),
+        );
+        return ref.getDownloadURL();
+      } on FirebaseException catch (e) {
+        lastError = e;
+      }
+    }
+
+    throw lastError ?? FirebaseException(plugin: 'firebase_storage', message: 'Profile upload failed.');
   }
 
   Future<void> saveOnboardingProfile({
@@ -63,19 +78,19 @@ class ProfileService {
 
   Future<void> updateProfile({
     required String userId,
-    required String firstName,
-    required String lastName,
-    required String displayName,
-    String nickname = '',
+    String? firstName,
+    String? lastName,
+    String? displayName,
+    String? nickname,
     String? profileImageUrl,
   }) async {
     final payload = <String, dynamic>{
-      'firstName': firstName,
-      'lastName': lastName,
-      'displayName': displayName,
-      'nickname': nickname,
       'updatedAt': FieldValue.serverTimestamp(),
     };
+    if (firstName != null) payload['firstName'] = firstName;
+    if (lastName != null) payload['lastName'] = lastName;
+    if (displayName != null) payload['displayName'] = displayName;
+    if (nickname != null) payload['nickname'] = nickname;
     if (profileImageUrl != null) {
       payload['profileImageUrl'] = profileImageUrl;
     }
