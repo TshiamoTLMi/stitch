@@ -5,11 +5,17 @@ class DemoSeedResult {
     required this.itemsCreated,
     required this.historyCreated,
     required this.eventsCreated,
+    this.itemsRepaired = 0,
+    this.historyRepaired = 0,
+    this.eventsRepaired = 0,
   });
 
   final int itemsCreated;
   final int historyCreated;
   final int eventsCreated;
+  final int itemsRepaired;
+  final int historyRepaired;
+  final int eventsRepaired;
 }
 
 class DemoDataService {
@@ -18,58 +24,96 @@ class DemoDataService {
   Future<DemoSeedResult> seedForUser(String userId) async {
     final now = DateTime.now();
 
-    final existingDemo = await _firestore
+    final existingLegacyDemo = await _firestore
         .collection('clothing_items')
         .where('user_id', isEqualTo: userId)
         .where('is_demo', isEqualTo: true)
         .limit(1)
         .get();
+    final existingNewDemo = await _firestore
+        .collection('clothing_items')
+        .where('userId', isEqualTo: userId)
+        .where('is_demo', isEqualTo: true)
+        .limit(1)
+        .get();
 
-    if (existingDemo.docs.isNotEmpty) {
-      return DemoSeedResult(itemsCreated: 0, historyCreated: 0, eventsCreated: 0);
+    if (existingLegacyDemo.docs.isNotEmpty || existingNewDemo.docs.isNotEmpty) {
+      return _repairExistingDemoData(userId, now);
     }
 
     final wardrobeItems = <Map<String, dynamic>>[
       {
-        'category': 'shirt',
+        'parentCategory': 'Tops',
+        'subcategory': 'Button-down shirts',
+        'categoryType': 'top',
         'color': 'white',
-        'style_tags': ['minimal', 'smart_casual'],
+        'colorGroup': 'neutral',
+        'styleTags': ['minimal', 'smart_casual'],
+        'season': 'All Season',
         'status': 'clean',
+        'gender': 'Unisex',
         'image_url': 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=900&q=80',
       },
       {
-        'category': 'pants',
+        'parentCategory': 'Bottoms',
+        'subcategory': 'Trousers',
+        'categoryType': 'bottom',
+        'fit': 'Regular',
         'color': 'black',
-        'style_tags': ['minimal', 'formal'],
+        'colorGroup': 'neutral',
+        'styleTags': ['minimal', 'formal'],
+        'season': 'All Season',
         'status': 'clean',
+        'gender': 'Unisex',
         'image_url': 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=900&q=80',
       },
       {
-        'category': 'shoes',
+        'parentCategory': 'Footwear',
+        'subcategory': 'Loafers',
+        'categoryType': 'shoes',
         'color': 'brown',
-        'style_tags': ['formal'],
+        'colorGroup': 'dark',
+        'styleTags': ['formal'],
+        'season': 'All Season',
         'status': 'clean',
+        'gender': 'Unisex',
         'image_url': 'https://images.unsplash.com/photo-1614252369475-531eba835eb1?auto=format&fit=crop&w=900&q=80',
       },
       {
-        'category': 'outerwear',
+        'parentCategory': 'Outerwear',
+        'subcategory': 'Blazers',
+        'categoryType': 'top',
+        'fit': 'Oversized',
         'color': 'olive',
-        'style_tags': ['streetwear', 'smart_casual'],
+        'colorGroup': 'dark',
+        'styleTags': ['streetwear', 'smart_casual'],
+        'season': 'Winter',
         'status': 'clean',
+        'gender': 'Unisex',
         'image_url': 'https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=900&q=80',
       },
       {
-        'category': 'accessory',
+        'parentCategory': 'Accessories',
+        'subcategory': 'Jewelry',
+        'categoryType': 'accessory',
         'color': 'gold',
-        'style_tags': ['soft_life'],
+        'colorGroup': 'bright',
+        'styleTags': ['soft_life'],
+        'season': 'All Season',
         'status': 'clean',
+        'gender': 'Unisex',
         'image_url': 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=900&q=80',
       },
       {
-        'category': 'shirt',
+        'parentCategory': 'Tops',
+        'subcategory': 'T-shirts',
+        'categoryType': 'top',
         'color': 'blue',
-        'style_tags': ['casual', 'streetwear'],
+        'colorGroup': 'neutral',
+        'styleTags': ['casual', 'streetwear'],
+        'season': 'Summer',
         'status': 'in_wash',
+        'gender': 'Unisex',
         'image_url': 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=900&q=80',
       },
     ];
@@ -129,12 +173,18 @@ class DemoDataService {
         ...wardrobeItems[i],
         'id': doc.id,
         'imageUrl': imageUrl,
+        'image_url': imageUrl,
+        'userId': userId,
         'user_id': userId,
         'is_demo': true,
         'createdAt': Timestamp.fromDate(createdAt),
         'created_at': Timestamp.fromDate(createdAt),
         'updatedAt': Timestamp.fromDate(createdAt),
         'updated_at': Timestamp.fromDate(createdAt),
+
+        // Legacy compatibility fields.
+        'category': wardrobeItems[i]['subcategory'],
+        'style_tags': wardrobeItems[i]['styleTags'],
       });
     }
 
@@ -143,8 +193,10 @@ class DemoDataService {
       final generatedAt = now.subtract(Duration(days: i + 1));
       batch.set(doc, {
         ...outfitHistory[i],
+        'userId': userId,
         'user_id': userId,
         'is_demo': true,
+        'generatedAt': Timestamp.fromDate(generatedAt),
         'generated_at': Timestamp.fromDate(generatedAt),
         'outfit': {
           'top_id': 'demo_top',
@@ -160,6 +212,7 @@ class DemoDataService {
     for (final event in events) {
       final doc = _firestore.collection('events').doc();
       batch.set(doc, {
+        'userId': userId,
         'user_id': userId,
         'name': event['name'],
         'occasion': event['occasion'],
@@ -194,5 +247,138 @@ class DemoDataService {
       historyCreated: outfitHistory.length,
       eventsCreated: events.length,
     );
+  }
+
+  Future<DemoSeedResult> _repairExistingDemoData(String userId, DateTime now) async {
+    final clothingLegacy = await _firestore
+        .collection('clothing_items')
+        .where('user_id', isEqualTo: userId)
+        .where('is_demo', isEqualTo: true)
+        .get();
+    final clothingNew = await _firestore
+        .collection('clothing_items')
+        .where('userId', isEqualTo: userId)
+        .where('is_demo', isEqualTo: true)
+        .get();
+    final history = await _firestore
+        .collection('outfit_history')
+        .where('user_id', isEqualTo: userId)
+        .where('is_demo', isEqualTo: true)
+        .get();
+    final events = await _firestore
+        .collection('events')
+        .where('user_id', isEqualTo: userId)
+        .where('is_demo', isEqualTo: true)
+        .get();
+
+    final batch = _firestore.batch();
+    final clothingDocs = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{
+      for (final doc in clothingLegacy.docs) doc.id: doc,
+      for (final doc in clothingNew.docs) doc.id: doc,
+    }.values;
+
+    var repairedItems = 0;
+    for (final doc in clothingDocs) {
+      final data = doc.data();
+      final category = ((data['category'] as String?) ?? '').toLowerCase();
+      final imageUrl = (data['imageUrl'] as String?) ?? (data['image_url'] as String?) ?? '';
+      final normalized = _normalizeLegacyCategory(category);
+      batch.set(doc.reference, {
+        'userId': userId,
+        'parentCategory': normalized['parentCategory'],
+        'subcategory': normalized['subcategory'],
+        'categoryType': normalized['categoryType'],
+        if (normalized['fit'] != null) 'fit': normalized['fit'],
+        'color': (data['color'] as String?) ?? 'black',
+        'colorGroup': _mapColorGroup((data['color'] as String?) ?? 'black'),
+        'styleTags': List<String>.from(
+          data['styleTags'] as List? ?? data['style_tags'] as List? ?? const <String>[],
+        ),
+        'season': (data['season'] as String?) ?? 'All Season',
+        'status': (data['status'] as String?) ?? 'clean',
+        'gender': (data['gender'] as String?) ?? 'Unisex',
+        'imageUrl': imageUrl,
+        'image_url': imageUrl,
+        'updatedAt': Timestamp.fromDate(now),
+        'updated_at': Timestamp.fromDate(now),
+      }, SetOptions(merge: true));
+      repairedItems++;
+    }
+
+    for (final doc in history.docs) {
+      batch.set(doc.reference, {
+        'userId': userId,
+        'generatedAt': (doc.data()['generated_at'] as Timestamp?) ?? Timestamp.fromDate(now),
+      }, SetOptions(merge: true));
+    }
+
+    for (final doc in events.docs) {
+      batch.set(doc.reference, {
+        'userId': userId,
+      }, SetOptions(merge: true));
+    }
+
+    await batch.commit();
+
+    return DemoSeedResult(
+      itemsCreated: 0,
+      historyCreated: 0,
+      eventsCreated: 0,
+      itemsRepaired: repairedItems,
+      historyRepaired: history.docs.length,
+      eventsRepaired: events.docs.length,
+    );
+  }
+
+  Map<String, String?> _normalizeLegacyCategory(String category) {
+    switch (category) {
+      case 'pants':
+      case 'trousers':
+        return {
+          'parentCategory': 'Bottoms',
+          'subcategory': 'Trousers',
+          'categoryType': 'bottom',
+          'fit': 'Regular',
+        };
+      case 'shoes':
+        return {
+          'parentCategory': 'Footwear',
+          'subcategory': 'Loafers',
+          'categoryType': 'shoes',
+          'fit': null,
+        };
+      case 'outerwear':
+      case 'jacket':
+        return {
+          'parentCategory': 'Outerwear',
+          'subcategory': 'Blazers',
+          'categoryType': 'top',
+          'fit': 'Oversized',
+        };
+      case 'accessory':
+      case 'accessories':
+        return {
+          'parentCategory': 'Accessories',
+          'subcategory': 'Jewelry',
+          'categoryType': 'accessory',
+          'fit': null,
+        };
+      default:
+        return {
+          'parentCategory': 'Tops',
+          'subcategory': 'T-shirts',
+          'categoryType': 'top',
+          'fit': null,
+        };
+    }
+  }
+
+  String _mapColorGroup(String color) {
+    final value = color.toLowerCase();
+    if (value == 'black' || value == 'white' || value == 'grey') return 'neutral';
+    if (value == 'navy' || value == 'brown' || value == 'olive') return 'dark';
+    if (value == 'beige' || value.contains('pastel')) return 'light';
+    if (value == 'red' || value == 'yellow' || value == 'gold') return 'bright';
+    return 'neutral';
   }
 }

@@ -10,13 +10,17 @@ class OnboardingValidator {
   }
 
   static String? validate({
-    required String fullName,
+    required String firstName,
+    required String lastName,
     required String? gender,
     required DateTime? birthdate,
     required List<String> stylePreferences,
   }) {
-    if (fullName.trim().isEmpty) {
-      return 'Full name is required.';
+    if (firstName.trim().isEmpty) {
+      return 'First name is required.';
+    }
+    if (lastName.trim().isEmpty) {
+      return 'Last name is required.';
     }
     if (gender == null || gender.trim().isEmpty) {
       return 'Gender is required.';

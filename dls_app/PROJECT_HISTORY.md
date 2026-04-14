@@ -258,6 +258,30 @@ Validate that this app is connected to Firebase/Firestore for project `Digital L
   - `firebase login`
 3. Run FlutterFire configure in `dls_app/` and select the existing Firebase project named `Digital Les Sete`.
 4. Confirm `lib/firebase_options.dart` no longer has `REPLACE_ME`.
+
+## 12. Profile + Onboarding Upgrade (2026-04-14)
+
+### Completed in this update
+
+1. Onboarding identity fields upgraded:
+  - first name and last name are both required
+  - display name / nickname field added (optional)
+  - app display name now uses nickname when provided, otherwise `First Last`
+2. Profile photo onboarding flow improved:
+  - image crop step added before upload
+  - compression retained to reduce upload failures and payload size
+  - profile photo remains optional
+3. Profile page can now update user identity details post-onboarding:
+  - edit first name, last name, and nickname
+  - update profile photo (camera/gallery -> crop -> compress -> upload)
+4. Clean testing helper added on profile page:
+  - one-tap `Clear My Test Data` removes current user's Firestore test data and profile photo object
+  - app signs user out immediately after reset so testing can restart cleanly
+
+### Notes
+
+- The in-app reset is scoped to the currently signed-in user.
+- Deleting all Firebase Auth users globally still requires Firebase Console/Admin tooling and cannot be done safely from normal client-side app code.
 5. Run app and execute a smoke test:
   - Upload one image from scanner.
   - Verify document appears in `clothing_items` in Firestore.

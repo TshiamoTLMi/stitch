@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,9 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final _fullNameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _nicknameController = TextEditingController();
   final _picker = ImagePicker();
   final _compressionService = ImageCompressionService();
 
@@ -47,9 +50,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Uint8List? _profileBytes;
   bool _isSaving = false;
 
+  String get _fullName {
+    final first = _firstNameController.text.trim();
+    final last = _lastNameController.text.trim();
+    return '$first $last'.trim();
+  }
+
+  String get _displayName {
+    final nickname = _nicknameController.text.trim();
+    return nickname.isEmpty ? _fullName : nickname;
+  }
+
   @override
   void dispose() {
-    _fullNameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _nicknameController.dispose();
     super.dispose();
   }
 
@@ -79,14 +95,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         return;
       }
 
-      final image = await _picker.pickImage(source: source);
+      final image = await _picker.pickImage(source: source, imageQuality: 90);
       if (image == null) return;
 
-      final bytes = await image.readAsBytes();
+      // Crop to a square — user can adjust/skip crop.
+      final cropped = await ImageCropper().cropImage(
+        sourcePath: image.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Photo',
+            toolbarColor: Colors.black,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+            hideBottomControls: false,
+          ),
+          IOSUiSettings(
+            title: 'Crop Photo',
+            aspectRatioLockEnabled: true,
+            resetAspectRatioEnabled: false,
+          ),
+        ],
+      );
+      // User cancelled crop — keep previous image unchanged.
+      if (cropped == null) return;
+
+      final bytes = await cropped.readAsBytes();
       final compressed = await _compressionService.compressBytes(
         bytes,
         maxWidth: 500,
-        jpegQuality: 70,
+        jpegQuality: 72,
       );
 
       setState(() => _profileBytes = compressed.bytes);
@@ -116,18 +155,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _submit() async {
     final validation = OnboardingValidator.validate(
-      fullName: _fullNameController.text,
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
       gender: _gender,
       birthdate: _birthdate,
       stylePreferences: _selectedStyles.toList(),
     );
     if (validation != null) {
       _showMessage(validation);
-      return;
-    }
-
-    if (_profileBytes == null) {
-      _showMessage('Profile image is required. Add a photo to continue.');
       return;
     }
 
@@ -143,15 +178,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     try {
       final profileService = context.read<ProfileService>();
       final age = OnboardingValidator.calculateAge(_birthdate!);
-      final imageUrl = await profileService.uploadProfileImage(
-        userId: user.uid,
-        imageBytes: _profileBytes!,
-      );
+
+      // Profile photo is optional — upload only when the user chose one.
+      String imageUrl = '';
+      if (_profileBytes != null) {
+        imageUrl = await profileService.uploadProfileImage(
+          userId: user.uid,
+          imageBytes: _profileBytes!,
+        );
+      }
 
       await profileService.saveOnboardingProfile(
         userId: user.uid,
         email: user.email ?? '',
-        displayName: _fullNameController.text.trim(),
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        nickname: _nicknameController.text.trim(),
+        displayName: _displayName,
         gender: _gender!,
         birthdate: _birthdate!,
         age: age,
@@ -163,8 +206,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(builder: (_) => const HomeShell()),
       );
-    } catch (_) {
+    } catch (e) {
       _showMessage('Could not save your profile right now. Please retry.');
+      debugPrint('[Onboarding] saveProfile error: $e');
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -201,12 +245,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _firstNameController,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(
+                        labelText: 'First Name *',
+                        hintText: 'First name',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _lastNameController,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(
+                        labelText: 'Last Name *',
+                        hintText: 'Last name',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
               TextField(
-                controller: _fullNameController,
+                controller: _nicknameController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  labelText: 'Full Name *',
-                  hintText: 'Enter your full name',
+                  labelText: 'Display Name / Nickname',
+                  hintText: 'What should we call you? (optional)',
                 ),
               ),
               const SizedBox(height: 14),
@@ -273,7 +343,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'Profile Image *',
+                'Profile Photo (optional)',
                 style: TextStyle(
                   color: AppTheme.onSurface,
                   fontWeight: FontWeight.w700,
@@ -287,17 +357,54 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: _profileBytes == null
-                    ? Center(
-                        child: Text(
-                          'No image selected',
-                          style: TextStyle(
-                            color: AppTheme.onSurfaceVariant.withValues(alpha: 0.8),
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person_outline,
+                            size: 40,
+                            color: AppTheme.onSurfaceVariant.withValues(alpha: 0.5),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Tap below to add a photo',
+                            style: TextStyle(
+                              color: AppTheme.onSurfaceVariant.withValues(alpha: 0.7),
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'You can also skip this step',
+                            style: TextStyle(
+                              color: AppTheme.onSurfaceVariant.withValues(alpha: 0.45),
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
                       )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.memory(_profileBytes!, fit: BoxFit.cover, width: double.infinity),
+                    : Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.memory(_profileBytes!, fit: BoxFit.cover, width: double.infinity),
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: GestureDetector(
+                              onTap: () => setState(() => _profileBytes = null),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.all(4),
+                                child: const Icon(Icons.close, color: Colors.white, size: 18),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
               ),
               const SizedBox(height: 10),
