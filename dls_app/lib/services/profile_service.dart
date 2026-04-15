@@ -40,6 +40,14 @@ class ProfileService {
       }
     }
 
+    if (lastError?.code == 'unauthorized') {
+      throw FirebaseException(
+        plugin: 'firebase_storage',
+        code: lastError!.code,
+        message: 'Profile upload blocked by Firebase Storage rules for this user/path.',
+      );
+    }
+
     throw lastError ?? FirebaseException(plugin: 'firebase_storage', message: 'Profile upload failed.');
   }
 

@@ -40,6 +40,10 @@ class AuthService {
     return _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
+  Future<void> sendPasswordResetEmail({required String email}) {
+    return _auth.sendPasswordResetEmail(email: email);
+  }
+
   Future<void> signInWithGoogle() async {
     if (kIsWeb) {
       final provider = GoogleAuthProvider();

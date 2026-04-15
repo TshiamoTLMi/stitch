@@ -40,6 +40,53 @@ class _LoginScreenState extends State<LoginScreen> {
     await auth.signIn(email, password);
   }
 
+  Future<void> _forgotPassword(AuthController auth) async {
+    final resetController = TextEditingController(text: _emailController.text.trim());
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Reset Password'),
+          content: TextField(
+            controller: resetController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              hintText: 'Enter your email',
+              labelText: 'Email',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final email = resetController.text.trim();
+                if (email.isEmpty || !email.contains('@')) {
+                  _showMessage('Enter a valid email address.');
+                  return;
+                }
+
+                final success = await auth.sendPasswordReset(email);
+                if (!mounted) return;
+                if (!success) {
+                  return;
+                }
+                Navigator.of(dialogContext).pop();
+                _showMessage('Password reset email sent if the account exists.');
+              },
+              child: const Text('Send Reset Link'),
+            ),
+          ],
+        );
+      },
+    );
+
+    resetController.dispose();
+  }
+
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
@@ -97,7 +144,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: true,
                           decoration: const InputDecoration(hintText: 'Password'),
                         ),
-                        const SizedBox(height: 14),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: auth.isLoading ? null : () => _forgotPassword(auth),
+                            child: const Text('Forgot password?'),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
                         ElevatedButton(
                           onPressed: auth.isLoading ? null : () => _submit(auth),
                           child: auth.isLoading

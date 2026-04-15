@@ -25,6 +25,11 @@ class AuthController extends ChangeNotifier {
     await _run(() => _authService.signUpWithEmail(email: email, password: password));
   }
 
+  Future<bool> sendPasswordReset(String email) async {
+    await _run(() => _authService.sendPasswordResetEmail(email: email));
+    return _errorMessage == null;
+  }
+
   Future<void> signOut() async {
     await _run(_authService.signOut);
   }
@@ -49,11 +54,14 @@ class AuthController extends ChangeNotifier {
     try {
       await action();
     } on FirebaseAuthException catch (e) {
-      _errorMessage = e.message ?? 'Authentication error occurred.';
+      if (e.code == 'invalid-credential' || e.code == 'account-exists-with-different-credential') {
+        _errorMessage = 'Google sign-in is blocked by Firebase/Google OAuth configuration. Add the Android SHA-1 and SHA-256 fingerprints for this app in Firebase Console, then download the updated google-services.json.';
+      } else {
+        _errorMessage = e.message ?? 'Authentication error occurred.';
+      }
     } on PlatformException catch (e) {
       if (e.code == 'sign_in_failed' || e.code == '10') {
-        _errorMessage =
-            'Google sign-in failed on Android. Ensure Firebase Android SHA-1/SHA-256 is configured for this app.';
+        _errorMessage = 'Google sign-in failed on Android. Add the app SHA-1 and SHA-256 fingerprints in Firebase Console, then refresh google-services.json.';
       } else {
         _errorMessage = e.message ?? 'Platform sign-in error occurred.';
       }

@@ -50,6 +50,10 @@ class WardrobeService {
       }
     }
 
+    if (lastError is FirebaseException && (lastError as FirebaseException).code == 'unauthorized') {
+      throw Exception('Image upload blocked by Firebase Storage rules.');
+    }
+
     throw Exception('Image upload failed: $lastError');
   }
 

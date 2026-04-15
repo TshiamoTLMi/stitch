@@ -22,7 +22,9 @@ Use this checklist before release. Do not mark go-live ready until all P0 checks
 
 ## C. Onboarding Gates
 
-- [ ] Full name required validation
+- [ ] First name required validation
+- [ ] Last name required validation
+- [ ] Display name / nickname support validation
 - [ ] Gender required validation
 - [ ] Birth year age range validation (13-100)
 - [ ] At least one style preference validation
@@ -69,3 +71,31 @@ Use this checklist before release. Do not mark go-live ready until all P0 checks
 - [ ] Open risks documented and accepted
 - [ ] Rollback plan prepared (previous stable build available)
 - [ ] Release owner sign-off complete
+
+## I. Publish/Update Rollout Checklist
+
+- [ ] `pubspec.yaml` version incremented for release
+- [ ] Android release artifact generated (`apk`/`aab`) and smoke-tested
+- [ ] Internal test rollout completed before broad production rollout
+- [ ] Existing install upgrade path tested (install over older app build)
+- [ ] Existing users can open app without forced re-signup
+- [ ] Email/password login re-validated after upgrade
+- [ ] Google login re-validated after upgrade
+- [ ] Profile image upload re-validated after upgrade
+- [ ] Closet image upload re-validated after upgrade
+- [ ] Calendar import re-validated after upgrade
+
+## J. Account Preservation Gates (No Forced Re-Signup)
+
+- [ ] No Firebase Auth user deletion operations performed for release
+- [ ] Firebase project id unchanged across builds/environments
+- [ ] Android `applicationId` unchanged for upgrade builds
+- [ ] iOS bundle id unchanged for upgrade builds
+- [ ] Token-expiry behavior confirmed (re-login prompt only when expected)
+
+## K. Web Publish Gates
+
+- [ ] `flutter build web` succeeds
+- [ ] Hosting deploy succeeds (`firebase deploy --only hosting`)
+- [ ] Browser hard refresh shows latest build assets
+- [ ] Web login and upload paths validated on production URL

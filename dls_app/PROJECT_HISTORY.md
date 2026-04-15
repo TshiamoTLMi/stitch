@@ -524,3 +524,26 @@ Final iOS build validation cannot be completed from this Windows environment bec
 
 1. Android physical smoke validation.
 2. iOS physical smoke validation on macOS/Xcode.
+
+## 24. Auth + Upload Runtime Fix Pass (2026-04-15)
+
+### Implemented
+
+1. Added forgot-password flow on login screen:
+  - user can request a password reset email directly from login
+2. Tightened profile edit scope:
+  - post-onboarding profile edit now targets display name / nickname and profile photo only
+3. Improved upload diagnostics for profile and wardrobe images:
+  - upload services now report Firebase Storage authorization failures more clearly
+  - fallback storage paths retained to reduce path-specific rule failures during migration
+4. Improved Google sign-in failure guidance:
+  - app now surfaces that Android SHA/OAuth config must be fixed in Firebase Console when sign-in returns credential/cert-style errors
+
+### Firebase Console actions identified from runtime behavior
+
+1. Google sign-in on Android is still blocked by Firebase/Google OAuth configuration, not by Dart UI logic.
+2. Android debug signing fingerprints extracted from local keystore for Firebase setup:
+  - SHA1: `EC:80:AE:AE:22:91:FF:23:3C:23:F7:FE:D1:D7:A9:90:38:9F:E3:83`
+  - SHA256: `13:BF:1B:C1:4F:E1:D5:F5:3C:1A:D0:5C:3D:BF:3A:BB:C5:38:CE:95:97:7F:22:9D:C2:99:18:CE:1C:D7:92:A8`
+3. After adding those fingerprints to the Android app in Firebase Console, refresh `google-services.json` and rebuild.
+4. If image uploads still fail after current code fallbacks, Firebase Storage rules are the primary remaining suspect and should be updated to allow authenticated writes for app upload paths.

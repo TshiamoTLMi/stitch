@@ -78,6 +78,9 @@ class FirebaseService {
       }
 
       if (imageUrl == null || imageUrl.isEmpty) {
+        if (uploadError is FirebaseException && (uploadError as FirebaseException).code == 'unauthorized') {
+          throw Exception('Image upload blocked by Firebase Storage rules.');
+        }
         throw Exception('Image upload failed: $uploadError');
       }
 
