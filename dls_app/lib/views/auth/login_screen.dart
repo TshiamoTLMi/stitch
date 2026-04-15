@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 }
 
                 final success = await auth.sendPasswordReset(email);
-                if (!mounted) return;
+                if (!mounted || !dialogContext.mounted) return;
                 if (!success) {
                   return;
                 }
