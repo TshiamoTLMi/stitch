@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsByUserId(data) {
+      return data.userId == request.auth.uid || data.user_id == request.auth.uid;
+    }
+
+    function ownsUserDoc(userId) {
+      return request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read, create, update, delete: if signedIn() && ownsUserDoc(userId);
+    }
+
+    match /clothing_items/{itemId} {
+      allow read, delete: if signedIn() && ownsByUserId(resource.data);
+      allow create: if signedIn() && ownsByUserId(request.resource.data);
+      allow update: if signedIn() && ownsByUserId(resource.data) && ownsByUserId(request.resource.data);
+    }
+
+    match /outfit_history/{historyId} {
+      allow read, delete: if signedIn() && ownsByUserId(resource.data);
+      allow create: if signedIn() && ownsByUserId(request.resource.data);
+      allow update: if signedIn() && ownsByUserId(resource.data) && ownsByUserId(request.resource.data);
+    }
+
+    match /events/{eventId} {
+      allow read, delete: if signedIn() && ownsByUserId(resource.data);
+      allow create: if signedIn() && ownsByUserId(request.resource.data);
+      allow update: if signedIn() && ownsByUserId(resource.data) && ownsByUserId(request.resource.data);
+    }
+
+    match /audit_events/{eventId} {
+      allow read, delete: if signedIn() && ownsByUserId(resource.data);
+      allow create: if signedIn() && ownsByUserId(request.resource.data);
+      allow update: if signedIn() && ownsByUserId(resource.data) && ownsByUserId(request.resource.data);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

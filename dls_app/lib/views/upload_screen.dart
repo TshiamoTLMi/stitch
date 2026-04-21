@@ -423,7 +423,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                 children: [
                                   Expanded(
                                     child: DropdownButtonFormField<String>(
-                                      value: _selectedSeason,
+                                      initialValue: _selectedSeason,
                                       decoration: const InputDecoration(
                                         labelText: 'Season',
                                       ),
@@ -440,7 +440,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: DropdownButtonFormField<String>(
-                                      value: _selectedStatus,
+                                      initialValue: _selectedStatus,
                                       decoration: const InputDecoration(
                                         labelText: 'Status',
                                       ),
@@ -458,7 +458,7 @@ class _UploadScreenState extends State<UploadScreen> {
                               ),
                               const SizedBox(height: 8),
                               DropdownButtonFormField<String>(
-                                value: _selectedGender,
+                                initialValue: _selectedGender,
                                 decoration: const InputDecoration(labelText: 'Gender'),
                                 items: genderOptions
                                     .map((g) => DropdownMenuItem(value: g, child: Text(g)))

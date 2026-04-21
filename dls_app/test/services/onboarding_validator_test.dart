@@ -25,7 +25,8 @@ void main() {
   group('OnboardingValidator.validate', () {
     test('returns error when required fields are missing', () {
       final error = OnboardingValidator.validate(
-        fullName: '',
+        firstName: '',
+        lastName: '',
         gender: null,
         birthdate: null,
         stylePreferences: const [],
@@ -36,7 +37,8 @@ void main() {
 
     test('returns error when age is outside 13 to 100', () {
       final tooYoung = OnboardingValidator.validate(
-        fullName: 'User Name',
+        firstName: 'User',
+        lastName: 'Name',
         gender: 'Male',
         birthdate: DateTime.now().subtract(const Duration(days: 365 * 10)),
         stylePreferences: const ['Minimal'],
@@ -47,7 +49,8 @@ void main() {
 
     test('returns null for valid payload', () {
       final error = OnboardingValidator.validate(
-        fullName: 'User Name',
+        firstName: 'User',
+        lastName: 'Name',
         gender: 'Female',
         birthdate: DateTime.now().subtract(const Duration(days: 365 * 24)),
         stylePreferences: const ['Minimal', 'Street Flex'],

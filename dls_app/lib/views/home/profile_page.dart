@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -156,11 +154,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _seedDemoData(String userId) async {
+    final messenger = ScaffoldMessenger.of(context);
     setState(() => _seeding = true);
     try {
       final result = await context.read<DemoDataService>().seedForUser(userId);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             result.itemsRepaired > 0 || result.historyRepaired > 0 || result.eventsRepaired > 0
@@ -173,7 +172,7 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(content: Text('Unable to seed demo data: $e')),
       );
     } finally {
@@ -182,6 +181,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _openEditProfile(String userId, Map<String, dynamic> profile) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final profileService = context.read<ProfileService>();
     final displayNameController = TextEditingController(
       text: ((profile['nickname'] as String?) ?? '').trim().isNotEmpty
           ? (profile['nickname'] as String?)
@@ -206,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Future<void> saveProfile() async {
               final display = displayNameController.text.trim();
               if (display.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   const SnackBar(content: Text('Display name is required.')),
                 );
                 return;
@@ -216,13 +217,13 @@ class _ProfilePageState extends State<ProfilePage> {
               try {
                 String? uploadedImageUrl;
                 if (pickedImageBytes != null) {
-                  uploadedImageUrl = await context.read<ProfileService>().uploadProfileImage(
+                  uploadedImageUrl = await profileService.uploadProfileImage(
                         userId: userId,
                         imageBytes: pickedImageBytes!,
                       );
                 }
 
-                await context.read<ProfileService>().updateProfile(
+                await profileService.updateProfile(
                       userId: userId,
                       displayName: display,
                       nickname: display,
@@ -230,13 +231,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
 
                 if (!mounted) return;
-                Navigator.of(sheetContext).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
+                Navigator.of(context).pop();
+                messenger.showSnackBar(
                   const SnackBar(content: Text('Profile updated successfully.')),
                 );
               } catch (e) {
                 if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   SnackBar(content: Text('Could not update profile: $e')),
                 );
               } finally {
@@ -316,6 +317,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _resetCurrentUserData(String userId) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final profileService = context.read<ProfileService>();
+    final authController = context.read<AuthController>();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -334,19 +338,19 @@ class _ProfilePageState extends State<ProfilePage> {
 
     setState(() => _resetting = true);
     try {
-      final result = await context.read<ProfileService>().clearCurrentUserTestData(userId);
+      final result = await profileService.clearCurrentUserTestData(userId);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             'Test data cleared. Items:${result['clothing_items'] ?? 0}, Outfits:${result['outfit_history'] ?? 0}, Events:${result['events'] ?? 0}.',
           ),
         ),
       );
-      await context.read<AuthController>().signOut();
+      await authController.signOut();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(content: Text('Unable to clear test data: $e')),
       );
     } finally {
