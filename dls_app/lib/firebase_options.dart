@@ -48,6 +48,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '357360805758',
     projectId: 'digital-les-sete',
     storageBucket: 'digital-les-sete.firebasestorage.app',
+    androidClientId: '357360805758-r2i90lg70ipjb7h85isielifgr77fnc6.apps.googleusercontent.com',
     iosClientId: '357360805758-467ktqtillfbefb0ksknq8o2o0to9ogi.apps.googleusercontent.com',
     iosBundleId: 'com.example.dlsApp',
   );
