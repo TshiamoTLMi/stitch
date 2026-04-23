@@ -37,3 +37,14 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/icons/dls_logo.png"
+  web:
+    generate: true
+    background_color: "#000000"
+    theme_color: "#000000"
+  image_path: "assets/icons/dls_logo.png"
