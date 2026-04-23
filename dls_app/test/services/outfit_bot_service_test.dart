@@ -114,4 +114,15 @@ void main() {
     expect(result.shoes, isNotNull);
     expect(result.isValid, isTrue);
   });
+
+  test('readiness reports missing shoes clearly', () {
+    final readiness = service.checkReadiness(<ClothingItem>[
+      item(id: 't1', category: 'shirt', status: 'clean'),
+      item(id: 'b1', category: 'trousers', status: 'clean'),
+    ]);
+
+    expect(readiness.canGenerate, isFalse);
+    expect(readiness.missingRequirements, contains('shoes'));
+    expect(readiness.userFriendlyMessage, contains('Add clean'));
+  });
 }

@@ -110,6 +110,8 @@ Verified green from recent test cycle:
 - [x] `flutter test` passes (16/16)
 - [x] Android debug install/launch succeeds on physical device (`RZCY60K25YA`)
 - [x] Profile update saves data and loads correctly after app restart
+- [x] Generator now returns user-friendly missing-items feedback when wardrobe requirements are not met
+- [x] Generator now supports offline mode for local fit generation with explicit UX messaging
 
 Still missing before go-live:
 
@@ -121,3 +123,17 @@ Still missing before go-live:
 - [ ] Android + Web integration smoke test passes (`flutter test integration_test -d RZCY60K25YA` and `flutter test integration_test -d chrome`)
 - [ ] PWA install flow validated on production web URL (Install App button or browser install prompt)
 - [ ] Launcher icon corner/background visual issue fully verified fixed on device
+
+## M. Web Blockers Log (Must be cleared before go-live)
+
+Open blockers for web release:
+
+- [ ] Forgot-password flow runtime verification on production web URL (request reset email and confirm user feedback)
+- [ ] Event reminder behavior for web must be finalized (feature disabled with clear message on web, or web-compatible fallback implemented)
+- [ ] Google sign-in web OAuth domain and authorized origins must be validated end-to-end
+- [ ] Full web smoke pass required for low-connectivity behavior (generator, history list, and upload flow)
+
+Working progress is documented in:
+
+- `PROJECT_HISTORY.md` for chronological implementation updates
+- `AUDIT_TRACKING_PLAN.md` for audit status, validation evidence, risks, and next actions

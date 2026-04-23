@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
@@ -12,6 +13,7 @@ import '../../models/outfit_result.dart';
 import '../../services/caption_service.dart';
 import '../../services/outfit_history_service.dart';
 import '../../services/outfit_bot_service.dart';
+import '../../services/outfit_llm_service.dart';
 
 class OutfitGeneratorPage extends StatefulWidget {
   const OutfitGeneratorPage({super.key, required this.userId});
@@ -29,20 +31,58 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
   final _outfitBot = OutfitBotService();
   final _captionService = CaptionService();
+  final _outfitLlmService = OutfitLlmService();
   OutfitResult? _result;
   String? _caption;
   bool _isGenerating = false;
+  bool _isAiEnhancing = false;
+  final _connectivity = Connectivity();
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  bool _isOffline = false;
 
   String _occasion = 'Braai';
   String _mood = 'Street Flex';
   String _weather = 'Sunny';
 
+  @override
+  void initState() {
+    super.initState();
+    _bindConnectivity();
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _bindConnectivity() async {
+    final current = await _connectivity.checkConnectivity();
+    _setOfflineState(current);
+
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_setOfflineState);
+  }
+
+  void _setOfflineState(List<ConnectivityResult> results) {
+    final offline = results.isEmpty || results.every((result) => result == ConnectivityResult.none);
+    if (!mounted || offline == _isOffline) {
+      return;
+    }
+    setState(() => _isOffline = offline);
+  }
+
   Future<void> _generate() async {
     if (_isGenerating) return;
 
     final wardrobe = context.read<WardrobeController>().items;
-    if (wardrobe.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload clothing items first.')));
+    final readiness = _outfitBot.checkReadiness(wardrobe);
+    if (!readiness.canGenerate) {
+      final offlineHint = _isOffline
+          ? ' You are offline, so only already-synced closet items are available right now.'
+          : '';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${readiness.userFriendlyMessage}$offlineHint')),
+      );
       return;
     }
 
@@ -61,14 +101,65 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       weather: _weather,
     );
 
+    var finalCaption = caption;
+    var finalReasoning = <String>[...result.reasoning];
+
+    if (_outfitLlmService.isConfigured && !_isOffline && result.isValid) {
+      if (mounted) {
+        setState(() => _isAiEnhancing = true);
+      }
+      final llmInsight = await _outfitLlmService.enhanceOutfit(
+        wardrobe: wardrobe,
+        result: result,
+        occasion: _occasion,
+        mood: _mood,
+        weather: _weather,
+      );
+      if (llmInsight != null) {
+        finalCaption = llmInsight.caption;
+        if (llmInsight.reasoning.isNotEmpty) {
+          finalReasoning = llmInsight.reasoning;
+        }
+      }
+      if (mounted) {
+        setState(() => _isAiEnhancing = false);
+      }
+    }
+
+    final finalResult = OutfitResult(
+      top: result.top,
+      bottom: result.bottom,
+      shoes: result.shoes,
+      accessory: result.accessory,
+      score: result.score,
+      reasoning: finalReasoning,
+    );
+
     setState(() {
-      _result = result;
-      _caption = caption;
+      _result = finalResult;
+      _caption = finalCaption;
       _isGenerating = false;
     });
 
-    if (result.isValid) {
-      unawaited(_persistGeneratedOutfit(result: result, caption: caption));
+    if (finalResult.isValid) {
+      unawaited(_persistGeneratedOutfit(result: finalResult, caption: finalCaption));
+      if (_isOffline && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Generated in offline mode. History will sync automatically when connection returns.'),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Not enough matching clean items for this combo. Try another mood or upload more pieces.'),
+        ),
+      );
+    }
+
+    if (mounted && _isAiEnhancing) {
+      setState(() => _isAiEnhancing = false);
     }
   }
 
@@ -102,6 +193,21 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       children: [
         Text('Outfit Choice Bot', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 8),
+        if (_isOffline) ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade100,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              'Offline mode is active. You can still generate outfits from already-synced wardrobe items.',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -166,6 +272,20 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
             ],
           ),
         ),
+        if (_isAiEnhancing) ...[
+          const SizedBox(height: 8),
+          const Text(
+            'AI stylist polishing your fit...',
+            style: TextStyle(color: AppTheme.onSurfaceVariant, fontWeight: FontWeight.w600),
+          ),
+        ],
+        if (!_outfitLlmService.isConfigured) ...[
+          const SizedBox(height: 8),
+          const Text(
+            'Tip: add DLS_LLM_API_KEY to enable Gemini/DeepSeek stylist boost.',
+            style: TextStyle(color: AppTheme.onSurfaceVariant),
+          ),
+        ],
         const SizedBox(height: 16),
         if (_result != null)
           Column(

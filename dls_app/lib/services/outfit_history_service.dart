@@ -38,6 +38,8 @@ class OutfitHistoryEntry {
 
 class OutfitHistoryService {
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  final Map<String, List<OutfitHistoryEntry>> _localEntriesByUser =
+      <String, List<OutfitHistoryEntry>>{};
 
   CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection('outfit_history');
@@ -50,6 +52,19 @@ class OutfitHistoryService {
     required String caption,
     required OutfitResult result,
   }) async {
+    final localEntry = OutfitHistoryEntry(
+      id: 'local_${DateTime.now().microsecondsSinceEpoch}',
+      occasion: occasion,
+      mood: mood,
+      weather: weather,
+      score: result.score,
+      generatedAt: DateTime.now(),
+      caption: caption,
+    );
+
+    final localList = _localEntriesByUser.putIfAbsent(userId, () => <OutfitHistoryEntry>[]);
+    localList.insert(0, localEntry);
+
     try {
       await _collection.add({
         'user_id': userId,
@@ -66,18 +81,27 @@ class OutfitHistoryService {
     }
   }
 
-  Stream<List<OutfitHistoryEntry>> streamRecentHistory(String userId, {int limit = 5}) {
+  Stream<List<OutfitHistoryEntry>> streamRecentHistory(String userId, {int limit = 5}) async* {
+    List<OutfitHistoryEntry> buildMergedList(List<OutfitHistoryEntry> remote) {
+      final local = _localEntriesByUser[userId] ?? <OutfitHistoryEntry>[];
+      final merged = <OutfitHistoryEntry>[...local, ...remote]
+        ..sort((a, b) => b.generatedAt.compareTo(a.generatedAt));
+
+      if (merged.length <= limit) {
+        return merged;
+      }
+      return merged.take(limit).toList();
+    }
+
+    yield buildMergedList(<OutfitHistoryEntry>[]);
+
     try {
-      return _collection.where('user_id', isEqualTo: userId).snapshots().map((snapshot) {
-        final entries = snapshot.docs.map(OutfitHistoryEntry.fromDoc).toList()
-          ..sort((a, b) => b.generatedAt.compareTo(a.generatedAt));
-        if (entries.length <= limit) {
-          return entries;
-        }
-        return entries.take(limit).toList();
-      });
+      await for (final snapshot in _collection.where('user_id', isEqualTo: userId).snapshots()) {
+        final remoteEntries = snapshot.docs.map(OutfitHistoryEntry.fromDoc).toList();
+        yield buildMergedList(remoteEntries);
+      }
     } catch (_) {
-      return Stream.value(<OutfitHistoryEntry>[]);
+      yield buildMergedList(<OutfitHistoryEntry>[]);
     }
   }
 }

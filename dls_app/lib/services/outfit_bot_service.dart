@@ -3,10 +3,66 @@ import 'dart:math';
 import '../models/clothing_item.dart';
 import '../models/outfit_result.dart';
 
+class OutfitReadiness {
+  const OutfitReadiness({
+    required this.canGenerate,
+    required this.missingRequirements,
+  });
+
+  final bool canGenerate;
+  final List<String> missingRequirements;
+
+  String get userFriendlyMessage {
+    if (canGenerate) {
+      return 'Your wardrobe has enough clean pieces. Ready to generate.';
+    }
+
+    if (missingRequirements.isEmpty) {
+      return 'We need a few more clean items before we can build a full fit.';
+    }
+
+    return 'Add clean ${missingRequirements.join(' and ')} to generate a complete outfit.';
+  }
+}
+
 class OutfitBotService {
   static const neutralColors = {'black', 'white', 'grey', 'beige'};
   static const cleanDripColors = {'white', 'cream', 'pastel', 'light blue'};
   static const softLifeColors = {'olive', 'brown', 'beige', 'sand', 'earth'};
+
+  OutfitReadiness checkReadiness(List<ClothingItem> wardrobe) {
+    final cleanItems = wardrobe.where((item) => item.isClean).toList();
+    if (cleanItems.isEmpty) {
+      return const OutfitReadiness(
+        canGenerate: false,
+        missingRequirements: ['tops', 'bottoms (or a dress)', 'shoes'],
+      );
+    }
+
+    final hasTop = cleanItems.any((item) => _isTop(item.categoryType, item.category));
+    final hasBottom = cleanItems.any((item) => _isBottom(item.categoryType, item.category));
+    final hasDress = cleanItems.any((item) => _isFull(item.categoryType, item.category));
+    final hasShoes = cleanItems.any((item) => _isShoes(item.categoryType, item.category));
+
+    final missing = <String>[];
+    final hasBodyBase = (hasTop && hasBottom) || hasDress;
+    if (!hasBodyBase) {
+      if (!hasTop && !hasDress) {
+        missing.add('tops or dresses');
+      }
+      if (!hasBottom && !hasDress) {
+        missing.add('bottoms or dresses');
+      }
+    }
+    if (!hasShoes) {
+      missing.add('shoes');
+    }
+
+    return OutfitReadiness(
+      canGenerate: missing.isEmpty,
+      missingRequirements: missing,
+    );
+  }
 
   OutfitResult generate({
     required List<ClothingItem> wardrobe,

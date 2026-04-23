@@ -43,3 +43,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local environment secrets and machine-only configs
+.env
+.env.*
+!.env.example
+
+# Local diagnostics output
+*.out
+*.err

@@ -277,3 +277,48 @@ Next action plan:
 - Execute Android physical smoke checklist.
 - Execute iOS physical smoke checklist on macOS.
 - Record outcomes and decide final release gate.
+
+## 16. Web Go-Live Stabilization Audit (2026-04-23)
+
+Status: In Progress
+
+Implementation summary:
+- Added explicit generator readiness checks so users get clear feedback when required clothing is missing.
+- Added generator offline-mode UX messaging and fallback behavior so users can still generate from already-synced items.
+- Added local in-memory outfit history fallback to preserve session history visibility when Firestore is unavailable.
+- Updated go-live checklist with a dedicated Web Blockers Log and explicit documentation locations for progress tracking.
+
+Validation evidence:
+- Service-level readiness test added in `test/services/outfit_bot_service_test.dart`.
+- Manual UX validation points captured for web blockers in `PRE_GO_LIVE_CHECKLIST.md`.
+
+Risk status:
+- Offline mode currently supports local generation and session-local history fallback, but first-load offline wardrobe sync still depends on prior successful online sync.
+- Web event-reminder behavior requires explicit release decision (disable on web or implement fallback reminder strategy).
+
+Next action plan:
+- Run `flutter analyze` and `flutter test` after dependency sync.
+- Execute web smoke test in Chrome with normal and offline/limited-network scenarios.
+- Confirm final web go-live blocker status in `PRE_GO_LIVE_CHECKLIST.md` and append test outcomes to `PROJECT_HISTORY.md`.
+
+## 17. LLM Integration and Exposure Audit (2026-04-23)
+
+Status: In Progress
+
+Implementation summary:
+- Added optional hybrid AI generation enhancement via `OutfitLlmService` for Gemini/DeepSeek.
+- Kept resilient baseline: existing rule engine remains active fallback if LLM is unavailable/offline.
+- Updated generator UI with explicit AI enhancement status and fallback guidance.
+- Added `.gitignore` coverage for local env secrets and local output artifacts.
+
+Validation evidence:
+- Static error scan passed for updated files (`outfit_llm_service.dart`, `outfit_generator_page.dart`, `.gitignore`, `pubspec.yaml`).
+
+Risk status:
+- LLM calls are client-side and require runtime API key injection; keys must not be hardcoded.
+- `android/app/google-services.json` is currently tracked; acceptable for client config, but team may choose stricter template-based handling.
+
+Next action plan:
+- Run full `flutter pub get`, `flutter analyze`, `flutter test` with new dependency set.
+- Execute on-device AI generation quality pass.
+- Finalize repository policy decision for tracked Firebase client config files.

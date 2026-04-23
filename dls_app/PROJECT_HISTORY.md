@@ -547,3 +547,55 @@ Final iOS build validation cannot be completed from this Windows environment bec
   - SHA256: `13:BF:1B:C1:4F:E1:D5:F5:3C:1A:D0:5C:3D:BF:3A:BB:C5:38:CE:95:97:7F:22:9D:C2:99:18:CE:1C:D7:92:A8`
 3. After adding those fingerprints to the Android app in Firebase Console, refresh `google-services.json` and rebuild.
 4. If image uploads still fail after current code fallbacks, Firebase Storage rules are the primary remaining suspect and should be updated to allow authenticated writes for app upload paths.
+
+## 25. Web Go-Live Stabilization Pass (2026-04-23)
+
+### Completed in this update
+
+1. Improved outfit generator pre-check feedback:
+  - Generate action now checks wardrobe readiness before attempting a result.
+  - Users now get clear guidance when key items are missing (for example: shoes or body-base items).
+2. Added offline mode UX support in generator:
+  - Offline status banner added to generator page.
+  - Generate still works in offline mode using already-synced wardrobe items.
+  - User receives clear offline message that history sync continues when connectivity returns.
+3. Added offline-safe history fallback behavior:
+  - Recent generated outfits are retained locally in-session so the history list still shows generated fits when backend connectivity is unavailable.
+4. Updated release tracking and audit docs:
+  - Added dedicated web blockers section in `PRE_GO_LIVE_CHECKLIST.md`.
+  - Recorded this implementation and risk posture in `AUDIT_TRACKING_PLAN.md`.
+
+### Current known web blockers (tracked)
+
+1. Forgot-password runtime verification on production web URL.
+2. Event reminder behavior decision for web (disable with clear UX or implement fallback).
+3. Web OAuth domain/origin verification for Google sign-in.
+4. Full low-connectivity web smoke validation for generator/history/upload.
+
+### Next test plan after phone connection
+
+1. Run `flutter pub get`, `flutter analyze`, and `flutter test` on latest branch state.
+2. Run Chrome/web smoke including offline/limited-network scenarios.
+3. Run Android physical smoke flow and append outcomes to checklist and audit logs.
+
+## 26. LLM Wiring + Git Exposure Audit (2026-04-23)
+
+### Completed in this update
+
+1. Added optional LLM enhancement path for outfit generation:
+  - New service: `lib/services/outfit_llm_service.dart`
+  - Provider support: `gemini` and `deepseek` via runtime `--dart-define` config
+  - Existing rule-based generator remains primary fallback for reliability
+2. Generator UX updated for AI-enhanced flow:
+  - AI enhancement runs after base fit generation when key is configured and device is online
+  - Clear loading feedback shown while AI stylist pass runs
+  - Graceful fallback to existing caption/reasoning when LLM call fails or is not configured
+3. Repository exposure audit performed for go-live hygiene:
+  - Verified tracked config files include `android/app/google-services.json` and `lib/firebase_options.dart`
+  - Added missing ignore rules in `dls_app/.gitignore` for local secret files and local output logs (`.env*`, `*.out`, `*.err`)
+
+### Next actions
+
+1. Add your chosen free-tier API key at runtime using `--dart-define=DLS_LLM_API_KEY=...`.
+2. Run on device and validate AI output quality for at least 10 wardrobe combinations.
+3. Decide whether `google-services.json` remains tracked or shifts to template-based distribution for stricter privacy posture.

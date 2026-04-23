@@ -47,6 +47,7 @@ Profile document creation is intentionally delayed until onboarding completion.
 - Rule-based generation from live wardrobe
 - Persisted generation history (`outfit_history`)
 - Recent history retrieval UI
+- Optional LLM stylist enhancement (Gemini/DeepSeek) with fallback to rule engine
 
 4. Event Planner
 - Event create/list from Firestore
@@ -88,6 +89,44 @@ flutterfire configure
 ```bash
 flutter run
 ```
+
+## Optional LLM Stylist Boost (Gemini or DeepSeek)
+
+The generator now supports an optional LLM enhancement pass for better caption and reasoning quality.
+
+No key is hardcoded in source. Configure via runtime `--dart-define` values:
+
+```bash
+flutter run \
+	--dart-define=DLS_LLM_PROVIDER=gemini \
+	--dart-define=DLS_LLM_API_KEY=YOUR_KEY_HERE \
+	--dart-define=DLS_LLM_MODEL=gemini-1.5-flash
+```
+
+DeepSeek example:
+
+```bash
+flutter run \
+	--dart-define=DLS_LLM_PROVIDER=deepseek \
+	--dart-define=DLS_LLM_API_KEY=YOUR_KEY_HERE \
+	--dart-define=DLS_LLM_MODEL=deepseek-chat
+```
+
+If `DLS_LLM_API_KEY` is missing or device is offline, app automatically falls back to local rule-based generation.
+
+## Git Exposure and Ignore Hygiene
+
+Current hygiene updates:
+
+1. Added ignore rules for local env files: `.env`, `.env.*` (except `.env.example`).
+2. Added ignore rules for ad-hoc local outputs: `*.out`, `*.err`.
+
+Current tracked config files:
+
+1. `android/app/google-services.json`
+2. `lib/firebase_options.dart`
+
+These are Firebase client config files (not service-account private keys). If you prefer stricter repo privacy, move to template files and inject real values outside git.
 
 ## Physical Device Testing (Android)
 
