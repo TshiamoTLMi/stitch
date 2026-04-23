@@ -41,50 +41,24 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _forgotPassword(AuthController auth) async {
-    final resetController = TextEditingController(text: _emailController.text.trim());
-
-    await showDialog<void>(
+    final messenger = ScaffoldMessenger.of(context);
+    final sent = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Reset Password'),
-          content: TextField(
-            controller: resetController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              hintText: 'Enter your email',
-              labelText: 'Email',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final email = resetController.text.trim();
-                if (email.isEmpty || !email.contains('@')) {
-                  _showMessage('Enter a valid email address.');
-                  return;
-                }
-
-                final success = await auth.sendPasswordReset(email);
-                if (!mounted || !dialogContext.mounted) return;
-                if (!success) {
-                  return;
-                }
-                Navigator.of(dialogContext).pop();
-                _showMessage('Password reset email sent if the account exists.');
-              },
-              child: const Text('Send Reset Link'),
-            ),
-          ],
+        return _ForgotPasswordDialog(
+          initialEmail: _emailController.text.trim(),
+          onSendReset: auth.sendPasswordReset,
+          getErrorText: () => auth.errorMessage,
         );
       },
     );
 
-    resetController.dispose();
+    if (!mounted || sent != true) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Password reset email sent if the account exists.')),
+      );
+    });
   }
 
   void _showMessage(String message) {
@@ -197,6 +171,110 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ForgotPasswordDialog extends StatefulWidget {
+  const _ForgotPasswordDialog({
+    required this.initialEmail,
+    required this.onSendReset,
+    required this.getErrorText,
+  });
+
+  final String initialEmail;
+  final Future<bool> Function(String email) onSendReset;
+  final String? Function() getErrorText;
+
+  @override
+  State<_ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
+}
+
+class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
+  late final TextEditingController _resetController;
+  bool _isSending = false;
+  String? _localError;
+
+  @override
+  void initState() {
+    super.initState();
+    _resetController = TextEditingController(text: widget.initialEmail);
+  }
+
+  @override
+  void dispose() {
+    _resetController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _send() async {
+    final email = _resetController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      setState(() {
+        _localError = 'Enter a valid email address.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isSending = true;
+      _localError = null;
+    });
+
+    final success = await widget.onSendReset(email);
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pop(true);
+      return;
+    }
+
+    setState(() {
+      _isSending = false;
+      _localError = widget.getErrorText() ?? 'Could not send reset email.';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Reset Password'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _resetController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              hintText: 'Enter your email',
+              labelText: 'Email',
+            ),
+          ),
+          if (_localError != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              _localError!,
+              style: const TextStyle(color: Color(0xFFFFB4AB), fontSize: 12),
+            ),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isSending ? null : () => Navigator.of(context).pop(false),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _isSending ? null : _send,
+          child: _isSending
+              ? const SizedBox(
+                  height: 18,
+                  width: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Send Reset Link'),
+        ),
+      ],
     );
   }
 }

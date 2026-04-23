@@ -478,3 +478,182 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
+class _EditProfileSheet extends StatefulWidget {
+  const _EditProfileSheet({
+    required this.userId,
+    required this.initialDisplayName,
+    required this.pickCroppedImage,
+  });
+
+  final String userId;
+  final String initialDisplayName;
+  final Future<Uint8List?> Function(ImageSource source) pickCroppedImage;
+
+  @override
+  State<_EditProfileSheet> createState() => _EditProfileSheetState();
+}
+
+class _EditProfileSheetState extends State<_EditProfileSheet> {
+  late final TextEditingController _displayNameController;
+  Uint8List? _pickedImageBytes;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _displayNameController = TextEditingController(text: widget.initialDisplayName);
+  }
+
+  @override
+  void dispose() {
+    _displayNameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickFrom(ImageSource source) async {
+    final bytes = await widget.pickCroppedImage(source);
+    if (bytes == null || !mounted) return;
+    setState(() => _pickedImageBytes = bytes);
+  }
+
+  Future<void> _save() async {
+    final display = _displayNameController.text.trim();
+    final messenger = ScaffoldMessenger.of(context);
+    final profileService = context.read<ProfileService>();
+    final navigator = Navigator.of(context);
+
+    if (display.isEmpty) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Display name is required.')),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    String? uploadedImageUrl;
+    String? uploadWarning;
+    try {
+      if (_pickedImageBytes != null) {
+        try {
+          uploadedImageUrl = await profileService.uploadProfileImage(
+            userId: widget.userId,
+            imageBytes: _pickedImageBytes!,
+          );
+        } catch (uploadError) {
+          debugPrint('[Profile] Image upload skipped: $uploadError');
+          uploadWarning =
+              'Photo could not be saved (Storage not enabled yet). Other changes were saved.';
+        }
+      }
+
+      await profileService.updateProfile(
+        userId: widget.userId,
+        displayName: display,
+        nickname: display,
+        profileImageUrl: uploadedImageUrl,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not update profile: $e')),
+      );
+      return;
+    }
+
+    // Pop first so the sheet tree is fully unmounted before we touch the messenger.
+    if (navigator.canPop()) {
+      navigator.pop();
+    }
+
+    // Defer snackbar to next frame so the popped route's teardown completes cleanly.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(uploadWarning ?? 'Profile updated successfully.'),
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text('Edit Profile', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _displayNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Display Name / Nickname',
+                hintText: 'How should we call you?',
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Update Profile Picture',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Choose Camera or Gallery to replace your profile photo.',
+              style: TextStyle(color: AppTheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 10),
+            if (_pickedImageBytes != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.memory(_pickedImageBytes!, height: 120, fit: BoxFit.cover),
+              ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _isSaving ? null : () => _pickFrom(ImageSource.camera),
+                    icon: const Icon(Icons.photo_camera_outlined),
+                    label: const Text('Camera'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _isSaving ? null : () => _pickFrom(ImageSource.gallery),
+                    icon: const Icon(Icons.photo_library_outlined),
+                    label: const Text('Gallery'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            ElevatedButton(
+              onPressed: _isSaving ? null : _save,
+              child: _isSaving
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save Profile'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+

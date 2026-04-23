@@ -99,3 +99,23 @@ Use this checklist before release. Do not mark go-live ready until all P0 checks
 - [ ] Hosting deploy succeeds (`firebase deploy --only hosting`)
 - [ ] Browser hard refresh shows latest build assets
 - [ ] Web login and upload paths validated on production URL
+
+## L. Current Status Snapshot (2026-04-23)
+
+Verified green from recent test cycle:
+
+- [x] `flutter pub get` succeeds
+- [x] `flutter analyze` reports no issues
+- [x] `flutter test` passes (16/16)
+- [x] Android debug install/launch succeeds on physical device (`RZCY60K25YA`)
+- [x] Profile update saves data and loads correctly after app restart
+
+Still missing before go-live:
+
+- [ ] Forgot-password flow: reset link request must complete with no runtime crash on physical device
+- [ ] Event reminders: schedule and fire local notification for events happening the next day
+- [ ] "You might need" recommendations: ensure actionable, user-friendly UX (clear reason + quick add/use action)
+- [ ] Wardrobe analytics: verify complete, readable metrics UX for non-technical users
+- [ ] Style evolution log: verify user-friendly timeline/log view with clear labels and easy scanning
+- [ ] iOS build/device smoke test (not yet verified in this cycle)
+- [ ] Launcher icon corner/background visual issue fully verified fixed on device
