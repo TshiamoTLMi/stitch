@@ -200,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
           builder: (sheetContext, setSheetState) {
             Future<void> pickFrom(ImageSource source) async {
               final bytes = await _pickCroppedImage(source);
-              if (bytes == null) return;
+              if (bytes == null || !sheetContext.mounted) return;
               setSheetState(() => pickedImageBytes = bytes);
             }
 
@@ -253,7 +253,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   SnackBar(content: Text('Could not update profile: $e')),
                 );
               } finally {
-                if (mounted) setSheetState(() => isSaving = false);
+                if (mounted && sheetContext.mounted) {
+                  setSheetState(() => isSaving = false);
+                }
               }
             }
 
