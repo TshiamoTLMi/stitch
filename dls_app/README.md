@@ -186,6 +186,23 @@ For tomorrow's physical-device testing flow and next AI phase planning, use:
 - `FEATURE_PLANS.md`
 - `PRE_GO_LIVE_CHECKLIST.md`
 
+## Preflight Gate (Run Before Web/App Launch)
+
+To reduce breakages after code changes, run the preflight script before `flutter run` or deploy:
+
+```powershell
+Set-Location "c:\Users\TshiamoMoloto\Documents\Git Repos\Portfilo\DLS\stitch\dls_app"
+pwsh -File .\tooling\preflight_check.ps1
+```
+
+This runs:
+
+1. `flutter analyze`
+2. `flutter test`
+3. `flutter build web --release`
+
+If any step fails, stop and fix before continuing.
+
 ## Automated Test Phase (Completed in Code)
 
 Implemented automated tests:

@@ -322,3 +322,24 @@ Next action plan:
 - Run full `flutter pub get`, `flutter analyze`, `flutter test` with new dependency set.
 - Execute on-device AI generation quality pass.
 - Finalize repository policy decision for tracked Firebase client config files.
+
+## 18. Regression Prevention Gate (2026-04-23)
+
+Status: Complete
+
+Implementation summary:
+- Added reusable preflight quality gate script at `tooling/preflight_check.ps1`.
+- Updated README with mandatory preflight usage before app/web runs.
+
+Validation evidence:
+- `flutter analyze` -> passed (`No issues found`).
+- `flutter test` -> passed (`All tests passed`).
+- `flutter build web --release` -> passed (`Built build/web`).
+
+Risk status:
+- Flutter on `C:\Program Files\flutter\bin\flutter.bat` still hangs in this environment.
+- Stable command path for this workspace remains `C:\Users\TshiamoMoloto\Documents\flutter\bin\flutter.bat`.
+
+Next action plan:
+- Use `tooling/preflight_check.ps1` before every release and before physical-device smoke tests.
+- Keep Flutter PATH alignment as a cleanup task to avoid accidental use of hanging SDK path.

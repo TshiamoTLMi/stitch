@@ -135,6 +135,10 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       reasoning: finalReasoning,
     );
 
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
       _result = finalResult;
       _caption = finalCaption;
