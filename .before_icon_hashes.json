@@ -1,0 +1,270 @@
+[
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\drawable-hdpi\\ic_launcher_foreground.png",
+    "Hash": "95B39E5E287F309875DFD58BDC53D318F24A3C62FB4C211244403AE4EC36EE0F"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\drawable-mdpi\\ic_launcher_foreground.png",
+    "Hash": "3CEEF8C0CC0D456DA35C697C2369B3CF2F2785CDE017DF6952B4A7ECBB088FFF"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\drawable-v21\\launch_background.xml",
+    "Hash": "DCA312EC77DE83E43EF70A825C299B51451247286C29167D62F19165750B8793"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\drawable-xhdpi\\ic_launcher_foreground.png",
+    "Hash": "CAC112FDABBA133334A75CB982A657EF5BAA2A1E7DDF564CCAE435E79AF67EBA"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\drawable-xxhdpi\\ic_launcher_foreground.png",
+    "Hash": "37E144108943CB6287BB34CBA03ECEB00E4DB092BA6061DEAF7844FC4497BE4A"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\drawable-xxxhdpi\\ic_launcher_foreground.png",
+    "Hash": "E07E27D1D3330174A9A7DACF8B26A7E3D398E3B38C4EF31B739253389626117F"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\drawable\\launch_background.xml",
+    "Hash": "2DF60E2CFBEE873CE2858088CF003E6B93498F2F568476DA437610467EA1A9D7"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-anydpi-v26\\launcher_icon.xml",
+    "Hash": "FE16AB84762F42E1166A008C9C77227FA3BA8399088BF9667E83D04BC4322AF1"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher.png",
+    "Hash": "64C465574F44FF1E11F3035B1BEC8CF3C8CB59968BEF11209CD77329F7529441"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-hdpi\\launcher_icon.png",
+    "Hash": "64C465574F44FF1E11F3035B1BEC8CF3C8CB59968BEF11209CD77329F7529441"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher.png",
+    "Hash": "8CEEB010E8F55D64DD2CB8DC5F9CB56061B892589C3C93E281C469832E530A68"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-mdpi\\launcher_icon.png",
+    "Hash": "8CEEB010E8F55D64DD2CB8DC5F9CB56061B892589C3C93E281C469832E530A68"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png",
+    "Hash": "5BE31246E3B47BBA2C50B961998F40C299FF50B66D203436B5041DC12AD590CD"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-xhdpi\\launcher_icon.png",
+    "Hash": "5BE31246E3B47BBA2C50B961998F40C299FF50B66D203436B5041DC12AD590CD"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher.png",
+    "Hash": "CA693E5EE2492F9406D12164900865D81686518DDA242E0B8CAF723ABA01DD23"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-xxhdpi\\launcher_icon.png",
+    "Hash": "CA693E5EE2492F9406D12164900865D81686518DDA242E0B8CAF723ABA01DD23"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher.png",
+    "Hash": "F78FC01667CF108C432B71E82FA88B91B4F1ECEB599A0B83D1F080E86D6365B6"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\mipmap-xxxhdpi\\launcher_icon.png",
+    "Hash": "F78FC01667CF108C432B71E82FA88B91B4F1ECEB599A0B83D1F080E86D6365B6"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\values-night\\styles.xml",
+    "Hash": "EA763597DC1A84C8034251CAEE98D7753E0FBF57340FFC94677427DE4B537516"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\values\\colors.xml",
+    "Hash": "D80A637240092D84A76BF66FDFF7A711F43FBA8B25088C6D6D7EA2600AAF0DF7"
+  },
+  {
+    "Path": "dls_app\\android\\app\\src\\main\\res\\values\\styles.xml",
+    "Hash": "CCA15A99B59380A548BF6A890F7CA5380EE509B1F9BBB2F5F9EC3589FA25C2F7"
+  },
+  {
+    "Path": "dls_app\\assets\\icons\\dls_logo.png",
+    "Hash": "4899EF6809C556666E723C8E5D6A21F51BB341B1E51463BEA29849B1E9FE8C35"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Contents.json",
+    "Hash": "59AEE64F32DAB46AD775DA6EA2F3FC4EFE6E8A78289A9185CD0D2D7E055845DD"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-1024x1024@1x.png",
+    "Hash": "23FF18DD0DA45C3AA62787EB0CC72BCF7100D6BE256652389E640E7030665881"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-20x20@1x.png",
+    "Hash": "74DB242A9CCD4790CC5EEDE650B557C87207353FDBF76C06D70853D1B6D18B9D"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-20x20@2x.png",
+    "Hash": "27E3C9B5EC525C71EC15D8204337000F4A9672C5A4E792D494FF58798FBD1DFA"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-20x20@3x.png",
+    "Hash": "F2F83A36F6B6F9AE50A94799DD0EE0685CE6C165874F8277EBE54E9800C615EF"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-29x29@1x.png",
+    "Hash": "625ED006E0E3137A9C55C3699C8B6ADF9788C19513799F5460E8C088A2BBF422"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-29x29@2x.png",
+    "Hash": "CFD4ED02A94313CCED3716B8C4DA643D0F1BEB521C77F2E1FD0C6F5EFBE47DD0"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-29x29@3x.png",
+    "Hash": "8F86DC9524ECE8C55193B09F15CC9749A2B62130BDEAE9AB8861918161C990E6"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-40x40@1x.png",
+    "Hash": "27E3C9B5EC525C71EC15D8204337000F4A9672C5A4E792D494FF58798FBD1DFA"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-40x40@2x.png",
+    "Hash": "7A50DF4D6ED96007B79941441B2CAB1CEF9A4A31A050AD7101C2A080333D906A"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-40x40@3x.png",
+    "Hash": "976FE91550F9764C24E05C346B11C1485B25E3C68A211268B023305FA089701C"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-50x50@1x.png",
+    "Hash": "9D9C6A331DF9D099D5B70EEB621D0A58DF2FAC6E770BE96029173B3F5222AE8B"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-50x50@2x.png",
+    "Hash": "A0E121718DA4602A6980029FDDAD83196927A4DF0F46B18CC02B3D179DFA2AE1"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-57x57@1x.png",
+    "Hash": "FD00E3222BFF12D15C9C7D40E8C8F608D9695AE58C00B39E66B878C0485CD936"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-57x57@2x.png",
+    "Hash": "34569A487A10C2E172C36CE14CA638645479C06F08DCEB9C1B52C3D2BCCAE727"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-60x60@2x.png",
+    "Hash": "976FE91550F9764C24E05C346B11C1485B25E3C68A211268B023305FA089701C"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-60x60@3x.png",
+    "Hash": "4C99EE96EF2747494F3A831B51A08B6A56D7715CE90B2B47E368325F65D1FB69"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-72x72@1x.png",
+    "Hash": "64C465574F44FF1E11F3035B1BEC8CF3C8CB59968BEF11209CD77329F7529441"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-72x72@2x.png",
+    "Hash": "CA693E5EE2492F9406D12164900865D81686518DDA242E0B8CAF723ABA01DD23"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-76x76@1x.png",
+    "Hash": "A47240234E46229D482D2F6C85C0E25EE59407ADB88D641B5136F6FDAFA60EF1"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-76x76@2x.png",
+    "Hash": "4D6162548EEF4DCE5E46DF82661AF116E1E53286A1B02F989BBDEDBEE0B2AA01"
+  },
+  {
+    "Path": "dls_app\\ios\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Icon-App-83.5x83.5@2x.png",
+    "Hash": "A2FA7DBE0E29B35DA88BF0D12A59DBEBF67D7FE47556102911BBD12E9584A2D2"
+  },
+  {
+    "Path": "dls_app\\linux\\.gitignore",
+    "Hash": "D7BBEAC6BA86E2D94D8CCC63A1A2FBBAC5EE7467F52F75C168165412D6AC3B60"
+  },
+  {
+    "Path": "dls_app\\linux\\CMakeLists.txt",
+    "Hash": "A9D966B92A6166BA4733139058B07B09306ACFE2AD22850BF5822B6F4FAC863C"
+  },
+  {
+    "Path": "dls_app\\linux\\flutter\\CMakeLists.txt",
+    "Hash": "4EB17836308C1CD53F6B2BB8EDB3B7B30610BFF3B1D9DF7FECC9317F9109700C"
+  },
+  {
+    "Path": "dls_app\\linux\\flutter\\generated_plugin_registrant.cc",
+    "Hash": "CF105E8CE1D7B7A3103B1F0CFA9B4D4A4ABF69C6C4AAD0A549F2774E32F7DCB9"
+  },
+  {
+    "Path": "dls_app\\linux\\flutter\\generated_plugin_registrant.h",
+    "Hash": "00F93BB5B1FAEFDEDE8F6065DF327522900FB0B8EFEE86BACF424FD947ED14BB"
+  },
+  {
+    "Path": "dls_app\\linux\\flutter\\generated_plugins.cmake",
+    "Hash": "99AE7FF3BE78108CBB1EDBE24C09B432E14ECD99395742033F89770434355974"
+  },
+  {
+    "Path": "dls_app\\linux\\runner\\CMakeLists.txt",
+    "Hash": "81ECF2604C50F480C23D460B2DDF653ECD39DF29CC5B2FE4913F1A59F008A5A7"
+  },
+  {
+    "Path": "dls_app\\linux\\runner\\main.cc",
+    "Hash": "905B4DFA4EAB584C1EB6244899B7D5EF56D0BCEAF3BFFB5EA335ED7E0BA3C549"
+  },
+  {
+    "Path": "dls_app\\linux\\runner\\my_application.cc",
+    "Hash": "8F484EC22EBEAD4B00D63F8865FC9A80CD34043545979E50258A9823B9E6BDC9"
+  },
+  {
+    "Path": "dls_app\\linux\\runner\\my_application.h",
+    "Hash": "880393CB82D7FEAAA95D9ACD6C2317749AFAE0E17EA5F5EE44B456BC081B5987"
+  },
+  {
+    "Path": "dls_app\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\app_icon_1024.png",
+    "Hash": "6232E5815AF17E25E0268B2FEC7AEA9E068CC92EC709E9605C2B31DF4FF2A313"
+  },
+  {
+    "Path": "dls_app\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\app_icon_128.png",
+    "Hash": "15591F03F31313AF6FD644ED0512106CC04365130B8B73244F1CFA6DDDFB4400"
+  },
+  {
+    "Path": "dls_app\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\app_icon_16.png",
+    "Hash": "CC6928B5ADFC00DBF526192E2705DD9AF641CDF20AB4C6C7CA7CD4936DCA59F0"
+  },
+  {
+    "Path": "dls_app\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\app_icon_256.png",
+    "Hash": "416EFD77CDE932D42EF34168DA24DD428A495B1F4F34BBBD125A18D2ADD186A2"
+  },
+  {
+    "Path": "dls_app\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\app_icon_32.png",
+    "Hash": "AE8C4458E41F1E28B1E851ED87D3268D4A0351CEEA427FA2A84CC94DDFB6D4C5"
+  },
+  {
+    "Path": "dls_app\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\app_icon_512.png",
+    "Hash": "0A91C6C1BF242E54EE179E34629E9EF3E8A6D286C0FCE01E302280A8BE9277E6"
+  },
+  {
+    "Path": "dls_app\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\app_icon_64.png",
+    "Hash": "6AD229623498E5F1277800DB3AB7CB11FAF85EB2569E1213F7D8E55003C07B42"
+  },
+  {
+    "Path": "dls_app\\macos\\Runner\\Assets.xcassets\\AppIcon.appiconset\\Contents.json",
+    "Hash": "992BA63D183DFB8F8E3AF38AC203D834D23C004DA1417C438B4C5A3D7D1D7103"
+  },
+  {
+    "Path": "dls_app\\web\\icons\\Icon-192.png",
+    "Hash": "F78FC01667CF108C432B71E82FA88B91B4F1ECEB599A0B83D1F080E86D6365B6"
+  },
+  {
+    "Path": "dls_app\\web\\icons\\Icon-512.png",
+    "Hash": "50DE4B5A9C216E38E09026B035783175BF50925003C5E2A1B631AF72A9DD30C5"
+  },
+  {
+    "Path": "dls_app\\web\\icons\\Icon-maskable-192.png",
+    "Hash": "F78FC01667CF108C432B71E82FA88B91B4F1ECEB599A0B83D1F080E86D6365B6"
+  },
+  {
+    "Path": "dls_app\\web\\icons\\Icon-maskable-512.png",
+    "Hash": "50DE4B5A9C216E38E09026B035783175BF50925003C5E2A1B631AF72A9DD30C5"
+  },
+  {
+    "Path": "dls_app\\windows\\runner\\resources\\app_icon.ico",
+    "Hash": "C098D3FC85CACFF98B8E69811B48E9F0D852FCEE278132D794411D978869CBF8"
+  }
+]
