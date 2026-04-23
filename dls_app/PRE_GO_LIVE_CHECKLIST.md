@@ -8,7 +8,7 @@ Use this checklist before release. Do not mark go-live ready until all P0 checks
 - [ ] `flutter analyze` reports no issues
 - [ ] `flutter test` passes
 - [ ] Android debug build succeeds (`flutter build apk --debug`)
-- [ ] iOS build path verified on macOS (`pod install`, Xcode build)
+- [ ] Web build succeeds (`flutter build web`)
 
 ## B. Auth and Routing Gates
 
@@ -56,12 +56,12 @@ Use this checklist before release. Do not mark go-live ready until all P0 checks
 - [ ] Storage rules hardened for authenticated access
 - [ ] OAuth client config correct in Firebase Console
 - [ ] Android SHA keys configured for Google sign-in
-- [ ] iOS bundle id and `GoogleService-Info.plist` match Firebase app
+- [ ] Web app origin/domain authorized in Firebase Auth settings
 
 ## G. Physical Device Gates (Manual)
 
 - [ ] Android physical smoke test passed
-- [ ] iOS physical smoke test passed (macOS + Xcode)
+- [ ] Web smoke test passed in Chrome (desktop + mobile viewport)
 - [ ] Low-network behavior checked on both platforms
 - [ ] No crash observed in core onboarding + dashboard path
 
@@ -90,7 +90,7 @@ Use this checklist before release. Do not mark go-live ready until all P0 checks
 - [ ] No Firebase Auth user deletion operations performed for release
 - [ ] Firebase project id unchanged across builds/environments
 - [ ] Android `applicationId` unchanged for upgrade builds
-- [ ] iOS bundle id unchanged for upgrade builds
+- [ ] Web deployment target/domain unchanged for upgrade builds
 - [ ] Token-expiry behavior confirmed (re-login prompt only when expected)
 
 ## K. Web Publish Gates
@@ -117,5 +117,6 @@ Still missing before go-live:
 - [ ] "You might need" recommendations: ensure actionable, user-friendly UX (clear reason + quick add/use action)
 - [ ] Wardrobe analytics: verify complete, readable metrics UX for non-technical users
 - [ ] Style evolution log: verify user-friendly timeline/log view with clear labels and easy scanning
-- [ ] iOS build/device smoke test (not yet verified in this cycle)
+- [ ] Android + Web integration smoke test passes (`flutter test integration_test -d RZCY60K25YA` and `flutter test integration_test -d chrome`)
+- [ ] PWA install flow validated on production web URL (Install App button or browser install prompt)
 - [ ] Launcher icon corner/background visual issue fully verified fixed on device

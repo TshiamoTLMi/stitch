@@ -18,21 +18,23 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Digital Lesela Sete - AI wardrobe, event planning, and styling assistant.">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="dls_app">
+  <meta name="apple-mobile-web-app-title" content="DLS">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>dls_app</title>
+  <title>Digital Lesela Sete</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <button id="installPwaBtn" aria-label="Install app">Install App</button>
+
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
@@ -41,6 +43,60 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
+  <script>
+    (function () {
+      var deferredPrompt = null;
+      var installBtn = document.getElementById('installPwaBtn');
+
+      if (installBtn) {
+        installBtn.style.display = 'none';
+
+        window.addEventListener('beforeinstallprompt', function (event) {
+          event.preventDefault();
+          deferredPrompt = event;
+          installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async function () {
+          if (!deferredPrompt) return;
+          installBtn.disabled = true;
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          installBtn.style.display = 'none';
+          installBtn.disabled = false;
+        });
+
+        window.addEventListener('appinstalled', function () {
+          installBtn.style.display = 'none';
+          deferredPrompt = null;
+        });
+      }
+    })();
+  </script>
   <script src="flutter_bootstrap.js" async></script>
+
+  <style>
+    #installPwaBtn {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 9999;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1f1600;
+      background: linear-gradient(120deg, #f6d365, #d4af37);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+      cursor: pointer;
+    }
+
+    #installPwaBtn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  </style>
 </body>
 </html>

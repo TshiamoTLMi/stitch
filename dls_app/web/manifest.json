@@ -1,11 +1,12 @@
 {
-    "name": "dls_app",
-    "short_name": "dls_app",
-    "start_url": ".",
+    "name": "Digital Lesela Sete",
+    "short_name": "DLS",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#000000",
-    "description": "A new Flutter project.",
+    "description": "AI wardrobe and event styling assistant.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
