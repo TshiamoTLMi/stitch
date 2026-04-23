@@ -178,12 +178,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final age = OnboardingValidator.calculateAge(_birthdate!);
 
       // Profile photo is optional — upload only when the user chose one.
+      // A storage failure must not block onboarding completion.
       String imageUrl = '';
       if (_profileBytes != null) {
-        imageUrl = await profileService.uploadProfileImage(
-          userId: user.uid,
-          imageBytes: _profileBytes!,
-        );
+        try {
+          imageUrl = await profileService.uploadProfileImage(
+            userId: user.uid,
+            imageBytes: _profileBytes!,
+          );
+        } catch (uploadError) {
+          debugPrint('[Onboarding] Profile image upload skipped: $uploadError');
+          if (mounted) {
+            _showMessage('Profile photo could not be saved (Storage not enabled yet). Your profile will still be created.');
+          }
+        }
       }
 
       await profileService.saveOnboardingProfile(

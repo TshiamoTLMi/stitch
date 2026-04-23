@@ -215,23 +215,35 @@ class _ProfilePageState extends State<ProfilePage> {
 
               setSheetState(() => isSaving = true);
               try {
+                // Image upload is optional — a Storage failure must not block the profile update.
                 String? uploadedImageUrl;
                 if (pickedImageBytes != null) {
-                  uploadedImageUrl = await profileService.uploadProfileImage(
-                        userId: userId,
-                        imageBytes: pickedImageBytes!,
+                  try {
+                    uploadedImageUrl = await profileService.uploadProfileImage(
+                      userId: userId,
+                      imageBytes: pickedImageBytes!,
+                    );
+                  } catch (uploadError) {
+                    debugPrint('[Profile] Image upload skipped: $uploadError');
+                    if (mounted) {
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Photo could not be saved (Storage not enabled yet). Other changes will be saved.'),
+                        ),
                       );
+                    }
+                  }
                 }
 
                 await profileService.updateProfile(
-                      userId: userId,
-                      displayName: display,
-                      nickname: display,
-                      profileImageUrl: uploadedImageUrl,
-                    );
+                  userId: userId,
+                  displayName: display,
+                  nickname: display,
+                  profileImageUrl: uploadedImageUrl,
+                );
 
-                if (!mounted) return;
-                Navigator.of(context).pop();
+                if (!mounted || !sheetContext.mounted) return;
+                Navigator.of(sheetContext).pop();
                 messenger.showSnackBar(
                   const SnackBar(content: Text('Profile updated successfully.')),
                 );
@@ -268,6 +280,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     const SizedBox(height: 12),
+                    const Text(
+                      'Update Profile Picture',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Choose Camera or Gallery to replace your profile photo.',
+                      style: TextStyle(color: AppTheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 10),
                     if (pickedImageBytes != null)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),

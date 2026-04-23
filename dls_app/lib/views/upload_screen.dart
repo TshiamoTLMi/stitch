@@ -139,9 +139,12 @@ class _UploadScreenState extends State<UploadScreen> {
         SnackBar(content: Text('Added $_selectedSubcategory to your wardrobe!')),
       );
     } catch (e) {
-      _lastUploadError = 'Upload failed: $e';
+      final msg = e.toString().contains('object-not-found') || e.toString().contains('Storage has not been set up')
+          ? 'Upload failed: Firebase Storage is not enabled yet. Go to Firebase Console → Storage → Get Started, then try again.'
+          : 'Upload failed: $e';
+      _lastUploadError = msg;
       if (!mounted) return;
-      _showMessage('Upload failed: $e');
+      _showMessage(msg);
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/clothing_item.dart';
 import '../../models/outfit_result.dart';
 import '../../services/caption_service.dart';
 import '../../services/outfit_history_service.dart';
@@ -28,17 +31,22 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   final _captionService = CaptionService();
   OutfitResult? _result;
   String? _caption;
+  bool _isGenerating = false;
 
   String _occasion = 'Braai';
   String _mood = 'Street Flex';
   String _weather = 'Sunny';
 
   Future<void> _generate() async {
+    if (_isGenerating) return;
+
     final wardrobe = context.read<WardrobeController>().items;
     if (wardrobe.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload clothing items first.')));
       return;
     }
+
+    setState(() => _isGenerating = true);
 
     final result = _outfitBot.generate(
       wardrobe: wardrobe,
@@ -56,29 +64,34 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     setState(() {
       _result = result;
       _caption = caption;
+      _isGenerating = false;
     });
 
     if (result.isValid) {
-      await context.read<OutfitHistoryService>().saveGeneratedOutfit(
-        userId: widget.userId,
-        occasion: _occasion,
-        mood: _mood,
-        weather: _weather,
-        caption: caption,
-        result: result,
-      );
+      unawaited(_persistGeneratedOutfit(result: result, caption: caption));
+    }
+  }
 
-      try {
-        await FirebaseFirestore.instance.collection('audit_events').add({
-          'user_id': widget.userId,
-          'type': 'outfit_generated',
-          'sprint': 4,
-          'message': 'Generated outfit for $_occasion / $_mood / $_weather with score ${result.score}.',
-          'created_at': Timestamp.fromDate(DateTime.now()),
-        });
-      } catch (_) {
-        // Audit trail is best-effort in demo mode.
-      }
+  Future<void> _persistGeneratedOutfit({required OutfitResult result, required String caption}) async {
+    await context.read<OutfitHistoryService>().saveGeneratedOutfit(
+      userId: widget.userId,
+      occasion: _occasion,
+      mood: _mood,
+      weather: _weather,
+      caption: caption,
+      result: result,
+    );
+
+    try {
+      await FirebaseFirestore.instance.collection('audit_events').add({
+        'user_id': widget.userId,
+        'type': 'outfit_generated',
+        'sprint': 4,
+        'message': 'Generated outfit for $_occasion / $_mood / $_weather with score ${result.score}.',
+        'created_at': Timestamp.fromDate(DateTime.now()),
+      });
+    } catch (_) {
+      // Audit trail is best-effort in demo mode.
     }
   }
 
@@ -133,13 +146,23 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
         ),
         const SizedBox(height: 14),
         ElevatedButton(
-          onPressed: _generate,
-          child: const Row(
+          onPressed: _isGenerating ? null : _generate,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.auto_awesome),
-              SizedBox(width: 8),
-              Text('Find My Fit'),
+              if (_isGenerating) ...[
+                const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 8),
+                const Text('Generating...'),
+              ] else ...[
+                const Icon(Icons.auto_awesome),
+                const SizedBox(width: 8),
+                const Text('Find My Fit'),
+              ],
             ],
           ),
         ),
@@ -163,6 +186,19 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                     Text('Bottom: ${_result!.bottom?.category ?? '-'}'),
                     Text('Shoes: ${_result!.shoes?.category ?? '-'}'),
                     Text('Accessory: ${_result!.accessory?.category ?? '-'}'),
+                    const SizedBox(height: 12),
+                    const Text('Selected Closet Items', style: TextStyle(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        _FitItemChip(label: 'Top', item: _result!.top),
+                        _FitItemChip(label: 'Bottom', item: _result!.bottom),
+                        _FitItemChip(label: 'Shoes', item: _result!.shoes),
+                        _FitItemChip(label: 'Accessory', item: _result!.accessory),
+                      ],
+                    ),
                     const SizedBox(height: 12),
                     const Text('Caption Suggestions', style: TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 8),
@@ -247,6 +283,99 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
           },
         ),
       ],
+    );
+  }
+}
+
+class _FitItemChip extends StatelessWidget {
+  const _FitItemChip({required this.label, required this.item});
+
+  final String label;
+  final ClothingItem? item;
+
+  @override
+  Widget build(BuildContext context) {
+    if (item == null) {
+      return Container(
+        width: 152,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceHigh,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+            const SizedBox(height: 6),
+            const Text('-', style: TextStyle(color: AppTheme.onSurfaceVariant)),
+          ],
+        ),
+      );
+    }
+
+    final imageUrl = item?.imageUrl ?? '';
+    final category = item?.category ?? '';
+
+    return Container(
+      width: 152,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceHigh,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              height: 94,
+              width: double.infinity,
+              child: imageUrl.isEmpty
+                  ? const ColoredBox(
+                      color: AppTheme.surfaceLow,
+                      child: Center(
+                        child: Icon(Icons.image_not_supported_outlined, color: AppTheme.onSurfaceVariant),
+                      ),
+                    )
+                  : Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      cacheWidth: 320,
+                      filterQuality: FilterQuality.low,
+                      loadingBuilder: (_, child, progress) => progress == null
+                          ? child
+                          : const ColoredBox(
+                              color: AppTheme.surfaceLow,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              ),
+                            ),
+                      errorBuilder: (_, __, ___) => const ColoredBox(
+                        color: AppTheme.surfaceLow,
+                        child: Center(
+                          child: Icon(Icons.broken_image_outlined, color: AppTheme.onSurfaceVariant),
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            category.isEmpty ? '-' : category,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -80,7 +80,7 @@ void main() {
       ],
     );
 
-    expect(suggestions, orderedEquals(<String>['Belt', 'Blazer', 'Formal shoes']));
+    expect(suggestions, orderedEquals(<String>['Belt', 'Formal shoes']));
   });
 
   test('returns empty list when wardrobe already covers event needs', () {

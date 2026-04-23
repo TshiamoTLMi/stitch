@@ -184,16 +184,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         label: 'Google',
                         onTap: auth.isLoading ? null : auth.signInGoogle,
                       ),
-                      _AuthChip(
-                        icon: Icons.apple,
-                        label: 'Apple',
-                        onTap: auth.isLoading ? null : auth.signInApple,
-                      ),
-                      _AuthChip(
-                        icon: Icons.window,
-                        label: 'Microsoft',
-                        onTap: auth.isLoading ? null : auth.signInMicrosoft,
-                      ),
                     ],
                   ),
                   const SizedBox(height: 22),

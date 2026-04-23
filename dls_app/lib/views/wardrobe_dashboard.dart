@@ -247,6 +247,8 @@ class _WardrobeCard extends StatelessWidget {
                 : Image.network(
                     imageUrl,
                     fit: BoxFit.cover,
+                  cacheWidth: 420,
+                  filterQuality: FilterQuality.low,
                     loadingBuilder: (_, child, prog) => prog == null
                         ? child
                         : const ColoredBox(
@@ -422,6 +424,22 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   bool _saving = false;
   bool _replacingPhoto = false;
   String? _localImagePath; // preview of newly selected photo before upload
+
+  List<String> get _categoryOptions {
+    final options = _categories.toList();
+    if (_category.isNotEmpty && !options.contains(_category)) {
+      options.add(_category);
+    }
+    return options;
+  }
+
+  List<String> get _statusOptions {
+    final options = _statuses.toList();
+    if (_status.isNotEmpty && !options.contains(_status)) {
+      options.add(_status);
+    }
+    return options;
+  }
 
   @override
   void initState() {
@@ -672,7 +690,7 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                                     isDense: true,
                                     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                   ),
-                                  items: _categories
+                                  items: _categoryOptions
                                       .map((c) => DropdownMenuItem(value: c, child: Text(_capitalizeWord(c))))
                                       .toList(),
                                   onChanged: _saving
@@ -703,7 +721,7 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                                     isDense: true,
                                     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                   ),
-                                  items: _statuses
+                                  items: _statusOptions
                                       .map((s) => DropdownMenuItem(value: s, child: Text(_capitalizeWord(s))))
                                       .toList(),
                                   onChanged: _saving

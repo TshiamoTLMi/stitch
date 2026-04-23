@@ -241,14 +241,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                     onTap: auth.isLoading ? () {} : auth.signInGoogle,
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _SocialPill(
-                                    label: 'Apple',
-                                    icon: Icons.apple,
-                                    onTap: () => _showError('Apple sign-in is planned for later sprint.'),
-                                  ),
-                                ),
                               ],
                             ),
                             const SizedBox(height: 28),
