@@ -16,6 +16,7 @@ Use this checklist before release. Do not mark go-live ready until all P0 checks
 - [ ] Login success with no profile -> Onboarding screen
 - [ ] Login success with existing profile -> Dashboard
 - [ ] Email/password sign-up and sign-in confirmed
+- [ ] Android sign-up account can sign in on Web with same email/password (and vice versa)
 - [ ] Google sign-in confirmed
 - [ ] Apple sign-in confirmed (if enabled for release)
 - [ ] Microsoft sign-in confirmed (if enabled for release)

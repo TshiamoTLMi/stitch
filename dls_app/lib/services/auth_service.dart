@@ -6,6 +6,15 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class AuthService {
   FirebaseAuth get _auth => FirebaseAuth.instance;
   GoogleSignIn get _google => GoogleSignIn();
+  bool _webPersistenceReady = false;
+
+  Future<void> _ensureWebPersistence() async {
+    if (!kIsWeb || _webPersistenceReady) return;
+    await _auth.setPersistence(Persistence.LOCAL);
+    _webPersistenceReady = true;
+  }
+
+  String _normalizeEmail(String email) => email.trim().toLowerCase();
 
   Stream<User?> get authState {
     try {
@@ -27,8 +36,9 @@ class AuthService {
     required String email,
     required String password,
   }) async {
+    await _ensureWebPersistence();
     await _auth.createUserWithEmailAndPassword(
-      email: email,
+      email: _normalizeEmail(email),
       password: password,
     );
   }
@@ -36,15 +46,21 @@ class AuthService {
   Future<void> signInWithEmail({
     required String email,
     required String password,
-  }) {
-    return _auth.signInWithEmailAndPassword(email: email, password: password);
+  }) async {
+    await _ensureWebPersistence();
+    await _auth.signInWithEmailAndPassword(
+      email: _normalizeEmail(email),
+      password: password,
+    );
   }
 
-  Future<void> sendPasswordResetEmail({required String email}) {
-    return _auth.sendPasswordResetEmail(email: email);
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    await _ensureWebPersistence();
+    await _auth.sendPasswordResetEmail(email: _normalizeEmail(email));
   }
 
   Future<void> signInWithGoogle() async {
+    await _ensureWebPersistence();
     if (kIsWeb) {
       final provider = GoogleAuthProvider();
       await _auth.signInWithPopup(provider);
