@@ -599,3 +599,22 @@ Final iOS build validation cannot be completed from this Windows environment bec
 1. Add your chosen free-tier API key at runtime using `--dart-define=DLS_LLM_API_KEY=...`.
 2. Run on device and validate AI output quality for at least 10 wardrobe combinations.
 3. Decide whether `google-services.json` remains tracked or shifts to template-based distribution for stricter privacy posture.
+
+## 27. AI Outfit Grounding Upgrade (2026-04-29)
+
+### Completed in this update
+
+1. Tightened AI generator grounding so LLM enhancement is explicitly locked to the selected wardrobe pieces.
+2. Updated the AI prompt to prevent invented garment swaps during caption/reasoning generation.
+3. Added an optional `Styling Tip` output in the generator UI for a more premium result when AI is enabled.
+
+### Validation
+
+1. Focused analysis passed for:
+  - `lib/views/home/outfit_generator_page.dart`
+  - `lib/services/outfit_llm_service.dart`
+
+### Outcome
+
+- Auto-generate still uses the app's actual outfit selection first.
+- AI now acts as a stylist layer on top of that chosen outfit instead of drifting into unrelated pieces.

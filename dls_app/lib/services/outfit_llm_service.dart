@@ -11,10 +11,12 @@ class OutfitLlmInsight {
   const OutfitLlmInsight({
     required this.caption,
     required this.reasoning,
+    required this.stylingTip,
   });
 
   final String caption;
   final List<String> reasoning;
+  final String? stylingTip;
 }
 
 class OutfitLlmService {
@@ -195,12 +197,17 @@ class OutfitLlmService {
     final reasoning = reasoningRaw is List
         ? reasoningRaw.whereType<String>().map((e) => e.trim()).where((e) => e.isNotEmpty).take(4).toList()
         : <String>[];
+    final stylingTip = (parsed['styling_tip'] as String?)?.trim();
 
     if (caption == null || caption.isEmpty) {
       return null;
     }
 
-    return OutfitLlmInsight(caption: caption, reasoning: reasoning);
+    return OutfitLlmInsight(
+      caption: caption,
+      reasoning: reasoning,
+      stylingTip: stylingTip == null || stylingTip.isEmpty ? null : stylingTip,
+    );
   }
 
   String _buildPrompt({
@@ -234,10 +241,16 @@ Selected outfit:
 - Shoes: ${itemSummary(result.shoes)}
 - Accessory: ${itemSummary(result.accessory)}
 
+Critical rules:
+- The selected outfit above is locked. You must style only these pieces.
+- Do not invent, swap, or suggest different garments as if they are already being worn.
+- You may mention one optional upgrade piece only as a future improvement in styling_tip.
+
 Return strict JSON only with this exact schema:
 {
   "caption": "short, punchy caption under 110 chars",
-  "reasoning": ["max 4 concise bullets, each under 90 chars"]
+  "reasoning": ["max 4 concise bullets, each under 90 chars"],
+  "styling_tip": "optional one-line finishing tip or future upgrade under 110 chars"
 }
 ''';
   }

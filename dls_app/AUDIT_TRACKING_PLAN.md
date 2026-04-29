@@ -343,3 +343,22 @@ Risk status:
 Next action plan:
 - Use `tooling/preflight_check.ps1` before every release and before physical-device smoke tests.
 - Keep Flutter PATH alignment as a cleanup task to avoid accidental use of hanging SDK path.
+
+## 19. AI Generator Grounding Audit (2026-04-29)
+
+Status: Complete
+
+Implementation summary:
+- Strengthened `OutfitLlmService` prompt rules so AI enhancement is locked to the selected outfit pieces.
+- Added optional `styling_tip` response handling and surfaced it in generator UI.
+
+Validation evidence:
+- Focused `flutter analyze` passed for `lib/views/home/outfit_generator_page.dart` and `lib/services/outfit_llm_service.dart`.
+
+Risk status:
+- AI quality still depends on runtime API key availability and network access.
+- Base outfit correctness still comes from the rule engine, which is the intended safety net.
+
+Next action plan:
+- Run on-device AI generation checks with real wardrobe data.
+- If quality is still too average, add personalization signals like recent liked outfits, favorite colors, and style DNA weighting into the AI prompt.

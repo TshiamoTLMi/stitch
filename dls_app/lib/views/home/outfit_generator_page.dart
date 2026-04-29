@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,8 @@ import '../../services/caption_service.dart';
 import '../../services/outfit_history_service.dart';
 import '../../services/outfit_bot_service.dart';
 import '../../services/outfit_llm_service.dart';
+import '../../services/outfit_image_service.dart';
+import '../../services/virtual_tryon_service.dart';
 
 class OutfitGeneratorPage extends StatefulWidget {
   const OutfitGeneratorPage({super.key, required this.userId});
@@ -32,10 +35,15 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   final _outfitBot = OutfitBotService();
   final _captionService = CaptionService();
   final _outfitLlmService = OutfitLlmService();
+  final _outfitImageService = OutfitImageService();
+  final _virtualTryOnService = VirtualTryOnService();
   OutfitResult? _result;
   String? _caption;
+  String? _stylingTip;
   bool _isGenerating = false;
   bool _isAiEnhancing = false;
+  bool _isRenderingImage = false;
+  bool _isGeneratingTryOn = false;
   final _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _isOffline = false;
@@ -103,6 +111,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
     var finalCaption = caption;
     var finalReasoning = <String>[...result.reasoning];
+    String? finalStylingTip;
 
     if (_outfitLlmService.isConfigured && !_isOffline && result.isValid) {
       if (mounted) {
@@ -120,6 +129,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
         if (llmInsight.reasoning.isNotEmpty) {
           finalReasoning = llmInsight.reasoning;
         }
+        finalStylingTip = llmInsight.stylingTip;
       }
       if (mounted) {
         setState(() => _isAiEnhancing = false);
@@ -142,6 +152,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     setState(() {
       _result = finalResult;
       _caption = finalCaption;
+      _stylingTip = finalStylingTip;
       _isGenerating = false;
     });
 
@@ -188,6 +199,154 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     } catch (_) {
       // Audit trail is best-effort in demo mode.
     }
+  }
+
+  Future<void> _generateOutfitImage() async {
+    final result = _result;
+    if (result == null || !result.isValid || _isRenderingImage) {
+      return;
+    }
+
+    setState(() => _isRenderingImage = true);
+    try {
+      final bytes = await _outfitImageService.composeOutfitImage(
+        result: result,
+        title: _caption,
+        cleanupBackground: true,
+      );
+      if (!mounted) {
+        return;
+      }
+      await _showGeneratedImageDialog(
+        title: 'Generated Outfit Image',
+        bytes: bytes,
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not generate outfit image. Please try again.')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isRenderingImage = false);
+      }
+    }
+  }
+
+  Future<void> _generateTryOn() async {
+    final result = _result;
+    if (result == null || !result.isValid || _isGeneratingTryOn) {
+      return;
+    }
+
+    if (!_virtualTryOnService.isConfigured) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Try-on backend is not configured. Add DLS_TRYON_ENDPOINT to enable this feature.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isGeneratingTryOn = true);
+    try {
+      final imageUrl = await _virtualTryOnService.generateTryOnImage(
+        result: result,
+        occasion: _occasion,
+        mood: _mood,
+        weather: _weather,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      if (imageUrl == null || imageUrl.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Try-on service did not return an image.')),
+        );
+        return;
+      }
+
+      await showDialog<void>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Virtual Try-On (Beta)'),
+            content: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                loadingBuilder: (_, child, progress) {
+                  if (progress == null) {
+                    return child;
+                  }
+                  return const SizedBox(
+                    width: 280,
+                    height: 320,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                },
+                errorBuilder: (_, __, ___) => const SizedBox(
+                  width: 280,
+                  height: 320,
+                  child: Center(child: Text('Could not load try-on image.')),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Try-on generation failed. Please retry.')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isGeneratingTryOn = false);
+      }
+    }
+  }
+
+  Future<void> _showGeneratedImageDialog({
+    required String title,
+    required Uint8List bytes,
+  }) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.memory(
+              bytes,
+              width: 280,
+              height: 360,
+              fit: BoxFit.cover,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -334,6 +493,20 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                       ),
                       child: Text(_caption ?? ''),
                     ),
+                    if ((_stylingTip ?? '').isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      const Text('Styling Tip', style: TextStyle(fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surfaceHigh,
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Text(_stylingTip!),
+                      ),
+                    ],
                     const SizedBox(height: 10),
                     const Text('Reasoning', style: TextStyle(fontWeight: FontWeight.w700)),
                     ..._result!.reasoning.map((e) => Text('- $e')),
@@ -353,13 +526,41 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.bookmark_border),
-                      label: const Text('Save'),
+                      onPressed: _isRenderingImage ? null : _generateOutfitImage,
+                      icon: _isRenderingImage
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.image_outlined),
+                      label: Text(_isRenderingImage ? 'Rendering...' : 'Generate Image'),
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _isGeneratingTryOn ? null : _generateTryOn,
+                  icon: _isGeneratingTryOn
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.auto_fix_high_outlined),
+                  label: Text(_isGeneratingTryOn ? 'Generating Try-On...' : 'Virtual Try-On (Beta)'),
+                ),
+              ),
+              if (!_virtualTryOnService.isConfigured) ...[
+                const SizedBox(height: 8),
+                const Text(
+                  'Tip: add DLS_TRYON_ENDPOINT to enable backend try-on rendering.',
+                  style: TextStyle(color: AppTheme.onSurfaceVariant),
+                ),
+              ],
             ],
           ),
         const SizedBox(height: 16),
