@@ -13,6 +13,7 @@ import '../../core/theme/app_theme.dart';
 import '../../services/demo_data_service.dart';
 import '../../services/image_compression_service.dart';
 import '../../services/profile_service.dart';
+import '../../widgets/context_tip_card.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -241,6 +242,27 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  String _buildInsightMessage(Map<String, dynamic> metrics) {
+    final items = (metrics['items'] as int?) ?? 0;
+    final outfits = (metrics['outfits'] as int?) ?? 0;
+    final topCategory = (metrics['topCategory'] as String?) ?? 'N/A';
+    final latestCaption = (metrics['latestCaption'] as String?) ?? '';
+
+    if (items == 0) {
+      return 'Start by uploading a few wardrobe items. Once your closet is populated, your style insights will become much sharper.';
+    }
+
+    if (outfits == 0) {
+      return 'Your closet is growing. Generate your first outfit to unlock personalized reasoning and history-based style tracking.';
+    }
+
+    if (topCategory == 'N/A') {
+      return 'You already have activity in the app. Keep generating looks and planning events to deepen your style profile.';
+    }
+
+    return 'Your strongest wardrobe signal right now is $topCategory. Latest fit vibe: $latestCaption';
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthController>();
@@ -347,17 +369,23 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: AppTheme.surfaceLow,
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('AI Stylist Insight', style: TextStyle(color: AppTheme.tertiary, fontWeight: FontWeight.w700)),
-                          SizedBox(height: 8),
+                          const Text('AI Stylist Insight', style: TextStyle(color: AppTheme.tertiary, fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 8),
                           Text(
-                            'Track your outfits and events to unlock stronger personalized style insights.',
-                            style: TextStyle(color: AppTheme.onSurfaceVariant),
+                            _buildInsightMessage(metrics),
+                            style: const TextStyle(color: AppTheme.onSurfaceVariant),
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(height: 12),
+                    const ContextTipCard(
+                      title: 'Profile Shortcuts',
+                      message: 'Use Seed Demo Data for quick showcases, or Clear My Test Data when you want a clean test run before tomorrow\'s app checks.',
+                      icon: Icons.insights_outlined,
                     ),
                     const SizedBox(height: 12),
                     Card(

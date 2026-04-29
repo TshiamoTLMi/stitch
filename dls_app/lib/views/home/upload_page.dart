@@ -8,6 +8,7 @@ import '../../core/constants/wardrobe_taxonomy.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/clothing_item.dart';
 import '../../services/wardrobe_service.dart';
+import '../../widgets/context_tip_card.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key, required this.userId});
@@ -54,9 +55,9 @@ class _UploadPageState extends State<UploadPage> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
+    final picked = await picker.pickImage(source: source, imageQuality: 90);
     if (picked == null) return;
 
     final bytes = await picked.readAsBytes();
@@ -136,13 +137,14 @@ class _UploadPageState extends State<UploadPage> {
       children: [
         Text('Closet Scanner', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 8),
-        const Text(
-          'Align your piece within the frame. MVP defaults to shirt + casual.',
-          style: TextStyle(color: AppTheme.onSurfaceVariant),
+        const ContextTipCard(
+          title: 'Quick Start',
+          message: 'Take a photo or pick one from gallery, then confirm category, color, and status before saving.',
+          icon: Icons.camera_alt_outlined,
         ),
         const SizedBox(height: 12),
         GestureDetector(
-          onTap: _pickImage,
+          onTap: () => _pickImage(ImageSource.gallery),
           child: Container(
             height: 340,
             decoration: BoxDecoration(
@@ -192,7 +194,7 @@ class _UploadPageState extends State<UploadPage> {
                   left: 16,
                   right: 16,
                   child: Text(
-                    'Tap to change image',
+                    'Tap preview to change image',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
@@ -202,6 +204,34 @@ class _UploadPageState extends State<UploadPage> {
           ),
         ),
         const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: _isSaving ? null : () => _pickImage(ImageSource.camera),
+                icon: const Icon(Icons.photo_camera_outlined),
+                label: const Text('Take Photo'),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: _isSaving ? null : () => _pickImage(ImageSource.gallery),
+                icon: const Icon(Icons.photo_library_outlined),
+                label: const Text('Gallery'),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ContextTipCard(
+          title: _imageBytes == null ? 'No Photo Selected' : 'Ready To Save',
+          message: _imageBytes == null
+              ? 'Add a clothing image first so we can save it into your closet.'
+              : 'Current setup: ${_category.replaceAll('_', ' ')} • ${_status.replaceAll('_', ' ')} • ${_selectedTags.join(', ')}.',
+          icon: _imageBytes == null ? Icons.image_outlined : Icons.check_circle_outline,
+        ),
+        const SizedBox(height: 12),
         DropdownButtonFormField<String>(
           initialValue: _category,
           decoration: const InputDecoration(labelText: 'Category'),

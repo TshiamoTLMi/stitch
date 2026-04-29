@@ -9,6 +9,7 @@ import '../../models/event_model.dart';
 import '../../services/calendar_sync_service.dart';
 import '../../services/event_service.dart';
 import '../../services/outfit_bot_service.dart';
+import '../../widgets/context_tip_card.dart';
 
 class EventPlannerPage extends StatefulWidget {
   const EventPlannerPage({super.key, required this.userId});
@@ -120,12 +121,21 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
   @override
   Widget build(BuildContext context) {
     final wardrobe = context.watch<WardrobeController>().items;
+    final readiness = _bot.checkReadiness(wardrobe);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       children: [
         Text('Event Planner', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 10),
+        ContextTipCard(
+          title: readiness.canGenerate ? 'Planner Ready' : 'Planner Needs More Closet Data',
+          message: readiness.canGenerate
+              ? 'Create events and the app will suggest looks from your clean wardrobe items.'
+              : '${readiness.userFriendlyMessage} Add more pieces to unlock stronger event recommendations.',
+          icon: readiness.canGenerate ? Icons.event_available_outlined : Icons.event_busy_outlined,
+        ),
+        const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -208,7 +218,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
               return const Card(
                 child: Padding(
                   padding: EdgeInsets.all(16),
-                  child: Text('No upcoming events yet.'),
+                  child: Text('No upcoming events yet. Add one above or import from your phone calendar.'),
                 ),
               );
             }
@@ -241,7 +251,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
                         ),
                         const SizedBox(height: 8),
                         if (suggestions.isEmpty)
-                          const Text('Add more clean items to get suggestions.')
+                          const Text('Add more clean wardrobe items to unlock better event suggestions.')
                         else
                           ...suggestions.map(
                             (s) => Container(
