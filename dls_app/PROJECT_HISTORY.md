@@ -618,3 +618,31 @@ Final iOS build validation cannot be completed from this Windows environment bec
 
 - Auto-generate still uses the app's actual outfit selection first.
 - AI now acts as a stylist layer on top of that chosen outfit instead of drifting into unrelated pieces.
+
+## 28. Outfit Image + Try-On Expansion (2026-04-29)
+
+### Completed in this update
+
+1. Implemented in-app outfit image generation from selected wardrobe pieces:
+  - Added `lib/services/outfit_image_service.dart`
+  - Composes top/bottom/shoes/accessory into a generated board image
+  - Exposed UI action: `Generate Image`
+2. Added automatic background cleanup pipeline for item images:
+  - Corner-sampled flat-background removal applied before compositing
+  - Improves item cutout quality in generated outfit image
+3. Added backend-ready virtual try-on scaffold:
+  - Added `lib/services/virtual_tryon_service.dart`
+  - Supports endpoint + optional auth via runtime config
+  - Exposed UI action: `Virtual Try-On (Beta)`
+
+### Runtime config for advanced try-on
+
+1. `--dart-define=DLS_TRYON_ENDPOINT=...`
+2. Optional: `--dart-define=DLS_TRYON_API_KEY=...`
+
+### Validation
+
+1. Focused analysis passed for:
+  - `lib/views/home/outfit_generator_page.dart`
+  - `lib/services/outfit_image_service.dart`
+  - `lib/services/virtual_tryon_service.dart`

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
@@ -8,6 +9,13 @@ import '../models/clothing_item.dart';
 import '../models/outfit_result.dart';
 
 class OutfitImageService {
+  OutfitImageService({http.Client? client, Duration? requestTimeout})
+      : _client = client ?? http.Client(),
+        _requestTimeout = requestTimeout ?? const Duration(seconds: 12);
+
+  final http.Client _client;
+  final Duration _requestTimeout;
+
   Future<Uint8List> composeOutfitImage({
     required OutfitResult result,
     String? title,
@@ -58,7 +66,9 @@ class OutfitImageService {
     }
 
     try {
-      final response = await http.get(Uri.parse(item.imageUrl.trim()));
+      final response = await _client
+          .get(Uri.parse(item.imageUrl.trim()))
+          .timeout(_requestTimeout);
       if (response.statusCode < 200 || response.statusCode >= 300) {
         return null;
       }

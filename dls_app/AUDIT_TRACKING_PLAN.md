@@ -362,3 +362,23 @@ Risk status:
 Next action plan:
 - Run on-device AI generation checks with real wardrobe data.
 - If quality is still too average, add personalization signals like recent liked outfits, favorite colors, and style DNA weighting into the AI prompt.
+
+## 20. Outfit Visual Generation Audit (2026-04-29)
+
+Status: Complete
+
+Implementation summary:
+- Added generated outfit board image composition from selected user wardrobe items.
+- Added background-cleanup step for flatter item backgrounds before compositing.
+- Added backend-ready Virtual Try-On beta integration path with runtime endpoint config.
+
+Validation evidence:
+- Focused `flutter analyze` passed for generator view + new image/try-on services.
+
+Risk status:
+- Background cleanup is heuristic and works best with flatter/solid photo backgrounds.
+- Virtual try-on result quality depends on external backend model capability and latency.
+
+Next action plan:
+- Run physical device UX test for `Generate Image` and `Virtual Try-On (Beta)` actions.
+- Add persistent save/share flow for generated outfit image in next pass.
