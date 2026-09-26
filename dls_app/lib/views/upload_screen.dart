@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,10 +7,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../core/constants/wardrobe_taxonomy.dart';
+import '../models/vision_analysis.dart';
 import '../services/firebase_service.dart';
+import '../services/vision_engine.dart';
 
 class UploadScreen extends StatefulWidget {
-  const UploadScreen({super.key});
+  const UploadScreen({super.key, this.visionEngine});
+
+  final VisionEngine? visionEngine;
 
   @override
   State<UploadScreen> createState() => _UploadScreenState();
@@ -18,12 +23,16 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   final ImagePicker _picker = ImagePicker();
   final FirebaseService _firebaseService = FirebaseService();
+  late final VisionEngine _visionEngine;
   File? _selectedImage;
   bool _isUploading = false;
-  String _selectedParentCategory = categoryTaxonomy.keys.first;
+  bool _isAiThinking = false;
+  final Set<String> _lockedFields = <String>{};
+  String? _selectedParentCategory;
   String? _selectedSubcategory;
   String? _selectedFit;
-  final TextEditingController _colorController = TextEditingController(text: 'black');
+  final TextEditingController _colorController =
+      TextEditingController(text: 'black');
   String _selectedSeason = seasonOptions.first;
   String _selectedStatus = statusOptions.first;
   String _selectedGender = genderOptions.first;
@@ -33,12 +42,19 @@ class _UploadScreenState extends State<UploadScreen> {
   List<String> get _subcategoryOptions =>
       categoryTaxonomy[_selectedParentCategory] ?? const <String>[];
 
-  bool get _needsFit => _selectedSubcategory != null && requiresFit(_selectedSubcategory!);
+  bool get _needsFit =>
+      _selectedSubcategory != null && requiresFit(_selectedSubcategory!);
 
   @override
   void dispose() {
     _colorController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _visionEngine = widget.visionEngine ?? GeminiVisionEngine();
   }
 
   Future<void> _pickFromCamera() async {
@@ -54,7 +70,7 @@ class _UploadScreenState extends State<UploadScreen> {
       return;
     }
 
-    setState(() => _selectedImage = File(image.path));
+    _selectImage(image.path);
   }
 
   Future<void> _pickFromGallery() async {
@@ -67,8 +83,160 @@ class _UploadScreenState extends State<UploadScreen> {
     final image = await _picker.pickImage(source: ImageSource.gallery);
     if (image == null) return;
 
-    setState(() => _selectedImage = File(image.path));
+    _selectImage(image.path);
   }
+
+  void _selectImage(String path) {
+    setState(() {
+      _selectedImage = File(path);
+      _selectedParentCategory = null;
+      _selectedSubcategory = null;
+      _selectedFit = null;
+      _colorController.clear();
+      _lockedFields.clear();
+      _isAiThinking = true;
+      _lastUploadError = null;
+    });
+    unawaited(_runVisionAnalysis(path));
+  }
+
+  Future<void> _runVisionAnalysis(String path) async {
+    try {
+      final result = await _visionEngine.analyzeClothingItem(
+        await File(path).readAsBytes(),
+      );
+      if (!mounted || _selectedImage?.path != path) return;
+
+      if (result.isNotClothing) {
+        setState(() {
+          _selectedImage = null;
+          _isAiThinking = false;
+          _selectedParentCategory = null;
+          _selectedSubcategory = null;
+          _selectedFit = null;
+          _colorController.clear();
+        });
+        _showMessage(
+            'That does not look like clothing. Please choose a clothing photo.');
+        return;
+      }
+
+      _applyVisionAnalysis(result);
+    } catch (_) {
+      if (mounted && _selectedImage?.path == path) {
+        setState(() => _isAiThinking = false);
+      }
+    }
+  }
+
+  void _applyVisionAnalysis(VisionAnalysis result) {
+    String? parent = _findParent(result.parentCategory ?? result.subcategory);
+    String? subcategory = _findSubcategory(result.subcategory);
+    if (subcategory != null) {
+      parent = categoryTaxonomy.entries
+          .firstWhere((entry) => entry.value.contains(subcategory))
+          .key;
+    }
+
+    setState(() {
+      if (!_lockedFields.contains('category')) {
+        _selectedParentCategory = parent;
+        _selectedSubcategory = subcategory;
+      }
+      if (!_lockedFields.contains('color') && result.color != null) {
+        _colorController.text = result.color!;
+      }
+      if (!_lockedFields.contains('fit')) {
+        _selectedFit = _findFit(result.fit);
+      }
+      _isAiThinking = false;
+    });
+  }
+
+  String? _findSubcategory(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    final normalized = _normalize(value);
+    for (final option in categoryTaxonomy.values.expand((items) => items)) {
+      final optionNormalized = _normalize(option);
+      if (optionNormalized == normalized ||
+          optionNormalized == '${normalized}s' ||
+          normalized == '${optionNormalized}s') {
+        return option;
+      }
+    }
+    const aliases = <String, String>{
+      'shirt': 'T-shirts',
+      'tshirt': 'T-shirts',
+      'tee': 'T-shirts',
+      'blazer': 'Blazers',
+      'jumpsuit': 'Jumpsuits',
+      'pants': 'Trousers',
+      'trouser': 'Trousers',
+      'shoes': 'Sneakers',
+      'shoe': 'Sneakers',
+      'sneaker': 'Sneakers',
+      'boot': 'Boots',
+      'jacket': 'Puffer jackets',
+      'coat': 'Trench coats',
+      'hat': 'Hats',
+      'bag': 'Bags',
+      'purse': 'Bags',
+      'jewellery': 'Jewelry',
+    };
+    return aliases[normalized];
+  }
+
+  String? _findParent(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    final normalized = _normalize(value);
+    for (final parent in categoryTaxonomy.keys) {
+      if (_normalize(parent) == normalized) return parent;
+    }
+    const aliases = <String, String>{
+      'top': 'Tops',
+      'shirt': 'Tops',
+      'tshirt': 'Tops',
+      'blouse': 'Tops',
+      'sweater': 'Tops',
+      'knitwear': 'Tops',
+      'bottom': 'Bottoms',
+      'pants': 'Bottoms',
+      'trousers': 'Bottoms',
+      'jeans': 'Bottoms',
+      'skirt': 'Bottoms',
+      'dress': 'Dresses & Jumpsuits',
+      'dresses': 'Dresses & Jumpsuits',
+      'jumpsuit': 'Dresses & Jumpsuits',
+      'fullbody': 'Dresses & Jumpsuits',
+      'outerwear': 'Outerwear',
+      'jacket': 'Outerwear',
+      'coat': 'Outerwear',
+      'activewear': 'Activewear & Leisure',
+      'sportswear': 'Activewear & Leisure',
+      'accessory': 'Accessories',
+      'accessories': 'Accessories',
+      'bag': 'Accessories',
+      'hat': 'Accessories',
+      'footwear': 'Footwear',
+      'shoe': 'Footwear',
+      'shoes': 'Footwear',
+      'sneaker': 'Footwear',
+      'boot': 'Footwear',
+    };
+    return aliases[normalized];
+  }
+
+  String? _findFit(String? value) {
+    if (value == null) return null;
+    final normalized = _normalize(value);
+    for (final fit in fitOptions) {
+      if (_normalize(fit) == normalized) return fit;
+    }
+    return null;
+  }
+
+  String _normalize(String value) =>
+      value.trim().toLowerCase().replaceAll(RegExp(r'[\s_-]+'), '');
 
   Future<bool> _requestCameraPermission() async {
     if (kIsWeb) return true;
@@ -98,6 +266,10 @@ class _UploadScreenState extends State<UploadScreen> {
       _showMessage('Subcategory is required.');
       return;
     }
+    if (_selectedParentCategory == null || _selectedParentCategory!.isEmpty) {
+      _showMessage('Parent category is required.');
+      return;
+    }
     if (_needsFit && (_selectedFit == null || _selectedFit!.isEmpty)) {
       _showMessage('Fit is required for this subcategory.');
       return;
@@ -116,10 +288,10 @@ class _UploadScreenState extends State<UploadScreen> {
     try {
       await _firebaseService.uploadClothingItem(
         _selectedImage!,
-        parentCategory: _selectedParentCategory,
+        parentCategory: _selectedParentCategory!,
         subcategory: _selectedSubcategory!,
         categoryType: deriveCategoryType(
-          parentCategory: _selectedParentCategory,
+          parentCategory: _selectedParentCategory!,
           subcategory: _selectedSubcategory!,
         ),
         fit: _needsFit ? _selectedFit : null,
@@ -136,10 +308,12 @@ class _UploadScreenState extends State<UploadScreen> {
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Added $_selectedSubcategory to your wardrobe!')),
+        SnackBar(
+            content: Text('Added $_selectedSubcategory to your wardrobe!')),
       );
     } catch (e) {
-      final msg = e.toString().contains('object-not-found') || e.toString().contains('Storage has not been set up')
+      final msg = e.toString().contains('object-not-found') ||
+              e.toString().contains('Storage has not been set up')
           ? 'Upload failed: Firebase Storage is not enabled yet. Go to Firebase Console → Storage → Get Started, then try again.'
           : 'Upload failed: $e';
       _lastUploadError = msg;
@@ -178,7 +352,10 @@ class _UploadScreenState extends State<UploadScreen> {
               gradient: RadialGradient(
                 center: Alignment.center,
                 radius: 1.3,
-                colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.8)
+                ],
               ),
             ),
           ),
@@ -189,13 +366,15 @@ class _UploadScreenState extends State<UploadScreen> {
               children: [
                 // Top controls
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _CircleControl(
                         onTap: () => Navigator.of(context).pop(),
-                        child: const Icon(Icons.close, color: Colors.white, size: 20),
+                        child: const Icon(Icons.close,
+                            color: Colors.white, size: 20),
                       ),
                       const Text(
                         'LESÉLA SETE',
@@ -208,7 +387,8 @@ class _UploadScreenState extends State<UploadScreen> {
                       ),
                       _CircleControl(
                         onTap: () {},
-                        child: const Icon(Icons.flash_on, color: Color(0xFFF2CA50), size: 20),
+                        child: const Icon(Icons.flash_on,
+                            color: Color(0xFFF2CA50), size: 20),
                       ),
                     ],
                   ),
@@ -221,399 +401,474 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                 ),
 
-                // Bottom controls
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Column(
-                    children: [
-                      // Instruction text
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Column(
                         children: [
-                          Container(width: 20, height: 1, color: const Color(0xFF4D4635)),
-                          const SizedBox(width: 10),
-                          Text(
-                            _selectedImage != null
-                                ? 'REVIEW YOUR PIECE'
-                                : 'ALIGN YOUR PIECE WITHIN THE FRAME',
-                            style: const TextStyle(
-                              color: Color(0xFFD0C5AF),
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 2,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Container(width: 20, height: 1, color: const Color(0xFF4D4635)),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      if (_selectedImage != null) ...[
-                        if (_lastUploadError != null) ...[
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF802918).withValues(alpha: 0.55),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Text(
-                              _lastUploadError!,
-                              style: const TextStyle(
-                                color: Color(0xFFFFDAD3),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1C1B1B).withValues(alpha: 0.94),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
+                          // Instruction text
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.category_outlined,
-                                      color: Color(0xFFD0C5AF), size: 18),
-                                  const SizedBox(width: 8),
-                                  const Text(
-                                    'Parent Category',
-                                    style: TextStyle(
-                                      color: Color(0xFFD0C5AF),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: _selectedParentCategory,
-                                      borderRadius: BorderRadius.circular(16),
-                                      dropdownColor: const Color(0xFF2A2A2A),
-                                      style: const TextStyle(
-                                        color: Color(0xFFE5E2E1),
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                      iconEnabledColor: const Color(0xFFF2CA50),
-                                      items: categoryTaxonomy.keys
-                                          .map(
-                                            (c) => DropdownMenuItem<String>(
-                                              value: c,
-                                              child: Text(c),
-                                            ),
-                                          )
-                                          .toList(),
-                                      onChanged: _isUploading
-                                          ? null
-                                          : (value) {
-                                              if (value == null) return;
-                                              setState(() {
-                                                _selectedParentCategory = value;
-                                                _selectedSubcategory = null;
-                                                _selectedFit = null;
-                                              });
-                                            },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  const Icon(Icons.sell_outlined,
-                                      color: Color(0xFFD0C5AF), size: 18),
-                                  const SizedBox(width: 8),
-                                  const Text(
-                                    'Subcategory',
-                                    style: TextStyle(
-                                      color: Color(0xFFD0C5AF),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: _selectedSubcategory,
-                                      hint: const Text('Select'),
-                                      borderRadius: BorderRadius.circular(16),
-                                      dropdownColor: const Color(0xFF2A2A2A),
-                                      style: const TextStyle(
-                                        color: Color(0xFFE5E2E1),
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                      iconEnabledColor: const Color(0xFFF2CA50),
-                                      items: _subcategoryOptions
-                                          .map(
-                                            (s) => DropdownMenuItem<String>(
-                                              value: s,
-                                              child: Text(s),
-                                            ),
-                                          )
-                                          .toList(),
-                                      onChanged: _isUploading
-                                          ? null
-                                          : (value) => setState(() {
-                                                _selectedSubcategory = value;
-                                                _selectedFit = null;
-                                              }),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              if (_needsFit) ...[
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.straighten_outlined,
-                                        color: Color(0xFFD0C5AF), size: 18),
-                                    const SizedBox(width: 8),
-                                    const Text(
-                                      'Fit',
-                                      style: TextStyle(
-                                        color: Color(0xFFD0C5AF),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        value: _selectedFit,
-                                        hint: const Text('Select fit'),
-                                        borderRadius: BorderRadius.circular(16),
-                                        dropdownColor: const Color(0xFF2A2A2A),
-                                        style: const TextStyle(
-                                          color: Color(0xFFE5E2E1),
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                        iconEnabledColor: const Color(0xFFF2CA50),
-                                        items: fitOptions
-                                            .map(
-                                              (f) => DropdownMenuItem<String>(
-                                                value: f,
-                                                child: Text(f),
-                                              ),
-                                            )
-                                            .toList(),
-                                        onChanged: _isUploading
-                                            ? null
-                                            : (value) => setState(() => _selectedFit = value),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                              const SizedBox(height: 8),
-                              TextField(
-                                controller: _colorController,
-                                style: const TextStyle(color: Color(0xFFE5E2E1)),
-                                decoration: const InputDecoration(
-                                  labelText: 'Color',
-                                  labelStyle: TextStyle(color: Color(0xFFD0C5AF)),
+                              Container(
+                                  width: 20,
+                                  height: 1,
+                                  color: const Color(0xFF4D4635)),
+                              const SizedBox(width: 10),
+                              Text(
+                                _selectedImage != null
+                                    ? 'REVIEW YOUR PIECE'
+                                    : 'ALIGN YOUR PIECE WITHIN THE FRAME',
+                                style: const TextStyle(
+                                  color: Color(0xFFD0C5AF),
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 2,
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: DropdownButtonFormField<String>(
-                                      initialValue: _selectedSeason,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Season',
-                                      ),
-                                      items: seasonOptions
-                                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                                          .toList(),
-                                      onChanged: _isUploading
-                                          ? null
-                                          : (value) => setState(
-                                              () => _selectedSeason = value ?? seasonOptions.first,
-                                            ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: DropdownButtonFormField<String>(
-                                      initialValue: _selectedStatus,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Status',
-                                      ),
-                                      items: statusOptions
-                                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                                          .toList(),
-                                      onChanged: _isUploading
-                                          ? null
-                                          : (value) => setState(
-                                              () => _selectedStatus = value ?? statusOptions.first,
-                                            ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              DropdownButtonFormField<String>(
-                                initialValue: _selectedGender,
-                                decoration: const InputDecoration(labelText: 'Gender'),
-                                items: genderOptions
-                                    .map((g) => DropdownMenuItem(value: g, child: Text(g)))
-                                    .toList(),
-                                onChanged: _isUploading
-                                    ? null
-                                    : (value) =>
-                                        setState(() => _selectedGender = value ?? genderOptions.first),
-                              ),
-                              const SizedBox(height: 8),
-                              Align(
-                                alignment: Alignment.centerLeft,
+                              const SizedBox(width: 10),
+                              Container(
+                                  width: 20,
+                                  height: 1,
+                                  color: const Color(0xFF4D4635)),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+
+                          if (_selectedImage != null) ...[
+                            if (_lastUploadError != null) ...[
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF802918)
+                                      .withValues(alpha: 0.55),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
                                 child: Text(
-                                  'Style tags',
-                                  style: TextStyle(
-                                    color: const Color(0xFFD0C5AF).withValues(alpha: 0.95),
+                                  _lastUploadError!,
+                                  style: const TextStyle(
+                                    color: Color(0xFFFFDAD3),
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 6),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: styleTagOptions
-                                    .map(
-                                      (tag) => FilterChip(
-                                        label: Text(tag),
-                                        selected: _selectedStyleTags.contains(tag),
-                                        onSelected: _isUploading
-                                            ? null
-                                            : (selected) => setState(() {
-                                                  if (selected) {
-                                                    _selectedStyleTags.add(tag);
-                                                  } else {
-                                                    _selectedStyleTags.remove(tag);
-                                                  }
-                                                }),
+                              const SizedBox(height: 10),
+                            ],
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1C1B1B)
+                                    .withValues(alpha: 0.94),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.category_outlined,
+                                          color: Color(0xFFD0C5AF), size: 18),
+                                      const SizedBox(width: 8),
+                                      const Text(
+                                        'Parent Category',
+                                        style: TextStyle(
+                                          color: Color(0xFFD0C5AF),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
-                                    )
-                                    .toList(),
+                                      const Spacer(),
+                                      _VisionField(
+                                        isThinking: _isAiThinking,
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton<String>(
+                                            value: _selectedParentCategory,
+                                            hint: const Text('Select'),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            dropdownColor:
+                                                const Color(0xFF2A2A2A),
+                                            style: const TextStyle(
+                                              color: Color(0xFFE5E2E1),
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                            iconEnabledColor:
+                                                const Color(0xFFF2CA50),
+                                            items: categoryTaxonomy.keys
+                                                .map(
+                                                  (c) =>
+                                                      DropdownMenuItem<String>(
+                                                    value: c,
+                                                    child: Text(c),
+                                                  ),
+                                                )
+                                                .toList(),
+                                            onChanged: _isUploading
+                                                ? null
+                                                : (value) {
+                                                    if (value == null) return;
+                                                    setState(() {
+                                                      _lockedFields
+                                                          .add('category');
+                                                      _selectedParentCategory =
+                                                          value;
+                                                      _selectedSubcategory =
+                                                          null;
+                                                      _selectedFit = null;
+                                                    });
+                                                  },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.sell_outlined,
+                                          color: Color(0xFFD0C5AF), size: 18),
+                                      const SizedBox(width: 8),
+                                      const Text(
+                                        'Subcategory',
+                                        style: TextStyle(
+                                          color: Color(0xFFD0C5AF),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      _VisionField(
+                                        isThinking: _isAiThinking,
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton<String>(
+                                            value: _selectedSubcategory,
+                                            hint: const Text('Select'),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            dropdownColor:
+                                                const Color(0xFF2A2A2A),
+                                            style: const TextStyle(
+                                              color: Color(0xFFE5E2E1),
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                            iconEnabledColor:
+                                                const Color(0xFFF2CA50),
+                                            items: _subcategoryOptions
+                                                .map(
+                                                  (s) =>
+                                                      DropdownMenuItem<String>(
+                                                    value: s,
+                                                    child: Text(s),
+                                                  ),
+                                                )
+                                                .toList(),
+                                            onChanged: _isUploading
+                                                ? null
+                                                : (value) => setState(() {
+                                                      _lockedFields
+                                                          .add('category');
+                                                      _selectedSubcategory =
+                                                          value;
+                                                      _selectedFit = null;
+                                                    }),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (_needsFit || _isAiThinking) ...[
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.straighten_outlined,
+                                            color: Color(0xFFD0C5AF), size: 18),
+                                        const SizedBox(width: 8),
+                                        const Text(
+                                          'Fit',
+                                          style: TextStyle(
+                                            color: Color(0xFFD0C5AF),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        _VisionField(
+                                          isThinking: _isAiThinking,
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<String>(
+                                              value: _selectedFit,
+                                              hint: const Text('Select fit'),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              dropdownColor:
+                                                  const Color(0xFF2A2A2A),
+                                              style: const TextStyle(
+                                                color: Color(0xFFE5E2E1),
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                              iconEnabledColor:
+                                                  const Color(0xFFF2CA50),
+                                              items: fitOptions
+                                                  .map(
+                                                    (f) => DropdownMenuItem<
+                                                        String>(
+                                                      value: f,
+                                                      child: Text(f),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                              onChanged: _isUploading
+                                                  ? null
+                                                  : (value) => setState(() {
+                                                        _lockedFields
+                                                            .add('fit');
+                                                        _selectedFit = value;
+                                                      }),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                  const SizedBox(height: 8),
+                                  _VisionField(
+                                    isThinking: _isAiThinking,
+                                    child: TextField(
+                                      controller: _colorController,
+                                      onChanged: (_) =>
+                                          _lockedFields.add('color'),
+                                      style: const TextStyle(
+                                          color: Color(0xFFE5E2E1)),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Color',
+                                        labelStyle:
+                                            TextStyle(color: Color(0xFFD0C5AF)),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: DropdownButtonFormField<String>(
+                                          initialValue: _selectedSeason,
+                                          decoration: const InputDecoration(
+                                            labelText: 'Season',
+                                          ),
+                                          items: seasonOptions
+                                              .map((s) => DropdownMenuItem(
+                                                  value: s, child: Text(s)))
+                                              .toList(),
+                                          onChanged: _isUploading
+                                              ? null
+                                              : (value) => setState(
+                                                    () => _selectedSeason =
+                                                        value ??
+                                                            seasonOptions.first,
+                                                  ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: DropdownButtonFormField<String>(
+                                          initialValue: _selectedStatus,
+                                          decoration: const InputDecoration(
+                                            labelText: 'Status',
+                                          ),
+                                          items: statusOptions
+                                              .map((s) => DropdownMenuItem(
+                                                  value: s, child: Text(s)))
+                                              .toList(),
+                                          onChanged: _isUploading
+                                              ? null
+                                              : (value) => setState(
+                                                    () => _selectedStatus =
+                                                        value ??
+                                                            statusOptions.first,
+                                                  ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  DropdownButtonFormField<String>(
+                                    initialValue: _selectedGender,
+                                    decoration: const InputDecoration(
+                                        labelText: 'Gender'),
+                                    items: genderOptions
+                                        .map((g) => DropdownMenuItem(
+                                            value: g, child: Text(g)))
+                                        .toList(),
+                                    onChanged: _isUploading
+                                        ? null
+                                        : (value) => setState(() =>
+                                            _selectedGender =
+                                                value ?? genderOptions.first),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Style tags',
+                                      style: TextStyle(
+                                        color: const Color(0xFFD0C5AF)
+                                            .withValues(alpha: 0.95),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: styleTagOptions
+                                        .map(
+                                          (tag) => FilterChip(
+                                            label: Text(tag),
+                                            selected: _selectedStyleTags
+                                                .contains(tag),
+                                            onSelected: _isUploading
+                                                ? null
+                                                : (selected) => setState(() {
+                                                      if (selected) {
+                                                        _selectedStyleTags
+                                                            .add(tag);
+                                                      } else {
+                                                        _selectedStyleTags
+                                                            .remove(tag);
+                                                      }
+                                                    }),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                          ],
+
+                          // Control row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Gallery button
+                              _CircleControl(
+                                onTap: _pickFromGallery,
+                                child: const Icon(Icons.photo_library_outlined,
+                                    color: Color(0xFFD0C5AF), size: 22),
+                              ),
+
+                              // Main action
+                              if (_selectedImage == null)
+                                // Shutter button
+                                GestureDetector(
+                                  onTap: _pickFromCamera,
+                                  child: Container(
+                                    width: 84,
+                                    height: 84,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: const Color(0xFFD4AF37)
+                                            .withValues(alpha: 0.8),
+                                        width: 3,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFFD4AF37)
+                                              .withValues(alpha: 0.25),
+                                          blurRadius: 20,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(6),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFE5E2E1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                // Upload button
+                                GestureDetector(
+                                  onTap: _isUploading ? null : _uploadImage,
+                                  child: Container(
+                                    height: 60,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 28),
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFFF2CA50),
+                                          Color(0xFFD4AF37)
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(999),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFFD4AF37)
+                                              .withValues(alpha: 0.35),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Center(
+                                      child: _isUploading
+                                          ? const SizedBox(
+                                              width: 22,
+                                              height: 22,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2.5,
+                                                color: Color(0xFF3C2F00),
+                                              ),
+                                            )
+                                          : const Text(
+                                              'Add to Wardrobe',
+                                              style: TextStyle(
+                                                color: Color(0xFF3C2F00),
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 15,
+                                                letterSpacing: -0.2,
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                ),
+
+                              // Flip / retake
+                              _CircleControl(
+                                onTap: _selectedImage != null
+                                    ? () =>
+                                        setState(() => _selectedImage = null)
+                                    : _pickFromCamera,
+                                child: Icon(
+                                  _selectedImage != null
+                                      ? Icons.refresh_rounded
+                                      : Icons.flip_camera_ios_outlined,
+                                  color: const Color(0xFFD0C5AF),
+                                  size: 22,
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 14),
-                      ],
-
-                      // Control row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Gallery button
-                          _CircleControl(
-                            onTap: _pickFromGallery,
-                            child: const Icon(Icons.photo_library_outlined,
-                                color: Color(0xFFD0C5AF), size: 22),
-                          ),
-
-                          // Main action
-                          if (_selectedImage == null)
-                            // Shutter button
-                            GestureDetector(
-                              onTap: _pickFromCamera,
-                              child: Container(
-                                width: 84,
-                                height: 84,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(0xFFD4AF37).withValues(alpha: 0.8),
-                                    width: 3,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFD4AF37).withValues(alpha: 0.25),
-                                      blurRadius: 20,
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(6),
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFFE5E2E1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          else
-                            // Upload button
-                            GestureDetector(
-                              onTap: _isUploading ? null : _uploadImage,
-                              child: Container(
-                                height: 60,
-                                padding: const EdgeInsets.symmetric(horizontal: 28),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFFF2CA50), Color(0xFFD4AF37)],
-                                  ),
-                                  borderRadius: BorderRadius.circular(999),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFD4AF37).withValues(alpha: 0.35),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: _isUploading
-                                      ? const SizedBox(
-                                          width: 22,
-                                          height: 22,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            color: Color(0xFF3C2F00),
-                                          ),
-                                        )
-                                      : const Text(
-                                          'Add to Wardrobe',
-                                          style: TextStyle(
-                                            color: Color(0xFF3C2F00),
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 15,
-                                            letterSpacing: -0.2,
-                                          ),
-                                        ),
-                                ),
-                              ),
-                            ),
-
-                          // Flip / retake
-                          _CircleControl(
-                            onTap: _selectedImage != null
-                                ? () => setState(() => _selectedImage = null)
-                                : _pickFromCamera,
-                            child: Icon(
-                              _selectedImage != null
-                                  ? Icons.refresh_rounded
-                                  : Icons.flip_camera_ios_outlined,
-                              color: const Color(0xFFD0C5AF),
-                              size: 22,
-                            ),
-                          ),
+                          const SizedBox(height: 20),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -651,6 +906,36 @@ class _UploadScreenState extends State<UploadScreen> {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+class _VisionField extends StatelessWidget {
+  const _VisionField({required this.isThinking, required this.child});
+
+  final bool isThinking;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        if (isThinking)
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: -2,
+            child: SizedBox(
+              height: 2,
+              child: LinearProgressIndicator(
+                backgroundColor: Color(0x334D4635),
+                color: Color(0xFFF2CA50),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
 
 class _CircleControl extends StatelessWidget {
   const _CircleControl({required this.onTap, required this.child});
@@ -876,4 +1161,3 @@ class _AiTag extends StatelessWidget {
     );
   }
 }
-

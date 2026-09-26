@@ -10,10 +10,96 @@ import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/profile_analytics_state.dart';
 import '../../services/demo_data_service.dart';
 import '../../services/image_compression_service.dart';
 import '../../services/profile_service.dart';
 import '../../widgets/context_tip_card.dart';
+
+class ProfileAnalyticsSummary extends StatelessWidget {
+  const ProfileAnalyticsSummary({
+    super.key,
+    required this.metrics,
+    this.onRetry,
+  });
+
+  final ProfileAnalyticsState metrics;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(child: _statTile(metrics.itemCount?.toString() ?? 'Loading', 'Items in Closet')),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _statTile(
+                metrics.styleScore?.toStringAsFixed(1) ?? 'Unavailable',
+                'Style Score',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(child: _statTile(metrics.outfitCount?.toString() ?? 'Loading', 'Outfits Logged')),
+            const SizedBox(width: 10),
+            Expanded(child: _statTile(metrics.eventCount?.toString() ?? 'Loading', 'Events Planned')),
+          ],
+        ),
+        if (metrics.freshness != AnalyticsFreshness.live && metrics.status != AnalyticsStatus.loading) ...[
+          const SizedBox(height: 8),
+          Text(
+            metrics.freshness == AnalyticsFreshness.cached
+                ? 'Showing cached insights. Some values may be stale.'
+                : metrics.freshness == AnalyticsFreshness.stale
+                    ? 'These insights may be stale. Refresh when connected.'
+                    : 'Some insights are unavailable right now.',
+            style: const TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12),
+          ),
+        ],
+        if (metrics.status != AnalyticsStatus.ready && metrics.status != AnalyticsStatus.loading) ...[
+          const SizedBox(height: 6),
+          Text(
+            metrics.status == AnalyticsStatus.empty
+                ? 'No activity yet. Add wardrobe items or generate an outfit to build this view.'
+                : metrics.message ?? 'Some metrics are unavailable.',
+            style: const TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12),
+          ),
+          if (metrics.canRetry)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry insights'),
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+
+  static Widget _statTile(String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceHigh,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Text(value, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 4),
+          Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceVariant)),
+        ],
+      ),
+    );
+  }
+}
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -28,6 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   bool _seeding = false;
   bool _resetting = false;
+  Future<ProfileAnalyticsState>? _metricsFuture;
 
   Future<bool> _requestImagePermission(ImageSource source) async {
     if (kIsWeb) return true;
@@ -86,72 +173,11 @@ class _ProfilePageState extends State<ProfilePage> {
     return compressed.bytes;
   }
 
-  Future<Map<String, dynamic>> _loadMetrics(String userId) async {
-    try {
-      final clothingLegacy =
-          await FirebaseFirestore.instance.collection('clothing_items').where('user_id', isEqualTo: userId).get();
-      final clothingNew =
-          await FirebaseFirestore.instance.collection('clothing_items').where('userId', isEqualTo: userId).get();
-      final historySnapshot =
-          await FirebaseFirestore.instance.collection('outfit_history').where('user_id', isEqualTo: userId).get();
-      final eventsSnapshot = await FirebaseFirestore.instance.collection('events').where('user_id', isEqualTo: userId).get();
-
-      final clothingDocs = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{
-        for (final doc in clothingLegacy.docs) doc.id: doc,
-        for (final doc in clothingNew.docs) doc.id: doc,
-      }.values.toList();
-
-      final scores = historySnapshot.docs
-          .map((doc) => (doc.data()['score'] as num?)?.toDouble())
-          .whereType<double>()
-          .toList();
-      final avgScore = scores.isEmpty ? 0.0 : scores.reduce((a, b) => a + b) / scores.length;
-      final styleScore = (avgScore / 20).clamp(0, 5);
-
-      return {
-        'items': clothingDocs.length,
-        'outfits': historySnapshot.size,
-        'events': eventsSnapshot.size,
-        'styleScore': styleScore,
-        'topCategory': _deriveTopCategory(clothingDocs),
-        'latestCaption': _latestCaption(historySnapshot.docs),
-      };
-    } catch (_) {
-      return {
-        'items': 0,
-        'outfits': 0,
-        'events': 0,
-        'styleScore': 0.0,
-        'topCategory': 'N/A',
-        'latestCaption': 'Generate an outfit to start collecting insights.',
-      };
-    }
-  }
-
-  String _deriveTopCategory(List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) {
-    final counts = <String, int>{};
-    for (final doc in docs) {
-      final data = doc.data();
-      final category = (data['subcategory'] as String?) ?? (data['category'] as String?) ?? 'unknown';
-      counts[category] = (counts[category] ?? 0) + 1;
-    }
-
-    if (counts.isEmpty) return 'N/A';
-    final sorted = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    return sorted.first.key;
-  }
-
-  String _latestCaption(List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) {
-    if (docs.isEmpty) return 'Generate an outfit to start collecting insights.';
-
-    final sorted = docs.toList()
-      ..sort((a, b) {
-        final aTs = (a.data()['generated_at'] as Timestamp?)?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final bTs = (b.data()['generated_at'] as Timestamp?)?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
-        return bTs.compareTo(aTs);
-      });
-
-    return (sorted.first.data()['caption'] as String?) ?? 'No caption found for latest outfit.';
+  Future<ProfileAnalyticsState> _loadMetrics(String userId) async {
+    return context.read<ProfileService>().loadAnalytics(
+          userId,
+          fallbackItems: context.read<WardrobeController>().items,
+        );
   }
 
   Future<void> _seedDemoData(String userId) async {
@@ -242,31 +268,37 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  String _buildInsightMessage(Map<String, dynamic> metrics) {
-    final items = (metrics['items'] as int?) ?? 0;
-    final outfits = (metrics['outfits'] as int?) ?? 0;
-    final topCategory = (metrics['topCategory'] as String?) ?? 'N/A';
-    final latestCaption = (metrics['latestCaption'] as String?) ?? '';
+  String _buildInsightMessage(ProfileAnalyticsState metrics) {
+    final items = metrics.itemCount;
+    final outfits = metrics.outfitCount;
+    final topCategory = metrics.topCategory;
+    final latestCaption = metrics.latestCaption;
 
-    if (items == 0) {
+    if (metrics.status == AnalyticsStatus.loading) {
+      return 'Loading your style insights.';
+    }
+    if (metrics.status == AnalyticsStatus.error || metrics.status == AnalyticsStatus.offline) {
+      return metrics.message ?? 'Profile insights are unavailable right now. Retry when you are connected.';
+    }
+
+    if (items == null || items == 0) {
       return 'Start by uploading a few wardrobe items. Once your closet is populated, your style insights will become much sharper.';
     }
 
-    if (outfits == 0) {
+    if (outfits == null || outfits == 0) {
       return 'Your closet is growing. Generate your first outfit to unlock personalized reasoning and history-based style tracking.';
     }
 
-    if (topCategory == 'N/A') {
+    if (topCategory == null) {
       return 'You already have activity in the app. Keep generating looks and planning events to deepen your style profile.';
     }
 
-    return 'Your strongest wardrobe signal right now is $topCategory. Latest fit vibe: $latestCaption';
+    return 'Your strongest wardrobe signal right now is $topCategory. Latest fit vibe: ${latestCaption ?? 'Unavailable'}';
   }
 
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthController>();
-    final wardrobe = context.watch<WardrobeController>();
     final userId = auth.user?.uid ?? '';
     final fallbackName = (auth.user?.email?.split('@').first ?? 'Curator').replaceAll('.', ' ');
 
@@ -282,18 +314,11 @@ class _ProfilePageState extends State<ProfilePage> {
             final profileImageUrl = ((profile['profileImageUrl'] as String?) ?? '').trim();
             final name = nickname.isNotEmpty ? nickname : (displayName.isNotEmpty ? displayName : fallbackName);
 
-            return FutureBuilder<Map<String, dynamic>>(
-              future: _loadMetrics(userId),
+            _metricsFuture ??= _loadMetrics(userId);
+            return FutureBuilder<ProfileAnalyticsState>(
+              future: _metricsFuture,
               builder: (context, snapshot) {
-                final metrics = snapshot.data ??
-                    {
-                      'items': wardrobe.items.length,
-                      'outfits': 0,
-                      'events': 0,
-                      'styleScore': 0.0,
-                      'topCategory': 'N/A',
-                      'latestCaption': 'Generate an outfit to start collecting insights.',
-                    };
+                final metrics = snapshot.data ?? const ProfileAnalyticsState.loading();
 
                 return Column(
                   children: [
@@ -339,25 +364,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             label: const Text('Edit Profile'),
                           ),
                           const SizedBox(height: 14),
-                          Row(
-                            children: [
-                              Expanded(child: _statTile('${metrics['items']}', 'Items in Closet')),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _statTile(
-                                  (metrics['styleScore'] as double).toStringAsFixed(1),
-                                  'Style Score',
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(child: _statTile('${metrics['outfits']}', 'Outfits Logged')),
-                              const SizedBox(width: 10),
-                              Expanded(child: _statTile('${metrics['events']}', 'Events Planned')),
-                            ],
+                          ProfileAnalyticsSummary(
+                            metrics: metrics,
+                            onRetry: () => setState(() => _metricsFuture = null),
                           ),
                         ],
                       ),
@@ -406,21 +415,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             context: context,
                             backgroundColor: AppTheme.surfaceLow,
                             builder: (context) {
-                              return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('audit_events')
-                                    .where('user_id', isEqualTo: userId)
-                                    .snapshots(),
+                              return FutureBuilder<List<StyleEvolutionEntry>>(
+                                future: context.read<ProfileService>().loadStyleEvolution(userId),
                                 builder: (context, snapshot) {
-                                  final docs = snapshot.data?.docs ?? [];
-                                  final sorted = docs.toList()
-                                    ..sort((a, b) {
-                                      final aTs = (a.data()['created_at'] as Timestamp?)?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
-                                      final bTs = (b.data()['created_at'] as Timestamp?)?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
-                                      return bTs.compareTo(aTs);
-                                    });
+                                  if (snapshot.hasError) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Text('Style evolution is unavailable. Please retry from Profile insights.'),
+                                    );
+                                  }
+                                  final entries = snapshot.data ?? const <StyleEvolutionEntry>[];
 
-                                  if (sorted.isEmpty) {
+                                  if (entries.isEmpty) {
                                     return const Padding(
                                       padding: EdgeInsets.all(16),
                                       child: Text('No profile analytics events yet.'),
@@ -428,15 +434,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                   }
 
                                   return ListView.builder(
-                                    itemCount: sorted.length,
+                                    itemCount: entries.length,
                                     itemBuilder: (context, index) {
-                                      final data = sorted[index].data();
-                                      final createdAt = (data['created_at'] as Timestamp?)?.toDate();
+                                      final entry = entries[index];
+                                      final createdAt = entry.createdAt;
                                       final formatted = createdAt == null ? '-' : DateFormat.yMMMd().add_jm().format(createdAt);
                                       return ListTile(
                                         leading: const Icon(Icons.timeline, color: AppTheme.primary),
-                                        title: Text((data['type'] as String?) ?? 'event'),
-                                        subtitle: Text('${(data['message'] as String?) ?? ''}\n$formatted'),
+                                        title: Text(entry.label),
+                                        subtitle: Text('${entry.description}\n$formatted'),
                                         isThreeLine: true,
                                       );
                                     },
@@ -489,22 +495,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _statTile(String value, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceHigh,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        children: [
-          Text(value, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.onSurfaceVariant)),
-        ],
-      ),
-    );
-  }
 }
 
 class _EditProfileSheet extends StatefulWidget {

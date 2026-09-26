@@ -14,6 +14,8 @@ class ClothingItem {
     required this.status,
     required this.gender,
     required this.imageUrl,
+    this.localImagePath,
+    this.storagePath,
     required this.userId,
     required this.createdAt,
     required this.updatedAt,
@@ -31,6 +33,8 @@ class ClothingItem {
   final String status;
   final String gender;
   final String imageUrl;
+  final String? localImagePath;
+  final String? storagePath;
   final String userId;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -64,38 +68,57 @@ class ClothingItem {
       'category': subcategory,
       'style_tags': styleTags,
       'user_id': userId,
+      if (localImagePath != null && localImagePath!.isNotEmpty)
+        'localImagePath': localImagePath,
+      if (storagePath != null && storagePath!.isNotEmpty)
+        'storagePath': storagePath,
     };
   }
 
   factory ClothingItem.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data() ?? <String, dynamic>{};
+    return ClothingItem.fromMap(doc.id, doc.data() ?? <String, dynamic>{});
+  }
 
+  factory ClothingItem.fromMap(String id, Map<String, dynamic> data) {
     return ClothingItem(
-      id: doc.id,
+      id: id,
       parentCategory: (data['parentCategory'] as String?) ?? 'Tops',
-      subcategory:
-          (data['subcategory'] as String?) ?? (data['category'] as String?) ?? 'T-shirts',
-      categoryType: (data['categoryType'] as String?) ?? _legacyCategoryType(data),
+      subcategory: (data['subcategory'] as String?) ??
+          (data['category'] as String?) ??
+          'T-shirts',
+      categoryType:
+          (data['categoryType'] as String?) ?? _legacyCategoryType(data),
       fit: data['fit'] as String?,
       color: (data['color'] as String?) ?? 'black',
       colorGroup: (data['colorGroup'] as String?) ?? 'neutral',
       styleTags: List<String>.from(
-        data['styleTags'] as List? ?? data['style_tags'] as List? ?? const <String>[],
+        data['styleTags'] as List? ??
+            data['style_tags'] as List? ??
+            const <String>[],
       ),
       season: (data['season'] as String?) ?? 'All Season',
       status: (data['status'] as String?) ?? 'clean',
       gender: (data['gender'] as String?) ?? 'Unisex',
-      imageUrl: (data['imageUrl'] as String?) ?? (data['image_url'] as String?) ?? '',
+      imageUrl:
+          (data['imageUrl'] as String?) ?? (data['image_url'] as String?) ?? '',
+      localImagePath: (data['localImagePath'] as String?) ??
+          (data['local_image_path'] as String?),
+      storagePath:
+          (data['storagePath'] as String?) ?? (data['storage_path'] as String?),
       userId: (data['userId'] as String?) ?? (data['user_id'] as String?) ?? '',
-      createdAt:
-          (data['createdAt'] as Timestamp?)?.toDate() ??
-          (data['created_at'] as Timestamp?)?.toDate() ??
+      createdAt: _readDate(data['createdAt']) ??
+          _readDate(data['created_at']) ??
           DateTime.now(),
-      updatedAt:
-          (data['updatedAt'] as Timestamp?)?.toDate() ??
-          (data['updated_at'] as Timestamp?)?.toDate() ??
+      updatedAt: _readDate(data['updatedAt']) ??
+          _readDate(data['updated_at']) ??
           DateTime.now(),
     );
+  }
+
+  static DateTime? _readDate(Object? value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    return null;
   }
 
   static String _legacyCategoryType(Map<String, dynamic> data) {
@@ -103,13 +126,20 @@ class ClothingItem {
     if (c.contains('shoe') || c.contains('boot') || c.contains('sneaker')) {
       return 'shoes';
     }
-    if (c.contains('pant') || c.contains('trouser') || c.contains('jean') || c.contains('skirt')) {
+    if (c.contains('pant') ||
+        c.contains('trouser') ||
+        c.contains('jean') ||
+        c.contains('skirt')) {
       return 'bottom';
     }
     if (c.contains('dress') || c.contains('jumpsuit') || c.contains('romper')) {
       return 'full';
     }
-    if (c.contains('bag') || c.contains('belt') || c.contains('hat') || c.contains('scarf') || c.contains('jewel')) {
+    if (c.contains('bag') ||
+        c.contains('belt') ||
+        c.contains('hat') ||
+        c.contains('scarf') ||
+        c.contains('jewel')) {
       return 'accessory';
     }
     return 'top';

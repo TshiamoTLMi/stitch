@@ -1,22 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/clothing_item.dart';
 import '../../models/event_model.dart';
+import '../../models/missing_item_recommendation.dart';
 import '../../services/event_service.dart';
 import '../../services/recommendation_service.dart';
+import '../upload_screen.dart';
 
 class DashboardPage extends StatelessWidget {
-  DashboardPage({super.key, required this.userId});
+  DashboardPage({
+    super.key,
+    required this.userId,
+    this.onOpenGenerator,
+    this.wardrobeItems,
+    this.upcomingEventsStream,
+  });
 
   final String userId;
+  final VoidCallback? onOpenGenerator;
+  final List<ClothingItem>? wardrobeItems;
+  final Stream<List<EventModel>>? upcomingEventsStream;
   final RecommendationService _recommendationService = RecommendationService();
 
   @override
   Widget build(BuildContext context) {
-    final wardrobe = context.watch<WardrobeController>().items;
+    final wardrobe = wardrobeItems ?? context.watch<WardrobeController>().items;
     final cleanCount = wardrobe.where((item) => item.isClean).length;
     final washCount = wardrobe.length - cleanCount;
     final topCategory = _topCategory(wardrobe);
@@ -68,7 +80,7 @@ class DashboardPage extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         StreamBuilder<List<EventModel>>(
-          stream: context.read<EventService>().streamUpcomingEvents(userId),
+          stream: upcomingEventsStream ?? context.read<EventService>().streamUpcomingEvents(userId),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Card(
@@ -80,7 +92,7 @@ class DashboardPage extends StatelessWidget {
             }
 
             final events = snapshot.data!;
-            final missing = _recommendationService.buildMissingItems(
+            final recommendations = _recommendationService.buildRecommendations(
               wardrobe: wardrobe,
               upcomingEvents: events,
             );
@@ -96,25 +108,32 @@ class DashboardPage extends StatelessWidget {
                 children: [
                   const Text('You might need', style: TextStyle(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 8),
-                  if (missing.isEmpty)
-                    const Text('You are set for upcoming events.', style: TextStyle(color: AppTheme.onSurfaceVariant))
+                  if (events.isEmpty)
+                    const Text('No upcoming events yet. Add one in Events to get guidance.', style: TextStyle(color: AppTheme.onSurfaceVariant))
                   else
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: missing
-                          .map(
-                            (m) => Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: AppTheme.surfaceHighest,
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(m),
-                            ),
-                          )
-                          .toList(),
-                    ),
+                    ...[
+                      ...events.take(3).map(
+                        (event) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            '${event.name} · ${DateFormat.yMMMd().format(event.date)} · ${event.occasion}',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                      if (recommendations.isEmpty)
+                        const Text(
+                          'Your wardrobe guidance will appear when event details are available.',
+                          style: TextStyle(color: AppTheme.onSurfaceVariant),
+                        )
+                      else
+                        ...recommendations.map(
+                          (recommendation) => _RecommendationTile(
+                            recommendation: recommendation,
+                            onAction: () => _openRecommendation(context, recommendation),
+                          ),
+                        ),
+                    ],
                 ],
               ),
             );
@@ -122,6 +141,16 @@ class DashboardPage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _openRecommendation(BuildContext context, MissingItemRecommendation recommendation) {
+    if (recommendation.action == RecommendationAction.addToWardrobe) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => const UploadScreen()),
+      );
+      return;
+    }
+    onOpenGenerator?.call();
   }
 
   Widget _metricCard({required String label, required String value}) {
@@ -154,5 +183,52 @@ class DashboardPage extends StatelessWidget {
     }
     final sorted = byCount.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
     return sorted.first.key;
+  }
+}
+
+class _RecommendationTile extends StatelessWidget {
+  const _RecommendationTile({required this.recommendation, required this.onAction});
+
+  final MissingItemRecommendation recommendation;
+  final VoidCallback onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final isUnknown = recommendation.state == RecommendationState.unknown;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceHighest,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(recommendation.need, style: const TextStyle(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          Text(recommendation.reason, style: const TextStyle(color: AppTheme.onSurfaceVariant)),
+          const SizedBox(height: 8),
+          if (isUnknown)
+            const Text(
+              'Needs more data',
+              style: TextStyle(color: Color(0xFFFFB4A5)),
+            )
+          else
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: onAction,
+                icon: Icon(
+                  recommendation.action == RecommendationAction.addToWardrobe
+                      ? Icons.add
+                      : Icons.auto_awesome,
+                ),
+                label: Text(recommendation.actionLabel),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }

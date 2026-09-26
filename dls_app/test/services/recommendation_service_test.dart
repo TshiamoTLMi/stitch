@@ -1,5 +1,6 @@
 import 'package:dls_app/models/clothing_item.dart';
 import 'package:dls_app/models/event_model.dart';
+import 'package:dls_app/models/missing_item_recommendation.dart';
 import 'package:dls_app/services/recommendation_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -98,5 +99,21 @@ void main() {
     );
 
     expect(suggestions, isEmpty);
+  });
+
+  test('returns structured reason, state, action, and deterministic dedupe key', () {
+    final recommendations = service.buildRecommendations(
+      wardrobe: <ClothingItem>[item(id: '1', category: 'shirt')],
+      upcomingEvents: <EventModel>[
+        event(id: 'e1', occasion: 'Work'),
+        event(id: 'e2', occasion: 'Work'),
+      ],
+    );
+
+    expect(recommendations, isNotEmpty);
+    expect(recommendations.first.reason, contains('Work'));
+    expect(recommendations.first.state, RecommendationState.missing);
+    expect(recommendations.first.action, RecommendationAction.addToWardrobe);
+    expect(recommendations.map((item) => item.dedupeKey).toSet().length, recommendations.length);
   });
 }

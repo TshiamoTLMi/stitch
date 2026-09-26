@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return _ForgotPasswordDialog(
           initialEmail: _emailController.text.trim(),
           onSendReset: auth.sendPasswordReset,
-          getErrorText: () => auth.errorMessage,
+          getErrorText: () => auth.recoveryMessage,
         );
       },
     );
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: auth.isLoading ? null : () => _forgotPassword(auth),
+                            onPressed: auth.isLoading || auth.isRecoverySending ? null : () => _forgotPassword(auth),
                             child: const Text('Forgot password?'),
                           ),
                         ),
@@ -193,6 +193,7 @@ class _ForgotPasswordDialog extends StatefulWidget {
 class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
   late final TextEditingController _resetController;
   bool _isSending = false;
+  bool _isSuccess = false;
   String? _localError;
 
   @override
@@ -209,7 +210,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
 
   Future<void> _send() async {
     final email = _resetController.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
+    if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
       setState(() {
         _localError = 'Enter a valid email address.';
       });
@@ -225,7 +226,11 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
     if (!mounted) return;
 
     if (success) {
-      Navigator.of(context).pop(true);
+      setState(() {
+        _isSending = false;
+        _isSuccess = true;
+        _localError = 'If an account exists for this email, a reset email has been requested.';
+      });
       return;
     }
 
@@ -242,30 +247,36 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            controller: _resetController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              hintText: 'Enter your email',
-              labelText: 'Email',
+          if (!_isSuccess)
+            TextField(
+              controller: _resetController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                hintText: 'Enter your email',
+                labelText: 'Email',
+              ),
             ),
-          ),
+          if (_isSuccess)
+            const Text('Check your inbox and return here to sign in after completing the reset.'),
           if (_localError != null) ...[
             const SizedBox(height: 10),
             Text(
               _localError!,
-              style: const TextStyle(color: Color(0xFFFFB4AB), fontSize: 12),
+              style: TextStyle(
+                color: _isSuccess ? AppTheme.tertiary : const Color(0xFFFFB4AB),
+                fontSize: 12,
+              ),
             ),
           ],
         ],
       ),
       actions: [
         TextButton(
-          onPressed: _isSending ? null : () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
+          onPressed: _isSending ? null : () => Navigator.of(context).pop(_isSuccess),
+          child: Text(_isSuccess ? 'Done' : 'Cancel'),
         ),
         ElevatedButton(
-          onPressed: _isSending ? null : _send,
+          onPressed: _isSending || _isSuccess ? null : _send,
           child: _isSending
               ? const SizedBox(
                   height: 18,

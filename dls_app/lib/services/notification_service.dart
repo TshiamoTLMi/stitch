@@ -5,6 +5,30 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../models/event_model.dart';
 
+enum ReminderStatus {
+  scheduled,
+  inAppFallback,
+  permissionDenied,
+  unavailable,
+  cancelled,
+  past,
+  error,
+}
+
+class ReminderResult {
+  const ReminderResult({
+    required this.eventId,
+    required this.status,
+    required this.notificationId,
+    this.message,
+  });
+
+  final String eventId;
+  final ReminderStatus status;
+  final int notificationId;
+  final String? message;
+}
+
 /// Handles scheduling and cancelling local push notifications for DLS events.
 ///
 /// Call [init] once at app startup (before runApp). Then call
@@ -19,6 +43,10 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   bool _initialised = false;
+  bool? _permissionGranted;
+  final Map<String, ReminderResult> _statuses = <String, ReminderResult>{};
+
+  Map<String, ReminderResult> get statuses => Map.unmodifiable(_statuses);
 
   // ── Android notification channel ──────────────────────────────────────────
 
@@ -31,6 +59,11 @@ class NotificationService {
 
   Future<void> init() async {
     if (_initialised) return;
+
+    if (kIsWeb) {
+      _initialised = true;
+      return;
+    }
 
     // Timezone data must be loaded before scheduling.
     tz.initializeTimeZones();
@@ -66,6 +99,8 @@ class NotificationService {
   // ── Permission request (call on first run / from settings) ────────────────
 
   Future<bool> requestPermission() async {
+    if (kIsWeb) return false;
+
     final android = _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
@@ -74,27 +109,71 @@ class NotificationService {
             IOSFlutterLocalNotificationsPlugin>();
 
     if (android != null) {
-      return await android.requestNotificationsPermission() ?? false;
+      _permissionGranted = await android.requestNotificationsPermission() ?? false;
+      return _permissionGranted!;
     }
     if (ios != null) {
-      return await ios.requestPermissions(alert: true, badge: true, sound: true) ?? false;
+      _permissionGranted = await ios.requestPermissions(alert: true, badge: true, sound: true) ?? false;
+      return _permissionGranted!;
     }
     return false;
   }
 
   // ── Schedule a reminder 1 hour before an event ───────────────────────────
 
-  Future<void> scheduleEventReminder(EventModel event) async {
+  Future<ReminderResult> scheduleEventReminder(EventModel event) async {
     if (!_initialised) await init();
+
+    final id = notificationIdFor(event.id);
+    if (!isNextLocalDay(event.date)) {
+      final result = ReminderResult(
+        eventId: event.id,
+        status: ReminderStatus.unavailable,
+        notificationId: id,
+        message: 'Reminders are reserved for events on the next local calendar day.',
+      );
+      _statuses[event.id] = result;
+      return result;
+    }
+    if (kIsWeb) {
+      final result = ReminderResult(
+        eventId: event.id,
+        status: ReminderStatus.inAppFallback,
+        notificationId: id,
+        message: 'Browser notification delivery is unavailable; this event remains visible in-app.',
+      );
+      _statuses[event.id] = result;
+      return result;
+    }
 
     final reminderTime = event.date.subtract(const Duration(hours: 1));
     final now = DateTime.now();
 
-    if (reminderTime.isBefore(now)) return; // already past — skip
+    if (reminderTime.isBefore(now)) {
+      final result = ReminderResult(
+        eventId: event.id,
+        status: ReminderStatus.past,
+        notificationId: id,
+      );
+      _statuses[event.id] = result;
+      return result;
+    }
+
+    if (_permissionGranted == null) {
+      await requestPermission();
+    }
+    if (_permissionGranted == false) {
+      final result = ReminderResult(
+        eventId: event.id,
+        status: ReminderStatus.permissionDenied,
+        notificationId: id,
+        message: 'Notification permission is unavailable. The event remains visible in-app.',
+      );
+      _statuses[event.id] = result;
+      return result;
+    }
 
     final tzTime = tz.TZDateTime.from(reminderTime, tz.local);
-    final id = _idFromEvent(event);
-
     const details = NotificationDetails(
       android: AndroidNotificationDetails(
         _channelId,
@@ -114,7 +193,7 @@ class NotificationService {
     try {
       await _plugin.zonedSchedule(
         id,
-        '${event.name} is in 1 hour 🕐',
+        '${event.name} is in 1 hour',
         'Your outfit is ready. Time to get dressed!',
         tzTime,
         details,
@@ -124,21 +203,43 @@ class NotificationService {
         matchDateTimeComponents: null,
       );
       debugPrint('[NOTIF] Scheduled reminder for "${event.name}" at $tzTime');
+      final result = ReminderResult(
+        eventId: event.id,
+        status: ReminderStatus.scheduled,
+        notificationId: id,
+      );
+      _statuses[event.id] = result;
+      return result;
     } catch (e) {
       debugPrint('[NOTIF] Could not schedule: $e');
+      final result = ReminderResult(
+        eventId: event.id,
+        status: ReminderStatus.error,
+        notificationId: id,
+        message: 'Reminder scheduling failed. The event remains visible in-app.',
+      );
+      _statuses[event.id] = result;
+      return result;
     }
   }
 
   // ── Cancel a specific event's reminder ───────────────────────────────────
 
   Future<void> cancelEventReminder(EventModel event) async {
-    await _plugin.cancel(_idFromEvent(event));
+    if (!_initialised) await init();
+    if (!kIsWeb) await _plugin.cancel(notificationIdFor(event.id));
+    _statuses[event.id] = ReminderResult(
+      eventId: event.id,
+      status: ReminderStatus.cancelled,
+      notificationId: notificationIdFor(event.id),
+    );
   }
 
   // ── Cancel all scheduled notifications ───────────────────────────────────
 
   Future<void> cancelAll() async {
-    await _plugin.cancelAll();
+    if (!kIsWeb) await _plugin.cancelAll();
+    _statuses.clear();
   }
 
   // ── Re-schedule all upcoming events (call on app resume / login) ──────────
@@ -146,7 +247,7 @@ class NotificationService {
   Future<void> rescheduleAllEvents(List<EventModel> events) async {
     if (!_initialised) await init();
     await cancelAll();
-    for (final e in events) {
+    for (final e in events.where((event) => isNextLocalDay(event.date))) {
       await scheduleEventReminder(e);
     }
   }
@@ -154,10 +255,19 @@ class NotificationService {
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   /// Stable int ID derived from Firestore doc ID (last 8 hex chars → int).
-  int _idFromEvent(EventModel event) {
-    final hex = event.id.replaceAll('-', '');
-    final tail = hex.length > 8 ? hex.substring(hex.length - 8) : hex;
-    return int.tryParse(tail, radix: 16) ?? event.id.hashCode.abs() % 0x7FFFFFFF;
+  static int notificationIdFor(String eventId) {
+    var hash = 2166136261;
+    for (final codeUnit in eventId.codeUnits) {
+      hash = (hash ^ codeUnit) * 16777619 & 0x7FFFFFFF;
+    }
+    return hash == 0 ? 1 : hash;
+  }
+
+  static bool isNextLocalDay(DateTime eventDate, {DateTime? now}) {
+    final reference = now ?? DateTime.now();
+    final nextDay = DateTime(reference.year, reference.month, reference.day + 1);
+    final followingDay = nextDay.add(const Duration(days: 1));
+    return !eventDate.isBefore(nextDay) && eventDate.isBefore(followingDay);
   }
 
   void _onTap(NotificationResponse response) {

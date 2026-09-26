@@ -9,9 +9,8 @@ service firebase.storage {
       allow read, write: if signedIn() && request.auth.uid == userId;
     }
 
-    // Legacy fallback path used by older upload flow.
-    match /clothing_items/{allPaths=**} {
-      allow read, write: if signedIn();
+    match /profile_images/{userId}.jpg {
+      allow read, write: if signedIn() && request.auth.uid == userId;
     }
 
     match /{allPaths=**} {

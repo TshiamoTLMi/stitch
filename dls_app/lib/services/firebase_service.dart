@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class FirebaseService {
@@ -13,7 +14,8 @@ class FirebaseService {
   FirebaseAuth get _auth => FirebaseAuth.instance;
   final Uuid _uuid = const Uuid();
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> streamClothingItems({String? userId}) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamClothingItems(
+      {String? userId}) {
     try {
       final uid = userId ?? _auth.currentUser?.uid;
       final base = _firestore.collection('clothing_items');
@@ -56,34 +58,36 @@ class FirebaseService {
       throw Exception('User not signed in.');
     }
 
-      final ts = DateTime.now().millisecondsSinceEpoch;
-      final candidatePaths = [
-        'users/$userId/items/${ts}_$id.jpg',
-        'clothing_items/$id.jpg',
-      ];
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    final candidatePaths = ['users/$userId/items/${ts}_$id.jpg'];
 
-      String? imageUrl;
-      Object? uploadError;
-      for (final path in candidatePaths) {
-        try {
-          final ref = _storage.ref().child(path);
-          await ref.putData(
-            compressedBytes,
-            SettableMetadata(contentType: 'image/jpeg'),
-          );
-          imageUrl = await ref.getDownloadURL();
-          break;
-        } catch (e) {
-          uploadError = e;
-        }
+    String? imageUrl;
+    String? storagePath;
+    Object? uploadError;
+    for (final path in candidatePaths) {
+      try {
+        final ref = _storage.ref().child(path);
+        await ref.putData(
+          compressedBytes,
+          SettableMetadata(contentType: 'image/jpeg'),
+        );
+        imageUrl = await ref.getDownloadURL();
+        storagePath = path;
+        break;
+      } catch (e) {
+        uploadError = e;
       }
+    }
 
-      if (imageUrl == null || imageUrl.isEmpty) {
-        if (uploadError is FirebaseException && uploadError.code == 'unauthorized') {
-          throw Exception('Image upload blocked by Firebase Storage rules.');
-        }
-        throw Exception('Image upload failed: $uploadError');
+    if (imageUrl == null || imageUrl.isEmpty) {
+      if (uploadError is FirebaseException &&
+          uploadError.code == 'unauthorized') {
+        throw Exception('Image upload blocked by Firebase Storage rules.');
       }
+      throw Exception('Image upload failed: $uploadError');
+    }
+
+    final localImagePath = await _saveLocalImage(id, compressedBytes);
 
     await _firestore.collection('clothing_items').doc(id).set({
       'id': id,
@@ -99,6 +103,8 @@ class FirebaseService {
       'gender': gender,
       'userId': userId,
       'imageUrl': imageUrl,
+      'localImagePath': localImagePath,
+      'storagePath': storagePath,
       'createdAt': FieldValue.serverTimestamp(),
 
       // Legacy compatibility fields during migration.
@@ -169,10 +175,7 @@ class FirebaseService {
     required String userId,
     required List<int> compressedBytes,
   }) async {
-    final candidatePaths = [
-      'users/$userId/items/$id.jpg',
-      'clothing_items/$id.jpg',
-    ];
+    final candidatePaths = ['users/$userId/items/$id.jpg'];
 
     Object? uploadError;
     for (final path in candidatePaths) {
@@ -191,7 +194,17 @@ class FirebaseService {
     throw Exception('Image upload failed: $uploadError');
   }
 
-  Future<DocumentReference<Map<String, dynamic>>> _resolveItemDocRef(String id) async {
+  Future<String> _saveLocalImage(String id, List<int> bytes) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final wardrobeDirectory = Directory('${directory.path}/wardrobe_items');
+    await wardrobeDirectory.create(recursive: true);
+    final file = File('${wardrobeDirectory.path}/$id.jpg');
+    await file.writeAsBytes(bytes, flush: true);
+    return file.path;
+  }
+
+  Future<DocumentReference<Map<String, dynamic>>> _resolveItemDocRef(
+      String id) async {
     final direct = _firestore.collection('clothing_items').doc(id);
     final directSnap = await direct.get();
     if (directSnap.exists) {

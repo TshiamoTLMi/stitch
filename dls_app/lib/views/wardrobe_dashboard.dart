@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../services/firebase_service.dart';
+import '../services/wardrobe_repository.dart';
 
 class WardrobeDashboard extends StatefulWidget {
   const WardrobeDashboard({super.key, required this.userId});
@@ -18,25 +20,70 @@ class WardrobeDashboard extends StatefulWidget {
 class _WardrobeDashboardState extends State<WardrobeDashboard> {
   final FirebaseService _svc = FirebaseService();
   int _selectedFilter = 0;
-  static const _filters = ['All Items', 'Tops', 'Bottoms', 'Shoes', 'Accessories'];
+  final Set<String> _selectedItemIds = <String>{};
+  bool _isDeletingSelected = false;
+  static const _filters = [
+    'All Items',
+    'Tops',
+    'Bottoms',
+    'Shoes',
+    'Accessories'
+  ];
 
   bool _matchesFilter(Map<String, dynamic> data) {
     if (_selectedFilter == 0) return true;
 
     final category = ((data['category'] as String?) ?? '').toLowerCase();
+    final subcategory = ((data['subcategory'] as String?) ?? '').toLowerCase();
+    final categoryType =
+        ((data['categoryType'] as String?) ?? '').toLowerCase();
+    final parentCategory =
+        ((data['parentCategory'] as String?) ?? '').toLowerCase();
+    final values = {category, subcategory, categoryType, parentCategory};
     switch (_selectedFilter) {
       case 1:
-        return ['shirt', 'top', 'tshirt', 'tee', 'outerwear', 'jacket']
-            .contains(category);
+        return values.intersection({
+          'shirt',
+          'top',
+          'tshirt',
+          'tee',
+          'outerwear',
+          'jacket',
+          'tops',
+          'full body',
+          'full'
+        }).isNotEmpty;
       case 2:
-        return ['pants', 'jeans', 'trouser', 'shorts', 'skirt']
-            .contains(category);
+        return values.intersection({
+          'pants',
+          'jeans',
+          'trouser',
+          'trousers',
+          'shorts',
+          'skirt',
+          'bottom',
+          'bottoms'
+        }).isNotEmpty;
       case 3:
-        return ['shoe', 'shoes', 'sneaker', 'sneakers', 'boot', 'boots']
-            .contains(category);
+        return values.intersection({
+          'shoe',
+          'shoes',
+          'sneaker',
+          'sneakers',
+          'boot',
+          'boots',
+          'footwear'
+        }).isNotEmpty;
       case 4:
-        return ['accessory', 'watch', 'bag', 'hat', 'belt', 'jewelry']
-            .contains(category);
+        return values.intersection({
+          'accessory',
+          'accessories',
+          'watch',
+          'bag',
+          'hat',
+          'belt',
+          'jewelry'
+        }).isNotEmpty;
       default:
         return true;
     }
@@ -49,6 +96,60 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
       backgroundColor: Colors.transparent,
       builder: (_) => _WardrobeDetailSheet(data: data),
     );
+  }
+
+  void _toggleSelection(String id) {
+    if (id.isEmpty || _isDeletingSelected) return;
+    setState(() {
+      if (!_selectedItemIds.add(id)) _selectedItemIds.remove(id);
+    });
+  }
+
+  Future<void> _deleteSelected() async {
+    if (_selectedItemIds.isEmpty || _isDeletingSelected) return;
+
+    final count = _selectedItemIds.length;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('Delete $count items?'),
+        content: const Text(
+            'This removes the photos, wardrobe records, and backups.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isDeletingSelected = true);
+    try {
+      final repository = context.read<WardrobeRepository>();
+      for (final id in _selectedItemIds.toList()) {
+        await repository.deleteClothingItem(id);
+      }
+      if (!mounted) return;
+      setState(() {
+        _selectedItemIds.clear();
+        _isDeletingSelected = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$count items deleted.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _isDeletingSelected = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Delete failed: $error')),
+      );
+    }
   }
 
   @override
@@ -77,6 +178,40 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
                   'Curating your digital legacy, one piece at a time.',
                   style: TextStyle(color: Color(0xFFD0C5AF), fontSize: 13),
                 ),
+                if (_selectedItemIds.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Text(
+                        '${_selectedItemIds.length} selected',
+                        style: const TextStyle(
+                          color: Color(0xFFF2CA50),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: _isDeletingSelected
+                            ? null
+                            : () => setState(_selectedItemIds.clear),
+                        child: const Text('Clear'),
+                      ),
+                      FilledButton.icon(
+                        onPressed: _isDeletingSelected ? null : _deleteSelected,
+                        icon: _isDeletingSelected
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.delete_outline),
+                        label: const Text('Delete'),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 18),
               ],
             ),
@@ -95,17 +230,25 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
               itemBuilder: (context, i) {
                 final sel = i == _selectedFilter;
                 return GestureDetector(
-                  onTap: () => setState(() => _selectedFilter = i),
+                  onTap: () => setState(() {
+                    _selectedFilter = i;
+                    _selectedItemIds.clear();
+                  }),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
                     decoration: BoxDecoration(
-                      color: sel ? const Color(0xFFF2CA50) : const Color(0xFF2A2A2A),
+                      color: sel
+                          ? const Color(0xFFF2CA50)
+                          : const Color(0xFF2A2A2A),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
                       _filters[i],
                       style: TextStyle(
-                        color: sel ? const Color(0xFF3C2F00) : const Color(0xFFD0C5AF),
+                        color: sel
+                            ? const Color(0xFF3C2F00)
+                            : const Color(0xFFD0C5AF),
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
                       ),
@@ -148,13 +291,18 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
               ..sort((a, b) {
                 final aData = a.data();
                 final bData = b.data();
-                final aTs = (aData['createdAt'] ?? aData['created_at']) as Timestamp?;
-                final bTs = (bData['createdAt'] ?? bData['created_at']) as Timestamp?;
-                final aDate = aTs?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
-                final bDate = bTs?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+                final aTs =
+                    (aData['createdAt'] ?? aData['created_at']) as Timestamp?;
+                final bTs =
+                    (bData['createdAt'] ?? bData['created_at']) as Timestamp?;
+                final aDate =
+                    aTs?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+                final bDate =
+                    bTs?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
                 return bDate.compareTo(aDate);
               });
-            final filtered = docs.where((d) => _matchesFilter(d.data())).toList();
+            final filtered =
+                docs.where((d) => _matchesFilter(d.data())).toList();
 
             if (docs.isEmpty) {
               return SliverToBoxAdapter(
@@ -192,9 +340,16 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
                       ...source.data(),
                       'id': source.id,
                     };
+                    final isSelected = _selectedItemIds.contains(source.id);
                     return GestureDetector(
-                      onTap: () => _openDetail(data),
-                      child: _WardrobeCard(data: data),
+                      onTap: () => _selectedItemIds.isNotEmpty
+                          ? _toggleSelection(source.id)
+                          : _openDetail(data),
+                      onLongPress: () => _toggleSelection(source.id),
+                      child: _WardrobeCard(
+                        data: data,
+                        isSelected: isSelected,
+                      ),
                     );
                   },
                   childCount: filtered.length,
@@ -211,12 +366,14 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
 // ── Item card ─────────────────────────────────────────────────────────────────
 
 class _WardrobeCard extends StatelessWidget {
-  const _WardrobeCard({required this.data});
+  const _WardrobeCard({required this.data, this.isSelected = false});
   final Map<String, dynamic> data;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = (data['imageUrl'] as String?) ?? (data['image_url'] as String?) ?? '';
+    final imageUrl =
+        (data['imageUrl'] as String?) ?? (data['image_url'] as String?) ?? '';
     final category = (data['category'] as String?) ?? 'Item';
     final status = ((data['status'] as String?) ?? 'clean').toLowerCase();
     final isClean = status == 'clean';
@@ -225,6 +382,9 @@ class _WardrobeCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1C1B1B),
         borderRadius: BorderRadius.circular(18),
+        border: isSelected
+            ? Border.all(color: const Color(0xFFF2CA50), width: 2)
+            : null,
       ),
       clipBehavior: Clip.hardEdge,
       child: Stack(
@@ -247,8 +407,8 @@ class _WardrobeCard extends StatelessWidget {
                 : Image.network(
                     imageUrl,
                     fit: BoxFit.cover,
-                  cacheWidth: 420,
-                  filterQuality: FilterQuality.low,
+                    cacheWidth: 420,
+                    filterQuality: FilterQuality.low,
                     loadingBuilder: (_, child, prog) => prog == null
                         ? child
                         : const ColoredBox(
@@ -290,7 +450,9 @@ class _WardrobeCard extends StatelessWidget {
                     width: 6,
                     height: 6,
                     decoration: BoxDecoration(
-                      color: isClean ? const Color(0xFF96E400) : const Color(0xFFFFB4A5),
+                      color: isClean
+                          ? const Color(0xFF96E400)
+                          : const Color(0xFFFFB4A5),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
@@ -316,6 +478,17 @@ class _WardrobeCard extends StatelessWidget {
               ),
             ),
           ),
+
+          if (isSelected)
+            const Positioned(
+              top: 10,
+              right: 10,
+              child: CircleAvatar(
+                radius: 13,
+                backgroundColor: Color(0xFFF2CA50),
+                child: Icon(Icons.check, color: Color(0xFF3C2F00), size: 17),
+              ),
+            ),
 
           // Item info footer
           Positioned(
@@ -416,7 +589,13 @@ class _WardrobeDetailSheet extends StatefulWidget {
 class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   final FirebaseService _service = FirebaseService();
   final ImagePicker _picker = ImagePicker();
-  static const _categories = ['shirt', 'outerwear', 'pants', 'shoes', 'accessory'];
+  static const _categories = [
+    'shirt',
+    'outerwear',
+    'pants',
+    'shoes',
+    'accessory'
+  ];
   static const _statuses = ['clean', 'in_wash', 'in the wash'];
 
   late String _category;
@@ -452,7 +631,8 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
     final id = (widget.data['id'] as String?) ?? '';
     if (id.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot replace photo: missing document id.')),
+        const SnackBar(
+            content: Text('Cannot replace photo: missing document id.')),
       );
       return;
     }
@@ -470,13 +650,17 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
           children: [
             const SizedBox(height: 8),
             ListTile(
-              leading: const Icon(Icons.camera_alt_outlined, color: Color(0xFFF2CA50)),
-              title: const Text('Take a photo', style: TextStyle(color: Color(0xFFE5E2E1))),
+              leading: const Icon(Icons.camera_alt_outlined,
+                  color: Color(0xFFF2CA50)),
+              title: const Text('Take a photo',
+                  style: TextStyle(color: Color(0xFFE5E2E1))),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined, color: Color(0xFFF2CA50)),
-              title: const Text('Choose from gallery', style: TextStyle(color: Color(0xFFE5E2E1))),
+              leading: const Icon(Icons.photo_library_outlined,
+                  color: Color(0xFFF2CA50)),
+              title: const Text('Choose from gallery',
+                  style: TextStyle(color: Color(0xFFE5E2E1))),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
             const SizedBox(height: 8),
@@ -523,7 +707,8 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
 
     setState(() => _saving = true);
     try {
-      await _service.updateClothingItem(id, category: _category, status: _status);
+      await _service.updateClothingItem(id,
+          category: _category, status: _status);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Item updated.')),
@@ -539,10 +724,53 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
     }
   }
 
+  Future<void> _delete() async {
+    final id = (widget.data['id'] as String?) ?? '';
+    if (id.isEmpty) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete item?'),
+        content:
+            const Text('This removes the photo, wardrobe record, and backup.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _saving = true);
+    try {
+      await context.read<WardrobeRepository>().deleteClothingItem(id);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item deleted.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Delete failed: $error')),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final imageUrl =
-      (widget.data['imageUrl'] as String?) ?? (widget.data['image_url'] as String?) ?? '';
+    final imageUrl = (widget.data['imageUrl'] as String?) ??
+        (widget.data['image_url'] as String?) ??
+        '';
     final createdAt = widget.data['createdAt'] ?? widget.data['created_at'];
 
     String createdLabel = 'Unknown date';
@@ -583,13 +811,16 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                     child: ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(22)),
                       child: _localImagePath != null
-                          ? Image.file(File(_localImagePath!), fit: BoxFit.cover)
+                          ? Image.file(File(_localImagePath!),
+                              fit: BoxFit.cover)
                           : imageUrl.isEmpty
                               ? const ColoredBox(
                                   color: Color(0xFF0E0E0E),
                                   child: Center(
-                                    child: Icon(Icons.image_not_supported_outlined,
-                                        color: Color(0xFF353534), size: 44),
+                                    child: Icon(
+                                        Icons.image_not_supported_outlined,
+                                        color: Color(0xFF353534),
+                                        size: 44),
                                   ),
                                 )
                               : Image.network(imageUrl, fit: BoxFit.cover),
@@ -602,11 +833,15 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                     child: GestureDetector(
                       onTap: _replacingPhoto ? null : _pickAndReplacePhoto,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 9),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1C1B1B).withValues(alpha: 0.88),
+                          color:
+                              const Color(0xFF1C1B1B).withValues(alpha: 0.88),
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: const Color(0xFFF2CA50).withValues(alpha: 0.5)),
+                          border: Border.all(
+                              color: const Color(0xFFF2CA50)
+                                  .withValues(alpha: 0.5)),
                         ),
                         child: _replacingPhoto
                             ? const SizedBox(
@@ -653,7 +888,8 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _DetailRow(label: 'Status', value: _capitalizeWord(_status)),
+                    _DetailRow(
+                        label: 'Status', value: _capitalizeWord(_status)),
                     const SizedBox(height: 8),
                     _DetailRow(label: 'Added On', value: createdLabel),
                     const SizedBox(height: 8),
@@ -688,14 +924,18 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                                   initialValue: _category,
                                   decoration: const InputDecoration(
                                     isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 10),
                                   ),
                                   items: _categoryOptions
-                                      .map((c) => DropdownMenuItem(value: c, child: Text(_capitalizeWord(c))))
+                                      .map((c) => DropdownMenuItem(
+                                          value: c,
+                                          child: Text(_capitalizeWord(c))))
                                       .toList(),
                                   onChanged: _saving
                                       ? null
-                                      : (v) => setState(() => _category = v ?? _category),
+                                      : (v) => setState(
+                                          () => _category = v ?? _category),
                                 ),
                               ),
                             ],
@@ -719,14 +959,18 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                                   initialValue: _status,
                                   decoration: const InputDecoration(
                                     isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 10),
                                   ),
                                   items: _statusOptions
-                                      .map((s) => DropdownMenuItem(value: s, child: Text(_capitalizeWord(s))))
+                                      .map((s) => DropdownMenuItem(
+                                          value: s,
+                                          child: Text(_capitalizeWord(s))))
                                       .toList(),
                                   onChanged: _saving
                                       ? null
-                                      : (v) => setState(() => _status = v ?? _status),
+                                      : (v) => setState(
+                                          () => _status = v ?? _status),
                                 ),
                               ),
                             ],
@@ -740,9 +984,19 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                                   ? const SizedBox(
                                       width: 18,
                                       height: 18,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2),
                                     )
                                   : const Text('Save Changes'),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: _saving ? null : _delete,
+                              icon: const Icon(Icons.delete_outline),
+                              label: const Text('Delete Item'),
                             ),
                           ),
                         ],
@@ -799,4 +1053,3 @@ String _capitalizeWord(String text) {
   if (text.isEmpty) return text;
   return text[0].toUpperCase() + text.substring(1).toLowerCase();
 }
-

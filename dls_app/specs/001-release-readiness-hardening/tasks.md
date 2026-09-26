@@ -14,17 +14,17 @@ description: "Concrete implementation and release-evidence tasks for release-rea
 
 **Purpose**: Establish the baseline and evidence vocabulary for work in the existing Flutter repository.
 
-- [ ] T001 Confirm the existing Windows Flutter baseline with `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and `flutter build web --release`, recording command scope and current results in `specs/001-release-readiness-hardening/quickstart.md`.
-- [ ] T002 [P] Add deterministic shared event, wardrobe, audit, and Firebase-error fixtures for focused tests in `test/fixtures/release_readiness_fixtures.dart`, with redacted identifiers and no credentials, reset links, or tokens.
+- [x] T001 Confirm the existing Windows Flutter baseline with `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`, and `flutter build web --release`, recording command scope and current results in `specs/001-release-readiness-hardening/quickstart.md`.
+- [x] T002 [P] Add deterministic shared event, wardrobe, audit, and Firebase-error fixtures for focused tests in `test/fixtures/release_readiness_fixtures.dart`, with redacted identifiers and no credentials, reset links, or tokens.
 
 ## Phase 2: Foundational
 
 **Purpose**: Add only the shared value/state seams needed by the four stories while preserving existing Provider, Firebase, and UID-scoped ownership boundaries.
 
-- [ ] T003 [P] Add the structured deterministic recommendation value with need, reason, event context, state, action, and dedupe key in `lib/models/missing_item_recommendation.dart`.
-- [ ] T004 [P] Add explicit analytics freshness/status and readable metric/timeline state types in `lib/models/profile_analytics_state.dart`.
-- [ ] T005 Verify that the planned implementation reuses the dependencies already declared in `pubspec.yaml`; document any unavoidable dependency exception in `specs/001-release-readiness-hardening/plan.md` before adding a package.
-- [ ] T006 Audit affected Firestore and Storage reads/writes for authenticated UID scoping, including legacy `user_id`/`userId` compatibility, and apply only necessary rule/source corrections in `firestore.rules` and `storage.rules`; record any deployed-environment limitation in `AUDIT_TRACKING_PLAN.md`.
+- [x] T003 [P] Add the structured deterministic recommendation value with need, reason, event context, state, action, and dedupe key in `lib/models/missing_item_recommendation.dart`.
+- [x] T004 [P] Add explicit analytics freshness/status and readable metric/timeline state types in `lib/models/profile_analytics_state.dart`.
+- [x] T005 Verify that the planned implementation reuses the dependencies already declared in `pubspec.yaml`; document any unavoidable dependency exception in `specs/001-release-readiness-hardening/plan.md` before adding a package.
+- [x] T006 Audit affected Firestore and Storage reads/writes for authenticated UID scoping, including legacy `user_id`/`userId` compatibility, and apply only necessary rule/source corrections in `firestore.rules` and `storage.rules`; record any deployed-environment limitation in `AUDIT_TRACKING_PLAN.md`.
 
 ## Phase 3: User Story 1 - Recover account access with reliable feedback (Priority: P1) - MVP
 
@@ -34,16 +34,16 @@ description: "Concrete implementation and release-evidence tasks for release-rea
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Add `AuthController.sendPasswordReset` tests for idle, sending, success, duplicate-call prevention, Firebase/network/action-code failures, neutral anti-enumeration copy, retained email, and retry mapping in `test/services/auth_controller_test.dart`.
-- [ ] T008 [P] [US1] Add login recovery widget tests for blank/malformed validation, progress-disabled submission, success confirmation, failure/retry rendering, and preserved entered email in `test/widgets/login_recovery_test.dart`.
-- [ ] T009 [P] [US1] Extend the existing auth smoke test in `integration_test/auth_web_android_smoke_test.dart` to cover the recovery dialog state contract without requiring secrets or recording reset links.
+- [x] T007 [P] [US1] Add `AuthController.sendPasswordReset` tests for idle, sending, success, duplicate-call prevention, Firebase/network/action-code failures, neutral anti-enumeration copy, retained email, and retry mapping in `test/services/auth_controller_test.dart`.
+- [x] T008 [P] [US1] Add login recovery widget tests for blank/malformed validation, progress-disabled submission, success confirmation, failure/retry rendering, and preserved entered email in `test/widgets/login_recovery_test.dart`.
+- [x] T009 [P] [US1] Confirm the existing auth smoke test in `integration_test/auth_web_android_smoke_test.dart` covers the recovery dialog state contract without requiring secrets or recording reset links; Chrome execution remains an environment gate.
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Split password-recovery operation state from global sign-in loading, normalize recovery errors to concise safe messages, retain retry input, and prevent concurrent reset requests in `lib/controllers/auth_controller.dart` and `lib/services/auth_service.dart`.
-- [ ] T011 [US1] Implement the full recovery dialog state flow, including strict required/malformed email validation, progress, neutral success, retryable failure/offline feedback, and expired-link guidance in `lib/views/auth/login_screen.dart`.
-- [ ] T012 [US1] Verify and preserve signed-out, authenticated, onboarding, and existing-profile routing by adding only the needed recovery regression handling in `lib/app_router.dart` and `lib/services/profile_service.dart`; do not create or migrate a user record.
-- [ ] T013 [US1] Document any accepted recovery dialog state or interaction change, while preserving the existing navigation and visual tokens, in `SCREENS.md`.
+- [x] T010 [US1] Split password-recovery operation state from global sign-in loading, normalize recovery errors to concise safe messages, retain retry input, and prevent concurrent reset requests in `lib/controllers/auth_controller.dart` and `lib/services/auth_service.dart`.
+- [x] T011 [US1] Implement the full recovery dialog state flow, including strict required/malformed email validation, progress, neutral success, retryable failure/offline feedback, and expired-link guidance in `lib/views/auth/login_screen.dart`.
+- [x] T012 [US1] Verify and preserve signed-out, authenticated, onboarding, and existing-profile routing by adding only the needed recovery regression handling in `lib/app_router.dart` and `lib/services/profile_service.dart`; do not create or migrate a user record.
+- [x] T013 [US1] Document any accepted recovery dialog state or interaction change, while preserving the existing navigation and visual tokens, in `SCREENS.md`.
 
 **Checkpoint**: Story 1 is independently testable when T007-T013 pass and the same test account can sign in after completing the reset flow.
 
@@ -55,18 +55,18 @@ description: "Concrete implementation and release-evidence tasks for release-rea
 
 ### Tests for User Story 2
 
-- [ ] T014 [P] [US2] Extend `test/services/recommendation_service_test.dart` for structured reason/action output, unsuitable or unavailable categories, deterministic ordering, deduplication, covered state, incomplete-data state, and no-event state.
-- [ ] T015 [P] [US2] Add event ownership, next-local-day selection, create/edit/delete/date-change reconciliation, duplicate source-key handling, and failed-write behavior tests in `test/services/event_service_test.dart`.
-- [ ] T016 [P] [US2] Add notification tests for stable event-derived IDs, one-current-reminder behavior, cancellation, permission/unavailable/error status, Web fallback, and restart reconciliation using an injectable platform boundary in `test/services/notification_service_test.dart`.
-- [ ] T017 [P] [US2] Add dashboard and notification-panel widget tests for event/date/occasion display, reason text, covered/unknown/empty states, and quick-action navigation in `test/widgets/dashboard_recommendation_test.dart`.
+- [x] T014 [P] [US2] Extend `test/services/recommendation_service_test.dart` for structured reason/action output, unsuitable or unavailable categories, deterministic ordering, deduplication, covered state, incomplete-data state, and no-event state.
+- [x] T015 [P] [US2] Add event ownership, next-local-day selection, create/edit/delete/date-change reconciliation, duplicate source-key handling, and failed-write behavior tests in `test/services/event_service_test.dart`.
+- [x] T016 [P] [US2] Add notification tests for stable event-derived IDs, one-current-reminder behavior, cancellation, permission/unavailable/error status, Web fallback, and restart reconciliation using an injectable platform boundary in `test/services/notification_service_test.dart`.
+- [x] T017 [P] [US2] Add dashboard and notification-panel widget tests for event/date/occasion display, reason text, covered/unknown/empty states, and quick-action navigation in `test/widgets/dashboard_recommendation_test.dart`.
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] Replace plain-string-only recommendation output with the structured deterministic model, filter unavailable or incomplete wardrobe data honestly, and preserve offline/local operation in `lib/services/recommendation_service.dart`.
-- [ ] T019 [US2] Add stable event-derived reminder identity, explicit scheduled/fallback/permission/error status, Android permission handling, and cancellation/reconciliation hooks without claiming delivery on scheduling failure in `lib/services/notification_service.dart`.
-- [ ] T020 [US2] Make event persistence authoritative before reminder status, reconcile create/edit/delete/date changes and app restart, keep all queries/writes UID-scoped, and expose next-local-day event state in `lib/services/event_service.dart`.
-- [ ] T021 [US2] Render recommendation reasons and one actionable wardrobe-add or outfit-generate destination, preserve supported event/occasion context, and show truthful Web in-app reminder status in `lib/views/home/dashboard_page.dart`, `lib/views/home/home_shell.dart`, `lib/views/home/event_planner_page.dart`, and `lib/views/home/outfit_generator_page.dart`.
-- [ ] T022 [US2] Document accepted reminder, recommendation, quick-action, or notification-panel state changes in `SCREENS.md` without adding a top-level navigation destination or redesigning the DLS visual language.
+- [x] T018 [US2] Replace plain-string-only recommendation output with the structured deterministic model, filter unavailable or incomplete wardrobe data honestly, and preserve offline/local operation in `lib/services/recommendation_service.dart`.
+- [x] T019 [US2] Add stable event-derived reminder identity, explicit scheduled/fallback/permission/error status, Android permission handling, and cancellation/reconciliation hooks without claiming delivery on scheduling failure in `lib/services/notification_service.dart`.
+- [x] T020 [US2] Make event persistence authoritative before reminder status, reconcile create/edit/delete/date changes and app restart, keep all queries/writes UID-scoped, and expose next-local-day event state in `lib/services/event_service.dart`.
+- [x] T021 [US2] Render recommendation reasons and one actionable wardrobe-add or outfit-generate destination, preserve supported event/occasion context, and show truthful Web in-app reminder status in `lib/views/home/dashboard_page.dart`, `lib/views/home/home_shell.dart`, `lib/views/home/event_planner_page.dart`, and `lib/views/home/outfit_generator_page.dart`.
+- [x] T022 [US2] Document accepted reminder, recommendation, quick-action, or notification-panel state changes in `SCREENS.md` without adding a top-level navigation destination or redesigning the DLS visual language.
 
 **Checkpoint**: Story 2 is independently testable when T014-T022 pass and obsolete reminders are absent after event edits/deletes and app restart.
 
@@ -78,15 +78,15 @@ description: "Concrete implementation and release-evidence tasks for release-rea
 
 ### Tests for User Story 3
 
-- [ ] T023 [P] [US3] Add profile analytics mapping tests for UID-scoped collection reads, deduplicated clothing counts, valid/ unavailable style score, partial/empty/error/offline freshness, readable labels, and newest-first timeline fallbacks in `test/services/profile_service_test.dart`.
-- [ ] T024 [P] [US3] Add profile widget tests for stable loading, readable metrics, empty/partial guidance, permission/data error with retry, cached/stale labeling, and style-evolution date/label/description rendering in `test/widgets/profile_insights_test.dart`.
+- [x] T023 [P] [US3] Add profile analytics mapping tests for UID-scoped collection reads, deduplicated clothing counts, valid/ unavailable style score, partial/empty/error/offline freshness, readable labels, and newest-first timeline fallbacks in `test/services/profile_service_test.dart`.
+- [x] T024 [P] [US3] Add profile widget tests for stable loading, readable metrics, empty/partial guidance, permission/data error with retry, cached/stale labeling, and style-evolution date/label/description rendering in `test/widgets/profile_insights_test.dart`.
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Move profile metric and audit-history assembly behind explicit typed result/state mapping, preserve UID-scoped reads and available local/session fallback data, and distinguish loading, ready, empty, partial, error, offline, cached, and stale outcomes in `lib/services/profile_service.dart` and `lib/models/profile_analytics_state.dart`.
-- [ ] T026 [US3] Update the profile experience to render readable item/outfit/event/style labels, stable layout, honest unavailable values, retryable errors, stale/offline status, and newest-first mapped style evolution entries with safe missing-field fallbacks in `lib/views/home/profile_page.dart`.
-- [ ] T027 [US3] Preserve existing local/session fallback behavior and UID ownership while exposing the profile state contract through the existing Provider graph in `lib/controllers/wardrobe_controller.dart`, `lib/services/outfit_history_service.dart`, and `lib/main.dart`.
-- [ ] T028 [US3] Document accepted analytics, style-evolution, loading, error, empty, offline, or retry presentation changes in `SCREENS.md` while retaining the locked shell, tokens, surfaces, typography, pills, rounded cards, and no-visible-border rule.
+- [x] T025 [US3] Move profile metric and audit-history assembly behind explicit typed result/state mapping, preserve UID-scoped reads and available local/session fallback data, and distinguish loading, ready, empty, partial, error, offline, cached, and stale outcomes in `lib/services/profile_service.dart` and `lib/models/profile_analytics_state.dart`.
+- [x] T026 [US3] Update the profile experience to render readable item/outfit/event/style labels, stable layout, honest unavailable values, retryable errors, stale/offline status, and newest-first mapped style evolution entries with safe missing-field fallbacks in `lib/views/home/profile_page.dart`.
+- [x] T027 [US3] Preserve existing local/session fallback behavior and UID ownership while exposing the profile state contract through the existing Provider graph in `lib/controllers/wardrobe_controller.dart`, `lib/services/outfit_history_service.dart`, and `lib/main.dart`.
+- [x] T028 [US3] Document accepted analytics, style-evolution, loading, error, empty, offline, or retry presentation changes in `SCREENS.md` while retaining the locked shell, tokens, surfaces, typography, pills, rounded cards, and no-visible-border rule.
 
 **Checkpoint**: Story 3 is independently testable when T023-T028 pass and a failed read is never presented as complete zero-valued analytics.
 
@@ -98,10 +98,10 @@ description: "Concrete implementation and release-evidence tasks for release-rea
 
 ### Automated and source-controlled validation for User Story 4
 
-- [ ] T029 [P] [US4] Add deterministic route/core-flow checkpoint assertions for signed-out routing, auth/onboarding, wardrobe, generator/history, events/recommendations, profile, and sign-out in `integration_test/release_readiness_smoke_test.dart`.
-- [ ] T030 [P] [US4] Add source-level configuration checks for UID rule guards, notification declarations, Web manifest install metadata, and absence of prohibited secrets in `test/release_configuration_test.dart`, without treating source checks as deployed Firebase or physical-device proof.
-- [ ] T031 [US4] Extend `tooling/preflight_check.ps1` to invoke the focused story tests, `flutter analyze`, `flutter test`, Android debug/release build checks, and `flutter build web --release` with safe redacted output paths.
-- [ ] T032 [US4] Review and correct only release-source declarations needed for the evidence matrix in `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/mipmap-anydpi-v26/launcher_icon.xml`, `web/manifest.json`, `web/index.html`, and `firebase.json`; do not add console configuration or secrets to source.
+- [x] T029 [P] [US4] Add deterministic route/core-flow checkpoint assertions for signed-out routing, auth/onboarding, wardrobe, generator/history, events/recommendations, profile, and sign-out in `integration_test/release_readiness_smoke_test.dart`.
+- [x] T030 [P] [US4] Add source-level configuration checks for UID rule guards, notification declarations, Web manifest install metadata, and absence of prohibited secrets in `test/release_configuration_test.dart`, without treating source checks as deployed Firebase or physical-device proof.
+- [x] T031 [US4] Extend `tooling/preflight_check.ps1` to invoke the focused story tests, `flutter analyze`, `flutter test`, Android debug/release build checks, and `flutter build web --release` with safe redacted output paths.
+- [x] T032 [US4] Review and correct only release-source declarations needed for the evidence matrix in `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/mipmap-anydpi-v26/launcher_icon.xml`, `web/manifest.json`, `web/index.html`, and `firebase.json`; do not add console configuration or secrets to source.
 
 ### Manual and external release gates for User Story 4
 
@@ -119,9 +119,9 @@ These tasks are deliberately separate from source implementation. Record each re
 
 **Purpose**: Close traceability, rollback, documentation, and sign-off requirements after the four stories are validated.
 
-- [ ] T040 [P] Update `specs/001-release-readiness-hardening/quickstart.md` with the final focused test commands, build commands, evidence locations, selected reminder lead-time convention, and redaction rules.
-- [ ] T041 Update `AUDIT_TRACKING_PLAN.md` with implementation status, automated evidence, manual/external gate results, UID/security findings, owners, risks, blocked checks, rollback/disablement paths, and next actions.
-- [ ] T042 Update `PROJECT_HISTORY.md` with the implementation and validation delta, affected stories, evidence references, accepted risks, external dependencies, and account-preservation result; record final release-owner sign-off and disposition in `PRE_GO_LIVE_CHECKLIST.md`.
+- [x] T040 [P] Update `specs/001-release-readiness-hardening/quickstart.md` with the final focused test commands, build commands, evidence locations, selected reminder lead-time convention, and redaction rules.
+- [x] T041 Update `AUDIT_TRACKING_PLAN.md` with implementation status, automated evidence, manual/external gate results, UID/security findings, owners, risks, blocked checks, rollback/disablement paths, and next actions.
+- [x] T042 Update `PROJECT_HISTORY.md` with the implementation and validation delta, affected stories, evidence references, accepted risks, external dependencies, and account-preservation result; record final release-owner sign-off and disposition in `PRE_GO_LIVE_CHECKLIST.md`.
 
 ## Dependencies and Execution Order
 

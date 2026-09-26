@@ -208,6 +208,19 @@
 - AI insight panel (lime tertiary accent)
 - Sign out button
 
+### Release-readiness state contract (2026-09-26)
+- Profile metrics use readable labels and distinguish loading, ready, empty, partial,
+  error, offline, cached, and stale data states.
+- Style evolution entries render newest-first with readable dates, mapped activity labels,
+  concise descriptions, and safe fallbacks when optional audit fields are missing.
+- Retry actions preserve the authenticated shell and do not replace unavailable data with
+  complete-looking zero values.
+- Login recovery shows validation, progress, neutral success, failure, offline, and retry
+  states without changing the existing auth route or visual tokens.
+- Event guidance shows the event name, date, occasion, recommendation reason, and one
+  existing wardrobe or generator action. Android reminder status and Web in-app fallback
+  status are explicit; no new top-level destination is added.
+
 ---
 
 ## What YOU Need to Provide (Blockers)

@@ -14,7 +14,30 @@ class AuthService {
     _webPersistenceReady = true;
   }
 
-  String _normalizeEmail(String email) => email.trim().toLowerCase();
+  static String normalizeEmail(String email) => email.trim().toLowerCase();
+
+  String _normalizeEmail(String email) => normalizeEmail(email);
+
+  static String recoveryErrorMessage(Object error) {
+    if (error is FirebaseAuthException) {
+      switch (error.code) {
+        case 'network-request-failed':
+        case 'timeout':
+          return 'We could not reach the reset service. Check your connection and try again.';
+        case 'too-many-requests':
+          return 'Too many attempts. Wait a moment, then try again.';
+        case 'invalid-action-code':
+        case 'expired-action-code':
+          return 'That reset link has expired. Request a new reset email.';
+        case 'invalid-email':
+          return 'Enter a valid email address.';
+        default:
+          return 'We could not complete that request. Check your details and try again.';
+      }
+    }
+
+    return 'We could not complete that request. Check your connection and try again.';
+  }
 
   Stream<User?> get authState {
     try {

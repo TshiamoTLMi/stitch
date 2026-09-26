@@ -368,17 +368,50 @@ Next action plan:
 Status: Complete
 
 Implementation summary:
-- Added generated outfit board image composition from selected user wardrobe items.
-- Added background-cleanup step for flatter item backgrounds before compositing.
-- Added backend-ready Virtual Try-On beta integration path with runtime endpoint config.
 
 Validation evidence:
-- Focused `flutter analyze` passed for generator view + new image/try-on services.
 
 Risk status:
-- Background cleanup is heuristic and works best with flatter/solid photo backgrounds.
-- Virtual try-on result quality depends on external backend model capability and latency.
 
 Next action plan:
-- Run physical device UX test for `Generate Image` and `Virtual Try-On (Beta)` actions.
-- Add persistent save/share flow for generated outfit image in next pass.
+## 21. SpecKit Release-hardening Audit (2026-09-26)
+
+Status: Repository implementation complete; external release gates remain open.
+
+Implementation summary:
+- Added operation-specific password recovery state, validation, safe Firebase error mapping,
+   duplicate-submit prevention, retry behavior, and neutral success messaging.
+- Added structured deterministic event recommendations with reasons, covered/unknown states,
+   and existing wardrobe/generator actions.
+- Added stable event reminder IDs, next-local-day selection, Android scheduling status, stale
+   reminder cancellation, and truthful Web in-app fallback behavior.
+- Added explicit profile analytics freshness/status mapping and readable style evolution
+   fallbacks without replacing failed reads with complete-looking zero values.
+- Removed the broad signed-in Firebase Storage fallback rule and retained UID-owned paths.
+- Added focused tests, release configuration checks, integration smoke scaffolding, and an
+   expanded PowerShell preflight command.
+
+Validation evidence:
+- `flutter pub get` passed.
+- `flutter analyze` passed with no issues.
+- `flutter test` passed with 42 tests.
+- `flutter build apk --debug` passed.
+- `flutter build apk --release` passed.
+- `flutter build web --release` passed.
+- Focused recovery, event, reminder, recommendation, profile, widget, and configuration tests
+   passed.
+
+Risk status:
+- Firebase Console OAuth/SHA/origin configuration and deployed rules are not proven by local
+   source checks.
+- Android physical notification, launcher, upgrade/account-preservation, and full smoke checks
+   remain pending device access.
+- Production-like Web reset/OAuth, upload, low-network, PWA install, and full smoke checks
+   remain pending deployment access.
+- iOS/macOS validation remains unavailable on Windows.
+
+Next action plan:
+- Execute the blocked Android/Web release-evidence tasks with an authorized release owner.
+- Record each result using `specs/001-release-readiness-hardening/contracts/release-evidence.md`.
+- Do not mark go-live ready until applicable P0 gates and external dependencies are green or
+   explicitly accepted by the release owner.

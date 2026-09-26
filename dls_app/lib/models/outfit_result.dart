@@ -6,6 +6,8 @@ class OutfitResult {
     required this.bottom,
     required this.shoes,
     required this.accessory,
+    this.outerwear,
+    this.accessories = const <ClothingItem>[],
     required this.score,
     required this.reasoning,
   });
@@ -14,6 +16,8 @@ class OutfitResult {
   final ClothingItem? bottom;
   final ClothingItem? shoes;
   final ClothingItem? accessory;
+  final ClothingItem? outerwear;
+  final List<ClothingItem> accessories;
   final int score;
   final List<String> reasoning;
 
@@ -25,6 +29,8 @@ class OutfitResult {
       'bottom_id': bottom?.id,
       'shoes_id': shoes?.id,
       'accessory_id': accessory?.id,
+      'outerwear_id': outerwear?.id,
+      'accessory_ids': accessories.map((item) => item.id).toList(),
       'score': score,
       'reasoning': reasoning,
     };

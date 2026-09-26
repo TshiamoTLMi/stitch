@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -30,9 +31,10 @@ class _HomeShellState extends State<HomeShell> {
 
   void _updateEvents(List<EventModel> events) {
     if (!mounted) return;
+    final currentReminderEvents = events.where((event) => NotificationService.isNextLocalDay(event.date)).toList();
     setState(() {
-      _upcomingEvents = events;
-      _unreadCount = events.length;
+      _upcomingEvents = currentReminderEvents;
+      _unreadCount = currentReminderEvents.length;
     });
   }
 
@@ -67,7 +69,10 @@ class _HomeShellState extends State<HomeShell> {
     }
 
     final pages = [
-      DashboardPage(userId: userId),
+      DashboardPage(
+        userId: userId,
+        onOpenGenerator: () => setState(() => _index = 2),
+      ),
       WardrobeDashboard(userId: userId),
       OutfitGeneratorPage(userId: userId),
       EventPlannerPage(userId: userId),
@@ -244,6 +249,14 @@ class _NotifPanel extends StatelessWidget {
                 ],
               ),
             ),
+            if (kIsWeb)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Browser notifications are unavailable or unverified. Upcoming events remain visible here in the app.',
+                  style: TextStyle(color: Color(0xFFD0C5AF), fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 8),
             // ── list ─────────────────────────────────────────────────────
             Expanded(

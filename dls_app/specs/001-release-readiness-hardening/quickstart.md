@@ -81,3 +81,22 @@ Use the matrix in [contracts/release-evidence.md](contracts/release-evidence.md)
 ## Windows limitation
 
 iOS build/device validation, CocoaPods, signing, and final Apple Firebase configuration remain macOS-only. Record them as not applicable or blocked for this Windows run; do not count them as Android or Web evidence.
+
+## Repository validation recorded (2026-09-26)
+
+The following checks passed in the Windows workspace:
+
+```text
+flutter pub get                 passed
+flutter analyze                 passed
+flutter test                    passed (42 tests)
+flutter build apk --debug       passed
+flutter build apk --release     passed
+flutter build web --release     passed
+focused story tests             passed
+```
+
+The reminder convention remains one hour before the event. Android delivery still requires
+physical-device permission and scheduling evidence; Web uses the in-app next-day fallback.
+Production Firebase configuration, deployed rules, production-like Web behavior, PWA install,
+low-network behavior, account preservation, and iOS/macOS validation remain external gates.

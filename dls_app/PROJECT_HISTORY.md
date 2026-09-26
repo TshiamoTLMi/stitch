@@ -646,3 +646,34 @@ Final iOS build validation cannot be completed from this Windows environment bec
   - `lib/views/home/outfit_generator_page.dart`
   - `lib/services/outfit_image_service.dart`
   - `lib/services/virtual_tryon_service.dart`
+
+  ## 29. SpecKit Release-hardening Pass (2026-09-26)
+
+  ### Completed in this update
+
+  1. Adopted the DLS SpecKit constitution and generated the full feature artifacts under
+    `specs/001-release-readiness-hardening/`.
+  2. Hardened password recovery with strict validation, independent progress/success/failure
+    state, duplicate-submit prevention, safe error copy, and retry behavior.
+  3. Hardened event guidance and reminders with structured reasons/actions, stable reminder IDs,
+    next-day reconciliation, Android fallback status, and truthful Web in-app reminders.
+  4. Hardened profile analytics and style evolution with readable labels, explicit data states,
+    chronological fallbacks, and retry/offline handling.
+  5. Removed the broad signed-in Storage rule fallback and added release configuration tests,
+    focused story tests, integration smoke scaffolding, and preflight coverage.
+
+  ### Validation evidence
+
+  - `flutter pub get` passed.
+  - `flutter analyze` passed.
+  - `flutter test` passed (42 tests).
+  - `flutter build apk --debug` passed.
+  - `flutter build apk --release` passed.
+  - `flutter build web --release` passed.
+
+  ### Remaining release gates
+
+  - Android physical-device notification, launcher, upgrade, and account-preservation checks.
+  - Production-like Web reset/OAuth, upload, low-network, PWA, and smoke checks.
+  - Firebase Console configuration and deployed-rule verification.
+  - iOS/macOS validation on an authorized Mac.

@@ -14,10 +14,7 @@ class WardrobeService {
 
   Stream<List<ClothingItem>> streamItems(String userId) {
     try {
-      return _collection
-          .where('userId', isEqualTo: userId)
-          .snapshots()
-          .map(
+      return _collection.where('userId', isEqualTo: userId).snapshots().map(
             (snapshot) => snapshot.docs.map(ClothingItem.fromDoc).toList(),
           );
     } catch (_) {
@@ -79,5 +76,67 @@ class WardrobeService {
 
   Future<void> deleteItem(String id) async {
     await _collection.doc(id).delete();
+  }
+
+  Future<ClothingItem?> getItem(String id) async {
+    final directSnapshot = await _collection.doc(id).get();
+    if (directSnapshot.exists) return ClothingItem.fromDoc(directSnapshot);
+
+    final byFieldId =
+        await _collection.where('id', isEqualTo: id).limit(1).get();
+    if (byFieldId.docs.isEmpty) return null;
+    return ClothingItem.fromDoc(byFieldId.docs.first);
+  }
+
+  Future<void> deleteFirestoreRecord(String id) async {
+    final docRef = await _resolveItemDocRef(id);
+    await docRef.delete();
+  }
+
+  Future<void> deleteStorageBackup(ClothingItem item) async {
+    final paths = <String>{
+      if (item.storagePath != null && item.storagePath!.isNotEmpty)
+        item.storagePath!,
+      if (item.userId.isNotEmpty) 'users/${item.userId}/items/${item.id}.jpg',
+      'clothing_items/${item.id}.jpg',
+    };
+    Object? lastError;
+
+    for (final path in paths) {
+      try {
+        await _storage.ref(path).delete();
+      } on FirebaseException catch (error) {
+        if (error.code != 'object-not-found') lastError = error;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (item.imageUrl.isNotEmpty) {
+      try {
+        await _storage.refFromURL(item.imageUrl).delete();
+      } on FirebaseException catch (error) {
+        if (error.code != 'object-not-found') lastError = error;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (lastError != null) {
+      throw Exception('Storage cleanup failed: $lastError');
+    }
+  }
+
+  Future<DocumentReference<Map<String, dynamic>>> _resolveItemDocRef(
+      String id) async {
+    final direct = _collection.doc(id);
+    final directSnapshot = await direct.get();
+    if (directSnapshot.exists) return direct;
+
+    final byFieldId =
+        await _collection.where('id', isEqualTo: id).limit(1).get();
+    if (byFieldId.docs.isNotEmpty) return byFieldId.docs.first.reference;
+
+    throw Exception('Item not found for id: $id');
   }
 }

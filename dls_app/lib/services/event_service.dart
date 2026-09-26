@@ -4,7 +4,11 @@ import '../models/event_model.dart';
 import 'notification_service.dart';
 
 class EventService {
+  EventService({NotificationService? notificationService})
+      : _notifications = notificationService ?? NotificationService();
+
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  final NotificationService _notifications;
 
   CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection('events');
@@ -27,22 +31,20 @@ class EventService {
     }
   }
 
-  Future<void> createEvent(EventModel event) async {
-    try {
-      final doc = await _collection.add(event.toMap());
-      // Schedule a local reminder 1 hour before the event.
-      final saved = EventModel(
-        id: doc.id,
-        userId: event.userId,
-        name: event.name,
-        date: event.date,
-        occasion: event.occasion,
-        recommendedOutfits: event.recommendedOutfits,
-      );
-      await NotificationService().scheduleEventReminder(saved);
-    } catch (_) {
-      // Silently degrade — event still created even if notification fails.
-    }
+  Future<EventModel> createEvent(EventModel event) async {
+    final doc = await _collection.add(event.toMap());
+    final saved = EventModel(
+      id: doc.id,
+      userId: event.userId,
+      name: event.name,
+      date: event.date,
+      occasion: event.occasion,
+      recommendedOutfits: event.recommendedOutfits,
+      source: event.source,
+      sourceKey: event.sourceKey,
+    );
+    await _notifications.scheduleEventReminder(saved);
+    return saved;
   }
 
   Future<bool> createEventIfMissing(EventModel event) async {
@@ -62,10 +64,28 @@ class EventService {
     return true;
   }
 
+  Future<EventModel> updateEvent(EventModel event) async {
+    await _collection.doc(event.id).update(event.toMap());
+    await _notifications.cancelEventReminder(event);
+    await _notifications.scheduleEventReminder(event);
+    return event;
+  }
+
   Future<void> deleteEvent(EventModel event) async {
-    try {
-      await _collection.doc(event.id).delete();
-      await NotificationService().cancelEventReminder(event);
-    } catch (_) {}
+    await _collection.doc(event.id).delete();
+    await _notifications.cancelEventReminder(event);
+  }
+
+  static List<EventModel> nextLocalDayEvents(
+    List<EventModel> events, {
+    DateTime? now,
+  }) {
+    final reference = now ?? DateTime.now();
+    final nextDay = DateTime(reference.year, reference.month, reference.day + 1);
+    final followingDay = nextDay.add(const Duration(days: 1));
+    return events
+        .where((event) => !event.date.isBefore(nextDay) && event.date.isBefore(followingDay))
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
   }
 }

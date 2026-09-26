@@ -137,3 +137,34 @@ Working progress is documented in:
 
 - `PROJECT_HISTORY.md` for chronological implementation updates
 - `AUDIT_TRACKING_PLAN.md` for audit status, validation evidence, risks, and next actions
+
+## N. SpecKit Release-hardening Evidence (2026-09-26)
+
+Repository checks completed in the Windows workspace:
+
+- [x] `flutter pub get` succeeds
+- [x] `flutter analyze` reports no issues
+- [x] `flutter test` passes (42 tests)
+- [x] `flutter build apk --debug` succeeds
+- [x] `flutter build apk --release` succeeds
+- [x] `flutter build web --release` succeeds
+- [x] Focused account recovery, event/reminder, recommendation, profile, widget, and
+	release-configuration tests pass
+- [x] Storage rules no longer include the broad signed-in fallback path
+- [ ] Chrome integration execution is blocked by the installed Flutter toolchain reporting
+	`Web devices are not supported for integration tests yet`; retain this as an environment
+	gate and validate the same flow through a supported browser/deployment path.
+
+Still blocked or requiring release-owner evidence:
+
+- [ ] Android physical notification permission, restart/force-stop, launcher icon, and
+	upgrade/account-preservation checks
+- [ ] Production-like Web reset/OAuth, upload, hard-refresh, low-network, and PWA install
+	checks
+- [ ] Firebase Console OAuth, Android SHA, authorized origins, deployed Firestore/Storage
+	rules, hosting, and notification capability checks
+- [ ] Android and Web full integration smoke runs against authorized environments
+- [ ] iOS/macOS build and device checks; unavailable from Windows
+
+Blocked checks must remain recorded as `blocked` or `not-applicable` with an owner and next
+action. Local source/build checks do not prove deployed Firebase or physical-device behavior.

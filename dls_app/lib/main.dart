@@ -13,6 +13,7 @@ import 'services/event_service.dart';
 import 'services/outfit_history_service.dart';
 import 'services/profile_service.dart';
 import 'services/wardrobe_service.dart';
+import 'services/wardrobe_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,10 @@ class DlsBootstrap extends StatelessWidget {
       providers: [
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<WardrobeService>(create: (_) => WardrobeService()),
+        Provider<WardrobeRepository>(
+          create: (context) =>
+              WardrobeRepository(service: context.read<WardrobeService>()),
+        ),
         Provider<EventService>(create: (_) => EventService()),
         Provider<OutfitHistoryService>(create: (_) => OutfitHistoryService()),
         Provider<DemoDataService>(create: (_) => DemoDataService()),
@@ -44,7 +49,8 @@ class DlsBootstrap extends StatelessWidget {
           create: (context) => AuthController(context.read<AuthService>()),
         ),
         ChangeNotifierProvider<WardrobeController>(
-          create: (context) => WardrobeController(context.read<WardrobeService>()),
+          create: (context) =>
+              WardrobeController(context.read<WardrobeRepository>()),
         ),
       ],
       child: const DlsApp(),
