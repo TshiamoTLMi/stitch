@@ -45,6 +45,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/ml_seed_rules.json
     - assets/seed/
     - assets/seed/images/
 

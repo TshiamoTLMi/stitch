@@ -9,6 +9,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/item_image.dart';
 import '../../models/clothing_item.dart';
 import '../../models/enhanced_outfit.dart';
 import '../../models/outfit.dart';
@@ -810,7 +811,7 @@ class _FitItemChip extends StatelessWidget {
       );
     }
 
-    final imageUrl = item?.imageUrl ?? '';
+    final imageProvider = item == null ? null : resolveItemImage(item!);
     final category = item?.category ?? '';
 
     return Container(
@@ -832,7 +833,7 @@ class _FitItemChip extends StatelessWidget {
             child: SizedBox(
               height: 94,
               width: double.infinity,
-              child: imageUrl.isEmpty
+              child: imageProvider == null
                   ? const ColoredBox(
                       color: AppTheme.surfaceLow,
                       child: Center(
@@ -840,10 +841,9 @@ class _FitItemChip extends StatelessWidget {
                             color: AppTheme.onSurfaceVariant),
                       ),
                     )
-                  : Image.network(
-                      imageUrl,
+                  : Image(
+                      image: ResizeImage(imageProvider, width: 320),
                       fit: BoxFit.cover,
-                      cacheWidth: 320,
                       filterQuality: FilterQuality.low,
                       loadingBuilder: (_, child, progress) => progress == null
                           ? child

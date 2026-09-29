@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/item_image.dart';
 import '../../models/profile_analytics_state.dart';
 import '../../services/demo_data_service.dart';
 import '../../services/image_compression_service.dart';
@@ -342,7 +343,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             child: profileImageUrl.isNotEmpty
                                 ? ClipOval(
-                                    child: Image.network(profileImageUrl, fit: BoxFit.cover),
+                                    child: Image(
+                                      image: resolveImageSource(
+                                              url: profileImageUrl) ??
+                                          NetworkImage(profileImageUrl),
+                                      fit: BoxFit.cover,
+                                    ),
                                   )
                                 : const CircleAvatar(
                                     backgroundColor: AppTheme.surfaceHigh,

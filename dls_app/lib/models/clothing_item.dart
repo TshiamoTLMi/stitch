@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../core/constants/wardrobe_taxonomy.dart';
+
 class ClothingItem {
   ClothingItem({
     required this.id,
@@ -8,7 +10,7 @@ class ClothingItem {
     required this.categoryType,
     this.fit,
     required this.color,
-    required this.colorGroup,
+    required String colorGroup,
     required this.styleTags,
     required this.season,
     required this.status,
@@ -19,7 +21,20 @@ class ClothingItem {
     required this.userId,
     required this.createdAt,
     required this.updatedAt,
-  });
+  }) : colorGroup = _resolveColorGroup(colorGroup, color);
+
+  /// Colour groups written by pre-Sprint-9 data. They are re-derived from the
+  /// colour so the harmony engine never sees a stale group.
+  static const Set<String> legacyColorGroups = <String>{'dark', 'light', 'bright'};
+
+  /// Returns a current colour group, re-deriving it from [color] when the stored
+  /// value is missing or a legacy `dark`/`light`/`bright` value.
+  static String _resolveColorGroup(String? stored, String color) {
+    final value = (stored ?? '').trim().toLowerCase();
+    if (value.isNotEmpty && !legacyColorGroups.contains(value)) return value;
+    return deriveColorGroup(color);
+  }
+
 
   final String id;
   final String parentCategory;
