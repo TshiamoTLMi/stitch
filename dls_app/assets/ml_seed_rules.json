@@ -4,9 +4,9 @@
   "description": "Recommendation priors for the on-device outfit engine. These are soft priors, not hard restrictions. Every slot/category/style/colour value is validated against lib/core/constants/wardrobe_taxonomy.dart by test/core/engine/rules_matrix_test.dart.",
   "categoryCompatibility": [
     { "id": "cc-01", "structure": "standard", "required": ["Tops", "Bottoms", "Footwear"], "optional": ["Accessories"], "suitability": 1.0, "note": "Core three-piece fit." },
-    { "id": "cc-02", "structure": "standard_plus_layer", "required": ["Tops", "Bottoms", "Footwear", "Outerwear"], "optional": ["Accessories"], "suitability": 0.95, "note": "Layered for cool or wet weather." },
+    { "id": "cc-02", "structure": "outerwear_layered", "required": ["Tops", "Bottoms", "Footwear", "Outerwear"], "optional": ["Accessories"], "suitability": 0.95, "note": "Layered for cool or wet weather." },
     { "id": "cc-03", "structure": "one_piece", "required": ["Dresses & Jumpsuits", "Footwear"], "optional": ["Accessories"], "suitability": 1.0, "note": "Dress or jumpsuit with shoes." },
-    { "id": "cc-04", "structure": "one_piece_plus_layer", "required": ["Dresses & Jumpsuits", "Footwear", "Outerwear"], "optional": ["Accessories"], "suitability": 0.9, "note": "One-piece with an outer layer." },
+    { "id": "cc-04", "structure": "one_piece_layered", "required": ["Dresses & Jumpsuits", "Footwear", "Outerwear"], "optional": ["Accessories"], "suitability": 0.9, "note": "One-piece with an outer layer." },
     { "id": "cc-05", "structure": "formal", "required": ["Tops", "Bottoms", "Footwear", "Outerwear", "Accessories"], "optional": [], "suitability": 1.0, "note": "Five-slot formal fit." },
     { "id": "cc-06", "structure": "formal_one_piece", "required": ["Dresses & Jumpsuits", "Footwear", "Accessories"], "optional": ["Outerwear"], "suitability": 0.95, "note": "Formal dress with accessories." },
     { "id": "cc-07", "structure": "casual_streetwear", "required": ["Tops", "Bottoms", "Footwear"], "optional": ["Accessories", "Essentials & Intimates"], "suitability": 0.9, "note": "Relaxed fit, optional headwear or extras." },

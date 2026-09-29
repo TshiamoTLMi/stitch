@@ -29,10 +29,16 @@ are listed separately and are never marked passed by source inspection alone.
 
 ## Phase 3: Affinity rule matrix
 
-- [ ] T009 Author `assets/ml_seed_rules.json` with >=100 rules across
-  `categoryCompatibility`, `styleEventAffinity`, `weatherSuitability`, `colorHarmony`,
-  `layerCompatibility`, `defaultWeights`.
-- [ ] T010 Unit test the rule matrix (schema, dimensions, non-empty weights).
+- [x] T009 Author `assets/ml_seed_rules.json` with >=100 rules across the five implemented
+  dimensions: `categoryCompatibility`, `styleEventAffinity`, `weatherSuitability`,
+  `colorHarmony`, `defaultWeights`. Layering is carried inside
+  `categoryCompatibility` (layered structure profiles) and inside
+  `weatherSuitability` (per-class `layering` / `sleeve` / `waterproof` fields plus the
+  `layeringNeeded` hint on each weather condition) rather than a separate
+  `layerCompatibility` dimension. Implemented: 127 rules.
+- [x] T010 Unit test the rule matrix in `test/core/engine/rules_matrix_test.dart`
+  (JSON parse, taxonomy enum alignment, symmetric colour matrix, weight sum = 1.0,
+  rule count >= 100, pubspec asset registration).
 
 ## Phase 4: Weather (US: context sensitivity)
 

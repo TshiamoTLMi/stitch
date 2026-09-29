@@ -4,6 +4,77 @@ import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 import '../../core/theme/app_theme.dart';
 
+/// Local-only hero backdrop for the splash/login screen.
+///
+/// Deliberately performs NO network image request, so app launch never depends
+/// on connectivity (Sprint 9 remediation). Uses only the frozen `SCREENS.md`
+/// tokens: background surfaces, gold primary, and a faint monogram watermark.
+class _AtelierHeroBackdrop extends StatelessWidget {
+  const _AtelierHeroBackdrop();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF23201C), Color(0xFF131313), Color(0xFF0E0E0E)],
+        ),
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: const Alignment(-0.35, -0.45),
+                radius: 1.15,
+                colors: [
+                  AppTheme.primary.withValues(alpha: 0.10),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: const Alignment(0.75, -0.15),
+                radius: 0.95,
+                colors: [
+                  AppTheme.primaryContainer.withValues(alpha: 0.05),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+          Align(
+            alignment: const Alignment(0.62, -0.62),
+            child: Text(
+              'DLS',
+              style: TextStyle(
+                fontSize: 132,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 10,
+                color: AppTheme.primary.withValues(alpha: 0.06),
+              ),
+            ),
+          ),
+          Align(
+            alignment: const Alignment(-0.72, 0.38),
+            child: Icon(
+              Icons.auto_awesome_outlined,
+              size: 46,
+              color: AppTheme.primary.withValues(alpha: 0.05),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class LoginSignupPage extends StatefulWidget {
   const LoginSignupPage({super.key});
 
@@ -55,15 +126,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Hero background
-          Image.network(
-            'https://images.unsplash.com/photo-1558618666-fcd25c85cd64'
-            '?auto=format&fit=crop&w=1400&q=80',
-            fit: BoxFit.cover,
-            color: Colors.black.withValues(alpha: 0.55),
-            colorBlendMode: BlendMode.darken,
-            errorBuilder: (_, __, ___) => const ColoredBox(color: Color(0xFF131313)),
-          ),
+          // Hero background - local only, no network request at launch
+          const _AtelierHeroBackdrop(),
 
           // Bottom fade gradient
           Container(

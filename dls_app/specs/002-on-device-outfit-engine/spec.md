@@ -61,6 +61,50 @@ taxonomy from `lib/core/constants/wardrobe_taxonomy.dart` (no duplicated enums).
 **Critical rule**: no dataset may be described as legally suitable unless its licence actually
 permits the intended use. No third-party product imagery is bundled or redistributed.
 
+## Affinity Rule Matrix
+
+Scoring is driven by `assets/ml_seed_rules.json`, which currently holds **127 rules** across
+**five** dimensions:
+
+| Dimension | Rules | Feeds |
+|---|---|---|
+| `categoryCompatibility` | 12 | `K` (category/structure) |
+| `styleEventAffinity` | 25 | `E` (event) and informs `S` |
+| `weatherSuitability` | 72 | `W` (weather) |
+| `colorHarmony` | 13 | `C` (colour) |
+| `defaultWeights` | 5 | the five scoring weights |
+
+- `styleEventAffinity` is the **full cross-product** of the five `styleTagOptions` against
+  the five app occasions (`Work`, `Braai`, `Date`, `Groove`, `Formal event`).
+- `weatherSuitability` covers six conditions (`hot`, `warm`, `mild`, `cold`, `freezing`,
+  `rain`) across twelve garment classes, each class referencing only real taxonomy
+  subcategories.
+- `colorHarmony` is a symmetric 3x3 matrix over the colour groups from `deriveColorGroup()`
+  plus four patterns (monochromatic, neutral-dominant, complementary, all-accent).
+- `defaultWeights` MUST sum to exactly `1.0`.
+
+**Layering is deliberately NOT a separate dimension.** It is integrated in two places:
+
+1. `categoryCompatibility` provides layered structure profiles (`outerwear_layered`,
+   `one_piece_layered`, `cold_weather_layered`, `active_layered`).
+2. `weatherSuitability` annotates each garment class with `layering`
+   (`none`/`single`/`mid`/`outer`/`footwear`/`accessory`), `sleeve`, and `waterproof`, and
+   each weather condition with a `layeringNeeded` hint.
+
+These are **priors, not filters**: a low score lowers ranking, it never removes an item.
+
+## Scoring Formula
+
+```
+Style Match % = round( 100 * ( w_style*S + w_event*E + w_weather*W + w_color*C + w_category*K ) )
+```
+
+where `S`, `E`, `W`, `C`, `K` are each normalised to `[0.0, 1.0]` and the weights come from
+`defaultWeights` (sum `1.0`).
+
+Canonical outfit templates validated by the engine: `standard`, `outerwear_layered`,
+`one_piece`, `one_piece_layered`.
+
 ## User Scenarios
 
 1. **Explainable local fit** - a signed-in user opens the generator, picks an occasion/mood/
