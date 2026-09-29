@@ -48,7 +48,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # --- Flutter SDK -------------------------------------------------------------
 # Downloaded as a pinned release archive rather than `git clone` so the image is
 # reproducible and does not carry ~1GB of git history.
-RUN curl -fsSL -o /tmp/flutter.tar.xz \
+#
+# The archive is ~1GB and routinely drops mid-transfer on CI networks, so the
+# download is resumable (`-C -`) and retried. Without this a single `curl` dies
+# with `error 56 (unexpected eof)` and the whole image build has to restart.
+RUN curl -fSL \
+        --retry 10 \
+        --retry-delay 5 \
+        --retry-max-time 0 \
+        --retry-all-errors \
+        --connect-timeout 30 \
+        -C - \
+        -o /tmp/flutter.tar.xz \
         "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz" \
     && mkdir -p /opt \
     && tar -xJf /tmp/flutter.tar.xz -C /opt \
