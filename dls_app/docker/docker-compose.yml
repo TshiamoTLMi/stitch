@@ -1,10 +1,17 @@
 # Containerised Flutter toolchain for the DLS app.
 #
+# Run from this directory (compose resolves paths relative to this file):
+#
+#   cd docker
 #   docker compose build              # build the image once
 #   docker compose run --rm test      # analyze + unit tests
 #   docker compose run --rm build-web # build/web
 #   docker compose run --rm build-apk # build/app/outputs/flutter-apk/
 #   docker compose run --rm shell     # interactive bash in the toolchain
+#
+# `context: ..` is the Flutter project root, which is the repository bind-mounted
+# at /app. Note that `.dockerignore` must stay at the context root (the project
+# root) because BuildKit only reads it from there.
 #
 # All services share the same image, so the toolchain is identical everywhere.
 name: dls
@@ -14,12 +21,12 @@ services:
   # release build is attempted.
   test:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     image: dls-flutter:3.41.6
     working_dir: /app
     volumes:
-      - .:/app
+      - ..:/app
       # Keep generated output off the host bind mount: a bind mount from
       # Windows is slow and thousands of small files crawl through it.
       - build-output:/app/build
@@ -42,11 +49,11 @@ services:
   build-web:
     image: dls-flutter:3.41.6
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     working_dir: /app
     volumes:
-      - .:/app
+      - ..:/app
       - build-output:/app/build
       - dart-tool:/app/.dart_tool
       - pub-cache:/root/.pub-cache
@@ -65,11 +72,11 @@ services:
   build-apk:
     image: dls-flutter:3.41.6
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     working_dir: /app
     volumes:
-      - .:/app
+      - ..:/app
       - build-output:/app/build
       - dart-tool:/app/.dart_tool
       - pub-cache:/root/.pub-cache
@@ -87,11 +94,11 @@ services:
   shell:
     image: dls-flutter:3.41.6
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     working_dir: /app
     volumes:
-      - .:/app
+      - ..:/app
       - build-output:/app/build
       - dart-tool:/app/.dart_tool
       - pub-cache:/root/.pub-cache

@@ -52,3 +52,7 @@ app.*.map.json
 # Local diagnostics output
 *.out
 *.err
+
+# Generated analyze dumps (regenerate with `flutter analyze`)
+analyze_machine_output.txt
+

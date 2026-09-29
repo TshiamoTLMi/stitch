@@ -228,18 +228,23 @@ Firebase console access, and remain open:** T033-T039 above.
       persistence, weather caching/city override, `resolveItemImage()` fallbacks,
       upload compression, the analytics tab, and the analytics log itself.
 
-- [x] T054 **Containerised build environment**: `Dockerfile.dev` pins Flutter to
-      3.41.6 stable (the audited revision) on Ubuntu 22.04 with JDK 17, the
+- [x] T054 **Containerised build environment**: `docker/Dockerfile.dev` pins Flutter
+      to 3.41.6 stable (the audited revision) on Ubuntu 22.04 with JDK 17, the
       Android cmdline-tools, pre-accepted SDK licences, `android-35/36` platforms
       and matching build-tools, web enabled and artefacts pre-cached.
-      `docker-compose.yml` provides `test`, `build-web`, `build-apk` and `shell`
-      services over one shared image, with named volumes for pub, Gradle, the
-      Android SDK, `/app/build` and `/app/.dart_tool`. `.dockerignore` keeps the
-      build context lean. Documented in `README.md`.
-      Status: compose schema validated (`docker compose config`); the pinned
-      Flutter archive URL verified against the official release index. The full
-      image build is still in progress on this host (slow ~1 GB SDK download) —
-      see the release note below.
+      `docker/docker-compose.yml` provides `test`, `build-web`, `build-apk` and
+      `shell` services over one shared image, with named volumes for pub, Gradle,
+      the Android SDK, `/app/build` and `/app/.dart_tool`. Docker files live in
+      `docker/`; `.dockerignore` stays at the project root because BuildKit only
+      reads it from the build-context root. Documented in `README.md` and
+      `docker/README.md`.
+      Status: compose schema validated from the new location
+      (`docker compose config` resolves `context: ..` to the project root); the
+      pinned Flutter archive URL verified against the official release index.
+      The full image build is BLOCKED on this host — the 1444 MB SDK downloads at
+      ~112 KB/s (3h38m ETA) and the first attempt failed with curl error 56. The
+      download is now resumable/retried, but the build needs a normal-bandwidth
+      host.
 
 ## Traceability Notes
 

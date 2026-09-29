@@ -6,10 +6,16 @@
 # audited on, so a container build cannot silently differ from a local build.
 # Bump FLUTTER_VERSION in lockstep with the team, never "latest".
 #
+# Build from inside this directory so `context: ..` resolves to the Flutter
+# project root:
+#
+#   cd docker
 #   docker compose build
 #   docker compose run --rm test
 #   docker compose run --rm build-web
 #   docker compose run --rm build-apk
+#
+# The repository is bind-mounted at /app by docker-compose.yml.
 #
 FROM ubuntu:22.04
 

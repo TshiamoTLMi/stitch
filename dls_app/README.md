@@ -227,14 +227,16 @@ flutter test
 
 ## Containerised Builds (Docker)
 
-The release toolchain is pinned in `Dockerfile.dev` so a container build cannot
-silently differ from a local one. Flutter is pinned to **3.41.6 stable** — the
-exact revision the release candidate was audited on. Bump `FLUTTER_VERSION` in
-lockstep with the team; never switch to `latest`.
+The release toolchain is pinned in `docker/Dockerfile.dev` so a container build
+cannot silently differ from a local one. Flutter is pinned to **3.41.6 stable** —
+the exact revision the release candidate was audited on. Bump it in lockstep
+with the team; never switch to `latest`.
 
 Prerequisites: Docker Desktop running (Linux containers mode).
 
 ```bash
+cd docker
+
 # Build the image once (~25 min first time: Flutter SDK + Android SDK downloads)
 docker compose build
 
@@ -250,6 +252,10 @@ docker compose run --rm build-apk
 # Interactive shell (codegen, flutter doctor, adb, ...)
 docker compose run --rm shell
 ```
+
+See `docker/README.md` for the volume map and details. Note that
+`.dockerignore` intentionally stays at the project root, because BuildKit only
+reads it from the build-context root.
 
 ### What is cached
 
