@@ -361,7 +361,7 @@ Process audit tracking reference:
 
 ### Scope
 1. Re-verify the repository baseline build/test gate before any Sprint 9 feature work.
-2. Confirm branch hygiene: bring `test` commits into the `dev` working branch.
+2. Confirm branch hygiene: keep development on `dev` and promote `dev` into `test` for pre-prod testing.
 3. Keep release-readiness evidence current for the remaining physical/external gates.
 
 ### Preflight Evidence (2026-09-29)
@@ -377,8 +377,9 @@ Process audit tracking reference:
 | `flutter build web --release` | ✅ Passed (`Built build\web`) |
 
 ### Branch Verification
-- `dev` is the active delivery branch (per `AUDIT_TRACKING_PLAN.md` §3).
-- `test` (2 commits ahead) fast-forward merged into `dev` → `dev` now at `419a4eb` (`Updating 3b1e7b4..419a4eb`).
+- Branch model (per `AUDIT_TRACKING_PLAN.md` §3): `dev` = coding development → `test` = pre-prod testing → `main` = production.
+- Development commits are authored on `dev`, then promoted `dev` → `test` for pre-prod validation.
+- Sprint 8 docs landed on `dev`; `test` was fast-forwarded from `dev` so pre-prod reflects the latest development baseline.
 
 ### Remaining before close
 1. Android physical notification / launcher / upgrade + account-preservation checks.

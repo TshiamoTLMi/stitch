@@ -27,8 +27,10 @@ Use this file to answer:
 ## 3. Baseline Context
 
 - Repository: `stitch`
-- Working branch for active delivery: `dev`
-- Default branch: `main`
+- Development branch: `dev` (all coding development lands here)
+- Pre-prod testing branch: `test` (receives promotions from `dev` for pre-prod validation)
+- Default/production branch: `main`
+- Promotion flow: `dev` -> `test` -> `main`
 - Flutter app path: `dls_app/`
 - Core history log: `PROJECT_HISTORY.md`
 - Screen contract: `SCREENS.md`
@@ -140,7 +142,7 @@ Use this checklist each sprint closeout.
 Focus: Release Readiness & Preflight Verification.
 
 1. Re-run `tooling\preflight_check.ps1` to reconfirm the baseline (analyze + full/focused tests + Android debug/release + Web release).
-2. Confirm branch hygiene; fast-forward `test` into the `dev` working branch.
+2. Confirm branch hygiene; promote `dev` into `test` for pre-prod validation.
 3. Keep release-readiness evidence current in `PRE_GO_LIVE_CHECKLIST.md`.
 
 ### Sprint 9 Plan (IN-PROGRESS)
@@ -440,8 +442,9 @@ Status: Active - preflight gate cleared
 
 Implementation summary:
 - Re-ran the repository baseline gate end-to-end via `tooling\preflight_check.ps1`.
-- Confirmed branch hygiene and fast-forward merged `test` into `dev`, the active delivery branch
-  defined in section 3.
+- Confirmed branch hygiene against the `dev` -> `test` -> `main` promotion model defined in
+  section 3.
+- Development work landed on `dev`; `test` was fast-forwarded from `dev` for pre-prod testing.
 
 Validation evidence:
 - `flutter analyze` -> passed (no issues).
@@ -453,7 +456,7 @@ Validation evidence:
 - `flutter build apk --release` -> passed (`app-release.apk`, 61.6MB).
 - `flutter build web --release` -> passed (`Built build\web`).
 - Preflight script terminal output -> `All preflight checks passed.`
-- Branch merge -> `Updating 3b1e7b4..419a4eb` (Fast-forward); `dev` now at `419a4eb`.
+- Branch promotion -> `dev` -> `test` fast-forward; `test` now matches `dev`.
 
 Risk status:
 - Physical-device Android/iOS gates and production-like Web gates from section 21 remain open and
