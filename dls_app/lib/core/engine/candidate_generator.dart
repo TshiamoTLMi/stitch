@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show compute;
+import 'package:flutter/foundation.dart' show compute, kIsWeb;
 
 import '../../models/clothing_item.dart';
 import 'affinity_engine.dart';
@@ -337,7 +337,12 @@ class CandidateGenerator {
   }
 
   /// Ranks on a background isolate, falling back to the synchronous path when
-  /// isolates are unavailable (for example on web or in a plain unit test).
+  /// isolates are unavailable.
+  ///
+  /// On web there is no isolate to hand off to: `compute()` would run the same
+  /// work on the main thread anyway, so we skip the JSON round-trip entirely
+  /// and rank inline. A `compute()` failure (unit tests, unsupported platform)
+  /// also falls back cleanly.
   Future<List<ScoredOutfit>> rankAsync({
     required String rulesJson,
     required Map<String, double> weights,
@@ -348,16 +353,18 @@ class CandidateGenerator {
     int limit = 3,
     int? candidateCap,
   }) async {
-    // Small wardrobes are not worth an isolate hand-off.
-    if (wardrobe.length < isolateThreshold) {
-      return rank(
-        wardrobe: wardrobe,
-        occasion: occasion,
-        weather: weather,
-        targetStyle: targetStyle,
-        limit: limit,
-        candidateCap: candidateCap,
-      );
+    List<ScoredOutfit> rankInline() => rank(
+          wardrobe: wardrobe,
+          occasion: occasion,
+          weather: weather,
+          targetStyle: targetStyle,
+          limit: limit,
+          candidateCap: candidateCap,
+        );
+
+    // Web cannot offload; small wardrobes are not worth a hand-off.
+    if (kIsWeb || wardrobe.length < isolateThreshold) {
+      return rankInline();
     }
 
     final payload = buildRankingPayload(
@@ -377,14 +384,7 @@ class CandidateGenerator {
       final result = await compute(rankInBackground, payload);
       return decodeRankingResult(result, wardrobe, limit: limit);
     } catch (_) {
-      return rank(
-        wardrobe: wardrobe,
-        occasion: occasion,
-        weather: weather,
-        targetStyle: targetStyle,
-        limit: limit,
-        candidateCap: candidateCap,
-      );
+      return rankInline();
     }
   }
 }

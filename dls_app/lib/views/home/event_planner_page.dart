@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/services/event_outfit_suggester.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/responsive_body.dart';
 import '../../models/clothing_item.dart';
 import '../../models/event_model.dart';
 import '../../services/calendar_sync_service.dart';
@@ -152,8 +153,9 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
     final wardrobe = context.watch<WardrobeController>().items;
     final readiness = _readinessBot.checkReadiness(wardrobe);
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+    return ResponsiveBody(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       children: [
         Text('Event Planner', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 10),
@@ -291,6 +293,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
           },
         ),
       ],
+      ),
     );
   }
 }

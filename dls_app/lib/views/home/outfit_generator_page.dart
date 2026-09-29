@@ -14,6 +14,7 @@ import '../../core/engine/feedback_store.dart';
 import '../../core/services/weather_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/item_image.dart';
+import '../../core/widgets/responsive_body.dart';
 import '../../models/clothing_item.dart';
 import '../../models/outfit_result.dart';
 import '../../models/weather_context.dart';
@@ -559,8 +560,9 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+    return ResponsiveBody(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       children: [
         Text('Outfit Choice Bot',
             style: Theme.of(context).textTheme.headlineMedium),
@@ -972,6 +974,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
           },
         ),
       ],
+      ),
     );
   }
 }

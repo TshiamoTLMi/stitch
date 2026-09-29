@@ -451,7 +451,12 @@ class _UploadScreenState extends State<UploadScreen> {
                   child: SingleChildScrollView(
                     physics: const ClampingScrollPhysics(),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      // Keep the form readable on a wide desktop browser
+                      // instead of stretching inputs across the whole window.
+                      padding: EdgeInsets.symmetric(
+                        horizontal:
+                            MediaQuery.sizeOf(context).width > 900 ? 160 : 32,
+                      ),
                       child: Column(
                         children: [
                           // Instruction text

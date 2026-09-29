@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../core/utils/item_image.dart';
+import '../core/widgets/responsive_body.dart';
 import '../services/firebase_service.dart';
 import '../services/wardrobe_repository.dart';
 
@@ -155,8 +156,10 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
+    return ResponsiveBody(
+      maxWidth: 1100,
+      child: CustomScrollView(
+        slivers: [
         // ── Header ───────────────────────────────────────────────────────
         SliverToBoxAdapter(
           child: Padding(
@@ -328,8 +331,10 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
             return SliverPadding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
               sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                // Responsive: 2 columns on a phone, more as the window widens,
+                // so desktop web does not stretch two giant cards.
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 240,
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,
                   childAspectRatio: 0.70,
@@ -360,6 +365,7 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
           },
         ),
       ],
+      ),
     );
   }
 }

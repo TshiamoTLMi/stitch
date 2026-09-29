@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import '../../models/weather_context.dart';
 import '../../models/weather_location.dart';
+import '../storage/kv_store.dart';
 
 /// Fetches local weather from the free Open-Meteo REST API and maps it into the
 /// DLS engine's condition vocabulary.
@@ -40,6 +42,16 @@ class WeatherService {
   final Future<Directory> Function() _directoryProvider;
   final Duration _timeout;
   WeatherLocation? _location;
+
+  KvStore? _kvStore;
+
+  /// Platform-appropriate persistence for the cache and the selected city.
+  ///
+  /// On web `path_provider` has no implementation, so the cache and the city
+  /// would silently never persist in Safari. Routing both through [KvStore]
+  /// keeps them in `localStorage` there and in the atomic file on mobile.
+  Future<KvStore> kvStore() async =>
+      _kvStore ??= await createDefaultKvStore();
 
   /// The place in use, falling back to the curated default coordinates.
   WeatherLocation get location =>
@@ -149,6 +161,13 @@ class WeatherService {
   /// Returns the last cached reading, or null when none is usable.
   Future<WeatherContext?> readCache() async {
     try {
+      if (kIsWeb) {
+        final raw = await (await kvStore()).read(cacheFileName);
+        if (raw == null) return null;
+        final decoded = jsonDecode(raw);
+        if (decoded is! Map<String, dynamic>) return null;
+        return WeatherContext.fromJson(decoded);
+      }
       final file = await _cacheFile();
       if (!file.existsSync()) return null;
       final decoded = jsonDecode(await file.readAsString());
@@ -162,9 +181,14 @@ class WeatherService {
   /// Atomic cache write: temp file then rename, so a crash cannot corrupt it.
   Future<void> _writeCache(WeatherContext context) async {
     try {
+      final payload = jsonEncode(context.toJson());
+      if (kIsWeb) {
+        await (await kvStore()).write(cacheFileName, payload);
+        return;
+      }
       final target = await _cacheFile();
       final temp = File('${target.path}$tempSuffix');
-      await temp.writeAsString(jsonEncode(context.toJson()), flush: true);
+      await temp.writeAsString(payload, flush: true);
       try {
         await temp.rename(target.path);
       } catch (_) {
@@ -187,6 +211,15 @@ class WeatherService {
   /// Restores the previously selected location, if any.
   Future<WeatherLocation?> loadLocation() async {
     try {
+      if (kIsWeb) {
+        final raw = await (await kvStore()).read(locationFileName);
+        if (raw == null) return null;
+        final decoded = jsonDecode(raw);
+        if (decoded is! Map<String, dynamic>) return null;
+        final location = WeatherLocation.fromJson(decoded);
+        if (location != null) _location = location;
+        return location;
+      }
       final file = await _locationFile();
       if (!file.existsSync()) return null;
       final decoded = jsonDecode(await file.readAsString());
@@ -202,9 +235,14 @@ class WeatherService {
   /// Atomically persists the selected location.
   Future<void> saveLocation(WeatherLocation value) async {
     try {
+      final payload = jsonEncode(value.toJson());
+      if (kIsWeb) {
+        await (await kvStore()).write(locationFileName, payload);
+        return;
+      }
       final target = await _locationFile();
       final temp = File('${target.path}$tempSuffix');
-      await temp.writeAsString(jsonEncode(value.toJson()), flush: true);
+      await temp.writeAsString(payload, flush: true);
       try {
         await temp.rename(target.path);
       } catch (_) {
