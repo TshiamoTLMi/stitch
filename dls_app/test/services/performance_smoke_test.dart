@@ -1,7 +1,10 @@
+import 'dart:io';
+
+import 'package:dls_app/core/engine/affinity_engine.dart';
+import 'package:dls_app/core/engine/candidate_generator.dart';
 import 'package:dls_app/models/clothing_item.dart';
 import 'package:dls_app/models/event_model.dart';
 import 'package:dls_app/services/caption_service.dart';
-import 'package:dls_app/services/outfit_bot_service.dart';
 import 'package:dls_app/services/recommendation_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,20 +49,61 @@ void main() {
       );
     }
 
-    test('OutfitBot generates quickly for large wardrobe', () {
-      final service = OutfitBotService();
-      final wardrobe = List<ClothingItem>.generate(1200, item);
+    test('AffinityEngine ranks quickly for a large wardrobe', () {
+      final engine =
+          AffinityEngine(File('assets/ml_seed_rules.json').readAsStringSync());
+      final now = DateTime(2026, 1, 1);
+      const parents = <String>[
+        'Tops',
+        'Bottoms',
+        'Footwear',
+        'Tops',
+        'Bottoms',
+        'Footwear',
+        'Outerwear',
+        'Dresses & Jumpsuits',
+      ];
+      const subs = <String>[
+        'T-shirts',
+        'Jeans',
+        'Sneakers',
+        'Sweaters',
+        'Trousers',
+        'Loafers',
+        'Hoodies',
+        'Casual dresses',
+      ];
+      final wardrobe = List<ClothingItem>.generate(1200, (i) {
+        final slot = i % parents.length;
+        return ClothingItem(
+          id: 'seed-$i',
+          parentCategory: parents[slot],
+          subcategory: subs[slot],
+          categoryType: 'top',
+          color: 'black',
+          colorGroup: 'neutral',
+          styleTags: const <String>['casual'],
+          season: 'All Season',
+          status: 'clean',
+          gender: 'Unisex',
+          imageUrl: '',
+          userId: 'u1',
+          createdAt: now,
+          updatedAt: now,
+        );
+      });
 
       final sw = Stopwatch()..start();
-      final result = service.generate(
+      final ranked = CandidateGenerator(engine: engine).rank(
         wardrobe: wardrobe,
         occasion: 'Work',
-        mood: 'Minimal',
-        weather: 'Cold',
+        weather: 'mild',
+        limit: 3,
       );
       sw.stop();
 
-      expect(result.score, inInclusiveRange(0, 100));
+      expect(ranked, isNotEmpty);
+      expect(ranked.first.styleMatchPercent, inInclusiveRange(0, 100));
       expect(sw.elapsedMilliseconds, lessThan(650));
     });
 

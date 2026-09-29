@@ -112,6 +112,23 @@ are listed separately and are never marked passed by source inspection alone.
   `applyWeights()` threw on its second write (silently degrading feedback to the default
   vector). It is now mutable, with a regression test in
   `test/core/engine/candidate_generator_test.dart`.
+- [x] T033 Purge legacy recommendation paths superseded by the affinity engine. Deleted
+  `lib/services/rule_engine.dart`, `lib/services/ai_stylist.dart` (Groq),
+  `lib/services/outfit_llm_service.dart` and `lib/services/outfit_feedback_service.dart`.
+  `outfit_generator_page.dart` now uses `AffinityEngine` as its only engine: the fallback
+  branch, `_toOutfitResult`, `_saveFeedback`, `_wearThis` and `_swapItem` are gone, and swipe
+  plus the action row now feed the local `FeedbackStore` through `_applyLikeOrDislike`.
+- [x] T034 Add an isolate performance threshold: `CandidateGenerator.rankAsync` ranks
+  synchronously when the wardrobe has fewer than `isolateThreshold` (default 20) items,
+  because the serialise + spawn cost exceeds the scoring work at that size.
+- [ ] T035 **Remaining legacy consumer**: `event_planner_page.dart` still calls
+  `OutfitBotService.generateSuggestionsForEvent` (which internally uses the legacy
+  `generate()`/`_scoreItem`). Migrate the Event Planner to the affinity engine, then delete
+  `OutfitBotService.generate`, `generateSuggestionsForEvent` and `_scoreItem` entirely.
+- [ ] T036 **Location configuration**: weather is still pinned to the default Johannesburg
+  coordinates. Add a manual city selector (persisted) and/or an optional `geolocator`
+  fallback so `WeatherContext` can report a real place name alongside temperature,
+  condition and source freshness.
 
 ## Phase 8: UI + offline
 

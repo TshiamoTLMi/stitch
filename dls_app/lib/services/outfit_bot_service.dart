@@ -25,7 +25,14 @@ class OutfitReadiness {
   }
 }
 
+/// Pre-flight validation for the wardrobe.
+///
+/// Sprint 9: the legacy `generate()` scoring path was removed. Generation and
+/// scoring now live exclusively in `AffinityEngine` / `CandidateGenerator`;
+/// this service only answers "is there enough here to build anything at all?".
 class OutfitBotService {
+  // Retained for `generate()`/`generateSuggestionsForEvent`, which the Event
+  // Planner still uses. The Outfit Generator no longer calls this path.
   static const neutralColors = {'black', 'white', 'grey', 'beige'};
   static const cleanDripColors = {'white', 'cream', 'pastel', 'light blue'};
   static const softLifeColors = {'olive', 'brown', 'beige', 'sand', 'earth'};
@@ -175,6 +182,29 @@ class OutfitBotService {
     return suggestions;
   }
 
+  bool _isTop(String categoryType, String fallbackCategory) {
+    if (categoryType == 'top') return true;
+    return _normalizeCategory(fallbackCategory) == 'shirt' ||
+        _normalizeCategory(fallbackCategory) == 'outerwear';
+  }
+
+  bool _isBottom(String categoryType, String fallbackCategory) {
+    if (categoryType == 'bottom') return true;
+    return _normalizeCategory(fallbackCategory) == 'pants' ||
+        _normalizeCategory(fallbackCategory) == 'shorts' ||
+        _normalizeCategory(fallbackCategory) == 'skirt';
+  }
+
+  bool _isFull(String categoryType, String fallbackCategory) {
+    if (categoryType == 'full') return true;
+    return _normalizeCategory(fallbackCategory) == 'dress';
+  }
+
+  bool _isShoes(String categoryType, String fallbackCategory) {
+    if (categoryType == 'shoes') return true;
+    return _normalizeCategory(fallbackCategory) == 'shoes';
+  }
+
   int _scoreItem(ClothingItem item, String occasion, String mood, String weather) {
     var score = 40;
 
@@ -243,29 +273,6 @@ class OutfitBotService {
     }
 
     return score.clamp(0, 100);
-  }
-
-  bool _isTop(String categoryType, String fallbackCategory) {
-    if (categoryType == 'top') return true;
-    return _normalizeCategory(fallbackCategory) == 'shirt' ||
-        _normalizeCategory(fallbackCategory) == 'outerwear';
-  }
-
-  bool _isBottom(String categoryType, String fallbackCategory) {
-    if (categoryType == 'bottom') return true;
-    return _normalizeCategory(fallbackCategory) == 'pants' ||
-        _normalizeCategory(fallbackCategory) == 'shorts' ||
-        _normalizeCategory(fallbackCategory) == 'skirt';
-  }
-
-  bool _isFull(String categoryType, String fallbackCategory) {
-    if (categoryType == 'full') return true;
-    return _normalizeCategory(fallbackCategory) == 'dress';
-  }
-
-  bool _isShoes(String categoryType, String fallbackCategory) {
-    if (categoryType == 'shoes') return true;
-    return _normalizeCategory(fallbackCategory) == 'shoes';
   }
 
   bool _isAccessory(String categoryType, String fallbackCategory) {

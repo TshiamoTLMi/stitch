@@ -15,20 +15,13 @@ import '../../core/services/weather_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/item_image.dart';
 import '../../models/clothing_item.dart';
-import '../../models/enhanced_outfit.dart';
-import '../../models/outfit.dart';
-import '../../models/user_profile.dart';
 import '../../models/outfit_result.dart';
 import '../../models/weather_context.dart';
 import '../../services/caption_service.dart';
 import '../../services/outfit_history_service.dart';
 import '../../services/outfit_bot_service.dart';
 import '../../services/outfit_image_service.dart';
-import '../../services/ai_stylist.dart';
-import '../../services/outfit_feedback_service.dart';
-import '../../services/rule_engine.dart';
 import '../../services/virtual_tryon_service.dart';
-import '../../services/wardrobe_repository.dart';
 
 class OutfitGeneratorPage extends StatefulWidget {
   const OutfitGeneratorPage({super.key, required this.userId});
@@ -55,18 +48,10 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   final _captionService = CaptionService();
   final _outfitImageService = OutfitImageService();
   final _virtualTryOnService = VirtualTryOnService();
-  late final RuleEngine _ruleEngine;
-  late final AIStylist _aiStylist;
-  final _feedbackService = OutfitFeedbackService();
   OutfitResult? _result;
-  Outfit? _engineOutfit;
   String? _caption;
-  String? _stylingTip;
-  String? _swapSuggestion;
-  bool _aiUnavailable = false;
   int _resultVersion = 0;
   bool _isGenerating = false;
-  bool _isAiEnhancing = false;
   bool _isRenderingImage = false;
   bool _isGeneratingTryOn = false;
   final _connectivity = Connectivity();
@@ -97,10 +82,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   @override
   void initState() {
     super.initState();
-    _ruleEngine = RuleEngine(
-      wardrobeRepository: context.read<WardrobeRepository>(),
-    );
-    _aiStylist = AIStylist(feedbackService: _feedbackService);
     _bindConnectivity();
     unawaited(_loadAffinityEngine());
     unawaited(_loadWeather());
@@ -321,14 +302,9 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       _result = result;
       _scored = best;
       _ranked = ranked;
-      _engineOutfit = null;
       _caption = caption;
-      _stylingTip = null;
-      _swapSuggestion = null;
-      _aiUnavailable = true;
       _affinityActive = true;
       _resultVersion++;
-      _isAiEnhancing = false;
       _isGenerating = false;
     });
 
@@ -347,9 +323,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
   Future<void> _generate() async {
     if (_isGenerating) return;
-    if (_engineOutfit != null) {
-      unawaited(_saveFeedback('regenerated'));
-    }
 
     final wardrobe = context.read<WardrobeController>().items;
     final readiness = _outfitBot.checkReadiness(wardrobe);
@@ -363,137 +336,24 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       return;
     }
 
-    setState(() {
-      _isGenerating = true;
-      _isAiEnhancing = !_isOffline;
-    });
+    setState(() => _isGenerating = true);
 
-    // Sprint 9: local-first affinity path. Falls through to the legacy rule
-    // engine when the matrix is unavailable or produces no valid candidate.
+    // Sprint 9: the AffinityEngine is the ONLY recommendation engine.
     final ranked = await _rankWithAffinity(wardrobe);
-    if (ranked != null) {
-      _applyAffinityResult(ranked);
-      return;
-    }
-
-    final candidates = _ruleEngine.generateTop3(_occasion, _mood, _weather);
-    final fallback = EnhancedOutfit(
-      outfit: candidates.first,
-      reason: 'Using basic mode. AI stylist unavailable.',
-      usedAi: false,
-    );
-    final enhanced = _isOffline
-        ? fallback
-        : await _aiStylist.enhance(
-            candidates,
-            UserProfile(id: widget.userId),
-            <String, dynamic>{
-              'occasion': _occasion,
-              'mood': _mood,
-              'weather': _weather,
-            },
-          );
-    final engineOutfit = enhanced.outfit;
-    final finalResult = _toOutfitResult(
-      engineOutfit,
-      reasoning: <String>[
-        enhanced.reason,
-        if (engineOutfit.missingItems.isNotEmpty)
-          'Missing items: ${engineOutfit.missingItems.join(', ')}.',
-      ],
-    );
-    final finalCaption = _captionService.generate(
-      occasion: _occasion,
-      mood: _mood,
-      weather: _weather,
-    );
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _result = finalResult;
-      _engineOutfit = engineOutfit;
-      _caption = finalCaption;
-      _stylingTip = null;
-      _swapSuggestion = enhanced.swapSuggestion;
-      _aiUnavailable = !enhanced.usedAi;
-      _affinityActive = false;
-      _resultVersion++;
-      _isAiEnhancing = false;
-      _isGenerating = false;
-    });
-
-    if (finalResult.isValid) {
-      unawaited(
-          _persistGeneratedOutfit(result: finalResult, caption: finalCaption));
-      if (_isOffline && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Generated in offline mode. History will sync automatically when connection returns.'),
-          ),
-        );
-      }
-    } else {
+    if (!mounted) return;
+    if (ranked == null) {
+      setState(() => _isGenerating = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-              'Not enough matching clean items for this combo. Try another mood or upload more pieces.'),
+            'Could not build a fit for this context. Try another combination or add pieces.',
+          ),
         ),
       );
+      return;
     }
-  }
 
-  OutfitResult _toOutfitResult(Outfit outfit,
-      {required List<String> reasoning}) {
-    return OutfitResult(
-      top: outfit.top,
-      bottom: outfit.bottom,
-      shoes: outfit.shoes,
-      accessory: outfit.accessories.isEmpty ? null : outfit.accessories.first,
-      outerwear: outfit.outerwear,
-      accessories: outfit.accessories,
-      score: outfit.styleScore,
-      reasoning: reasoning,
-    );
-  }
-
-  Future<void> _saveFeedback(String reason) async {
-    final outfit = _engineOutfit;
-    if (outfit == null) return;
-    try {
-      await _feedbackService.saveFeedback(
-        userId: widget.userId,
-        generatedOutfit: outfit,
-        userFinalOutfit: outfit.toJson(),
-        reason: reason,
-        occasion: _occasion,
-        mood: _mood,
-      );
-    } catch (_) {
-      // Feedback is best-effort while the app is offline.
-    }
-  }
-
-  Future<void> _wearThis() async {
-    await _saveFeedback('accepted');
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saved to your lookbook.')),
-      );
-    }
-  }
-
-  Future<void> _swapItem() async {
-    await _saveFeedback('user_swap');
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Swap noted. We will learn your preference.')),
-      );
-    }
+    _applyAffinityResult(ranked);
   }
 
   Future<void> _persistGeneratedOutfit(
@@ -769,24 +629,10 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
             ],
           ),
         ),
-        if (_isAiEnhancing) ...[
-          const SizedBox(height: 8),
-          const Text(
-            'AI stylist polishing your fit...',
-            style: TextStyle(
-                color: AppTheme.onSurfaceVariant, fontWeight: FontWeight.w600),
-          ),
-        ],
         if (_affinityActive) ...[
           const SizedBox(height: 8),
           const Text(
             'Powered by On-Device Affinity Engine (Offline).',
-            style: TextStyle(color: AppTheme.onSurfaceVariant),
-          ),
-        ] else if (_aiUnavailable) ...[
-          const SizedBox(height: 8),
-          const Text(
-            'Using basic mode. AI stylist unavailable.',
             style: TextStyle(color: AppTheme.onSurfaceVariant),
           ),
         ],
@@ -798,11 +644,10 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                 key: ValueKey('outfit-$_resultVersion'),
                 direction: DismissDirection.horizontal,
                 onDismissed: (direction) {
-                  if (direction == DismissDirection.startToEnd) {
-                    unawaited(_wearThis());
-                  } else {
-                    unawaited(_generate());
-                  }
+                  // Swipe right = like, swipe left = dislike. Both feed the
+                  // local adaptive weight store.
+                  unawaited(_applyLikeOrDislike(
+                      direction == DismissDirection.startToEnd));
                 },
                 background: const ColoredBox(
                   color: Color(0xFFB8E6C1),
@@ -938,21 +783,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                         ),
                         child: Text(_caption ?? ''),
                       ),
-                      if ((_stylingTip ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        const Text('Styling Tip',
-                            style: TextStyle(fontWeight: FontWeight.w700)),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppTheme.surfaceHigh,
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: Text(_stylingTip!),
-                        ),
-                      ],
                       const SizedBox(height: 10),
                       const Text('Reasoning',
                           style: TextStyle(fontWeight: FontWeight.w700)),
@@ -961,36 +791,22 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                   ),
                 ),
               ),
-              if (_swapSuggestion != null) ...[
-                const SizedBox(height: 10),
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.swap_horiz),
-                    title: const Text('AI suggests a swap'),
-                    subtitle: Text(_swapSuggestion!),
-                    trailing: TextButton(
-                      onPressed: _swapItem,
-                      child: const Text('Apply Swap'),
-                    ),
-                  ),
-                ),
-              ],
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: _wearThis,
-                      icon: const Icon(Icons.checkroom_outlined),
-                      label: const Text('Wear This'),
+                      onPressed: () => _applyLikeOrDislike(true),
+                      icon: const Icon(Icons.thumb_up_outlined),
+                      label: const Text('Love It'),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: _swapItem,
-                      icon: const Icon(Icons.swap_horiz),
-                      label: const Text('Swap Item'),
+                      onPressed: () => _applyLikeOrDislike(false),
+                      icon: const Icon(Icons.thumb_down_outlined),
+                      label: const Text('Not My Fit'),
                     ),
                   ),
                 ],

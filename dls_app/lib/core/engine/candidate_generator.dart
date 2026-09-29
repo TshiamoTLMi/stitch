@@ -33,6 +33,7 @@ class CandidateGenerator {
     required this.engine,
     this.bucketCap = 4,
     this.maxCandidates = 60,
+    this.isolateThreshold = 20,
   });
 
   final AffinityEngine engine;
@@ -42,6 +43,11 @@ class CandidateGenerator {
 
   /// Maximum scored candidates retained.
   final int maxCandidates;
+
+  /// Wardrobes smaller than this are ranked synchronously: the isolate
+  /// hand-off (serialising the payload + spawning) costs more than the
+  /// scoring work itself.
+  final int isolateThreshold;
 
   Map<OutfitSlot, List<ClothingItem>> partition(
     List<ClothingItem> wardrobe, {
@@ -342,6 +348,18 @@ class CandidateGenerator {
     int limit = 3,
     int? candidateCap,
   }) async {
+    // Small wardrobes are not worth an isolate hand-off.
+    if (wardrobe.length < isolateThreshold) {
+      return rank(
+        wardrobe: wardrobe,
+        occasion: occasion,
+        weather: weather,
+        targetStyle: targetStyle,
+        limit: limit,
+        candidateCap: candidateCap,
+      );
+    }
+
     final payload = buildRankingPayload(
       rulesJson: rulesJson,
       weights: weights,

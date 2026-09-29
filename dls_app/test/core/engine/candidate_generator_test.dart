@@ -289,6 +289,46 @@ void main() {
     });
   });
 
+  group('isolate threshold', () {
+    test('small wardrobes skip the isolate and still rank correctly', () async {
+      final generator = CandidateGenerator(engine: engine, bucketCap: 4);
+      expect(curated.length, lessThan(generator.isolateThreshold));
+
+      final isolated = await generator.rankAsync(
+        rulesJson: engine.sourceJson!,
+        weights: engine.defaultWeights,
+        wardrobe: curated,
+        occasion: 'Formal event',
+        weather: 'warm',
+        limit: 2,
+      );
+      final sync = generator.rank(
+        wardrobe: curated,
+        occasion: 'Formal event',
+        weather: 'warm',
+        limit: 2,
+      );
+      expect(isolated, isNotEmpty);
+      expect(isolated.map((o) => o.id).toList(), sync.map((o) => o.id).toList());
+    });
+
+    test('large wardrobes still take the isolate path', () async {
+      final generator = CandidateGenerator(engine: engine);
+      expect(seedWardrobe.length, greaterThanOrEqualTo(generator.isolateThreshold));
+
+      final isolated = await generator.rankAsync(
+        rulesJson: engine.sourceJson!,
+        weights: engine.defaultWeights,
+        wardrobe: seedWardrobe,
+        occasion: 'Work',
+        weather: 'mild',
+        limit: 3,
+      );
+      expect(isolated, isNotEmpty);
+      expect(isolated.first.styleMatchPercent, inInclusiveRange(0, 100));
+    });
+  });
+
   group('all six weather conditions', () {
     const conditions = <String>[
       'hot',
