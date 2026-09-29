@@ -8,6 +8,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../../controllers/wardrobe_controller.dart';
+import '../../core/engine/affinity_engine.dart';
+import '../../core/engine/candidate_generator.dart';
+import '../../core/engine/feedback_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/item_image.dart';
 import '../../models/clothing_item.dart';
@@ -61,6 +64,15 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _isOffline = false;
 
+  // Sprint 9: local-first affinity engine (no paid API, works offline).
+  static const String kRulesAsset = 'assets/ml_seed_rules.json';
+  AffinityEngine? _affinityEngine;
+  CandidateGenerator? _candidateGenerator;
+  FeedbackStore? _feedbackStore;
+  ScoredOutfit? _scored;
+  List<ScoredOutfit> _ranked = const <ScoredOutfit>[];
+  bool _feedbackSaving = false;
+
   String _occasion = 'Braai';
   String _mood = 'Street Flex';
   String _weather = 'Sunny';
@@ -73,6 +85,67 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     );
     _aiStylist = AIStylist(feedbackService: _feedbackService);
     _bindConnectivity();
+    unawaited(_loadAffinityEngine());
+  }
+
+  /// Loads the bundled rule matrix and any persisted user weights. If this
+  /// fails the page silently falls back to the legacy rule engine.
+  Future<void> _loadAffinityEngine() async {
+    try {
+      final engine = await AffinityEngine.fromAsset(kRulesAsset);
+      final store = FeedbackStore(engine: engine);
+      final weights = await store.load();
+      engine.applyWeights(weights.values);
+      if (!mounted) return;
+      setState(() {
+        _affinityEngine = engine;
+        _candidateGenerator = CandidateGenerator(engine: engine);
+        _feedbackStore = store;
+      });
+    } catch (_) {
+      // Keep the legacy path; the generator still works without the matrix.
+    }
+  }
+
+  /// Maps the existing Mood dropdown onto a taxonomy style tag.
+  static String? _moodToStyle(String mood) {
+    switch (mood) {
+      case 'Street Flex':
+        return 'streetwear';
+      case 'Minimal':
+      case 'Clean Drip':
+        return 'smart_casual';
+      case 'Soft Life':
+        return 'casual';
+      default:
+        return null;
+    }
+  }
+
+  Future<void> _applyLikeOrDislike(bool liked) async {
+    final store = _feedbackStore;
+    final scored = _scored;
+    if (store == null || scored == null || _feedbackSaving) return;
+
+    setState(() => _feedbackSaving = true);
+    try {
+      final updated = await store.applyFeedback(
+        contributions: scored.contributionKeys,
+        feedback: liked ? 1.0 : 0.0,
+      );
+      _affinityEngine?.applyWeights(updated.values);
+      if (!mounted) return;
+      setState(() => _feedbackSaving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(liked
+              ? 'Noted. Future fits will lean this way.'
+              : 'Noted. Future fits will steer away from this.'),
+        ),
+      );
+    } catch (_) {
+      if (mounted) setState(() => _feedbackSaving = false);
+    }
   }
 
   @override
@@ -98,6 +171,101 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     setState(() => _isOffline = offline);
   }
 
+  /// Ranks candidates with the local affinity engine. Returns null when the
+  /// engine is unavailable so the legacy rule-engine path can take over.
+  List<ScoredOutfit>? _rankWithAffinity(List<ClothingItem> wardrobe) {
+    final generator = _candidateGenerator;
+    if (generator == null || wardrobe.isEmpty) return null;
+    final ranked = generator.rank(
+      wardrobe: wardrobe,
+      occasion: _occasion,
+      weather: _weather,
+      targetStyle: _moodToStyle(_mood),
+      limit: 5,
+    );
+    return ranked.isEmpty ? null : ranked;
+  }
+
+  OutfitResult _scoredToOutfitResult(ScoredOutfit scored) {
+    ClothingItem? top;
+    ClothingItem? bottom;
+    ClothingItem? outerwear;
+    ClothingItem? shoes;
+    final accessories = <ClothingItem>[];
+
+    for (final item in scored.items) {
+      switch (slotForParentCategory(item.parentCategory)) {
+        case OutfitSlot.top:
+          top ??= item;
+          break;
+        case OutfitSlot.bottom:
+          bottom = item;
+          break;
+        case OutfitSlot.outerwear:
+          outerwear = item;
+          break;
+        case OutfitSlot.shoes:
+          shoes = item;
+          break;
+        case OutfitSlot.onePiece:
+          // `OutfitResult` has no dedicated one-piece slot yet, so a dress or
+          // jumpsuit renders in the primary garment slot.
+          top ??= item;
+          break;
+        case OutfitSlot.accessory:
+          accessories.add(item);
+          break;
+      }
+    }
+
+    return OutfitResult(
+      top: top,
+      bottom: bottom,
+      shoes: shoes,
+      outerwear: outerwear,
+      accessory: accessories.isEmpty ? null : accessories.first,
+      accessories: accessories,
+      score: scored.styleMatchPercent,
+      reasoning: scored.breakdown.reasons,
+    );
+  }
+
+  void _applyAffinityResult(List<ScoredOutfit> ranked) {
+    final best = ranked.first;
+    final result = _scoredToOutfitResult(best);
+    final caption = _captionService.generate(
+      occasion: _occasion,
+      mood: _mood,
+      weather: _weather,
+    );
+
+    setState(() {
+      _result = result;
+      _scored = best;
+      _ranked = ranked;
+      _engineOutfit = null;
+      _caption = caption;
+      _stylingTip = null;
+      _swapSuggestion = null;
+      _aiUnavailable = true;
+      _resultVersion++;
+      _isAiEnhancing = false;
+      _isGenerating = false;
+    });
+
+    if (result.isValid) {
+      unawaited(
+          _persistGeneratedOutfit(result: result, caption: caption));
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'No valid combination for this context. Try another occasion or add more pieces.'),
+        ),
+      );
+    }
+  }
+
   Future<void> _generate() async {
     if (_isGenerating) return;
     if (_engineOutfit != null) {
@@ -120,6 +288,14 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       _isGenerating = true;
       _isAiEnhancing = !_isOffline;
     });
+
+    // Sprint 9: local-first affinity path. Falls through to the legacy rule
+    // engine when the matrix is unavailable or produces no valid candidate.
+    final ranked = _rankWithAffinity(wardrobe);
+    if (ranked != null) {
+      _applyAffinityResult(ranked);
+      return;
+    }
 
     final candidates = _ruleEngine.generateTop3(_occasion, _mood, _weather);
     final fallback = EnhancedOutfit(
@@ -572,8 +748,52 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Style score: ${_result!.score}/100',
+                      Text('Style Match: ${_result!.score}%',
                           style: Theme.of(context).textTheme.titleMedium),
+                      if (_scored != null &&
+                          _scored!.breakdown.reasons.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          _scored!.breakdown.reasons.first,
+                          style: const TextStyle(
+                              color: AppTheme.onSurfaceVariant, fontSize: 12),
+                        ),
+                      ],
+                      if (_ranked.length > 1) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          'Top of ${_ranked.length} candidate fits considered.',
+                          style: const TextStyle(
+                              color: AppTheme.onSurfaceVariant, fontSize: 11),
+                        ),
+                      ],
+                      if (_scored != null) ...[
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _feedbackSaving
+                                    ? null
+                                    : () => _applyLikeOrDislike(false),
+                                icon:
+                                    const Icon(Icons.thumb_down_outlined, size: 16),
+                                label: const Text('Not my fit'),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: FilledButton.icon(
+                                onPressed: _feedbackSaving
+                                    ? null
+                                    : () => _applyLikeOrDislike(true),
+                                icon: const Icon(Icons.thumb_up_outlined, size: 16),
+                                label: const Text('Love it'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 8),
                       Text('Top: ${_result!.top?.category ?? '-'}'),
                       Text('Bottom: ${_result!.bottom?.category ?? '-'}'),

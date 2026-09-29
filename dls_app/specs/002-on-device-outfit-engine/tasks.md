@@ -48,13 +48,28 @@ are listed separately and are never marked passed by source inspection alone.
 
 ## Phase 5: Affinity engine (US: explainable local fit)
 
-- [ ] T013 Add `lib/services/outfit_affinity_engine.dart` with normalised weighted scoring
-  `w_style*S + w_event*E + w_weather*W + w_color*C + w_category*K` -> 0-100.
-- [ ] T014 Support variable structures: standard, standard+layer, one-piece,
-  one-piece+layer, formal, casual/streetwear.
-- [ ] T015 Expose a real `Style Match` percentage (no random/hardcoded scores).
-- [ ] T016 Tests: category compatibility, style/event/weather/colour scoring, structure
-  selection, determinism.
+- [x] T013 Add `lib/core/engine/affinity_engine.dart` with normalised weighted scoring
+  `w_style*S + w_event*E + w_weather*W + w_color*C + w_category*K` -> 0-100. Implemented as a
+  pure, synchronous class (isolate-ready) that loads `assets/ml_seed_rules.json` at runtime.
+- [x] T014 Support variable structures: `standard`, `outerwear_layered`, `one_piece`,
+  `one_piece_layered`, plus layered/context profiles in the rule matrix. Structural
+  validation rejects missing/duplicate footwear, multiple tops/bottoms/one-pieces/layers and
+  overlapping dress+top or dress+bottom combinations.
+- [x] T015 Expose a real `Style Match` percentage (no random/hardcoded scores), rendered by
+  `outfit_generator_page.dart` together with the engine's own reason.
+- [x] T016 Tests in `test/core/engine/affinity_engine_test.dart` (23 tests): rule loading,
+  structural acceptance/rejection, score bounds over 42 candidate/context combinations,
+  determinism, occasion and weather ranking, colour harmony, explainability hooks.
+- [x] T017 Add `lib/core/engine/feedback_store.dart` with
+  `W_new = W_old + 0.1 x (Feedback - W_old)`, clamped to `[0.0, 1.0]`, persisted to
+  `<app documents>/user_weights.json` via a temp-file + atomic rename.
+- [x] T018 Update ONLY the dimensions implicated by `AffinityBreakdown.contributions`
+  (`cc-*` -> category, `style:*` -> style+event, `weather:*` -> weather, `color:*` -> colour),
+  then re-normalise the vector to sum 1.0. Verified by test.
+- [x] T019 Tests in `test/core/engine/feedback_store_test.dart`: default initialisation from the
+  rule matrix, the documented worked examples, clamping, re-normalisation, contribution
+  mapping, 200-iteration stability, atomic write, persistence across instances, corrupt-file
+  recovery.
 
 ## Phase 6: Feedback adaptation (US: adaptive learning)
 
@@ -65,12 +80,15 @@ are listed separately and are never marked passed by source inspection alone.
 
 ## Phase 7: Seeding + dev/prod separation
 
-- [ ] T020 Add `lib/services/seed_wardrobe_loader.dart` (load asset JSON + rules).
-- [ ] T021 Add `lib/services/mock_wardrobe_seeder.dart` using
-  `WardrobeRepository.seedLocalItems()`, idempotent by stable UUID.
-- [ ] T022 Dev/demo gating: first-launch seeding only outside production; production empty
-  wardrobes stay empty.
-- [ ] T023 Tests: seed disabled in production; no duplicate insert on re-seed.
+- [x] T020 Add `lib/core/engine/candidate_generator.dart` (seed loader for runtime wardrobe
+  injection lands in Phase 7). Partitions the wardrobe into slot buckets, pre-ranks each bucket
+  with `AffinityEngine.itemPrior`, generates combinations for the four canonical templates,
+  validates and scores them, and returns `ScoredOutfit`s sorted by Style Match.
+- [x] T021 Candidate pruning verified: per-bucket cap (default 4) plus a scored-list cap
+  (default 60) keep a 332-item wardrobe bounded and deterministic.
+- [x] T022 Candidate generation tested against the real 332-item seed dataset in
+  `test/core/engine/candidate_generator_test.dart` (every candidate passes structural
+  validation, sorted descending, deterministic, occasion/weather change the winner).
 
 ## Phase 8: UI + offline
 

@@ -144,6 +144,49 @@ class AffinityEngine {
 
   double weight(String key) => _weights[key] ?? 0.0;
 
+  /// Applies user-adapted weights (from `FeedbackStore`) over the matrix
+  /// defaults. Used to make past feedback affect future scoring.
+  void applyWeights(Map<String, double> overrides) {
+    _weights = <String, double>{..._weights, ...overrides};
+  }
+
+  /// Cheap, deterministic per-item prior in `[0, 1]`, used to prune wardrobe
+  /// buckets before candidate generation so a large wardrobe cannot explode
+  /// combinatorially. It is a heuristic, not the final score.
+  double itemPrior(
+    ClothingItem item, {
+    String occasion = '',
+    String? weather,
+    String? targetStyle,
+  }) {
+    var event = 0.5;
+    final eventKey = canonicalEvent(occasion);
+    if (eventKey.isNotEmpty) {
+      var best = 0.0;
+      for (final tag in item.styleTags) {
+        final score = _styleEvent[_normalizeStyleKey(tag)]?[eventKey];
+        if (score != null && score > best) best = score;
+      }
+      if (best > 0) event = best;
+    }
+
+    var weatherScore = 0.5;
+    final condition = canonicalWeather(weather ?? '');
+    if (condition.isNotEmpty && _weatherConditions.contains(condition)) {
+      weatherScore =
+          _weatherBySubcategory[item.subcategory]?.scores[condition] ?? 0.5;
+    }
+
+    var style = 1.0;
+    final wanted = _normalizeStyleKey(targetStyle ?? '');
+    if (wanted.isNotEmpty) {
+      style = item.styleTags.map(_normalizeStyleKey).contains(wanted) ? 1.0 : 0.0;
+    }
+
+    return _clamp01(0.5 * event + 0.3 * weatherScore + 0.2 * style);
+  }
+
+
   void _parse(String source) {
     final root = jsonDecode(source) as Map<String, dynamic>;
 
@@ -317,6 +360,33 @@ class AffinityEngine {
   static String _normalizeEventKey(String value) =>
       value.trim().toLowerCase();
 
+  /// Occasion aliases so the existing UI dropdown values map onto the matrix.
+  /// `Event` (shown in the generator UI) means `Formal event` in the rules.
+  static const Map<String, String> eventAliases = <String, String>{
+    'event': 'formal event',
+    'office': 'work',
+    'wedding': 'formal event',
+    'graduation': 'formal event',
+  };
+
+  /// Weather aliases for the existing UI dropdown values (`Sunny`, `Rainy`).
+  static const Map<String, String> weatherAliases = <String, String>{
+    'sunny': 'warm',
+    'rainy': 'rain',
+  };
+
+  /// Canonical occasion key, or the normalised input when it has no alias.
+  static String canonicalEvent(String value) {
+    final key = _normalizeEventKey(value);
+    return eventAliases[key] ?? key;
+  }
+
+  /// Canonical weather condition key.
+  static String canonicalWeather(String value) {
+    final key = _normalizeEventKey(value);
+    return weatherAliases[key] ?? key;
+  }
+
   static String _normStyle(String value) => _normalizeStyleKey(value);
 
   static double _clamp01(double value) => value.clamp(0.0, 1.0);
@@ -420,7 +490,7 @@ class AffinityEngine {
     String occasion,
     List<String> contributions,
   ) {
-    final key = _normalizeEventKey(occasion);
+    final key = canonicalEvent(occasion);
     if (key.isEmpty || items.isEmpty) return 0.5;
 
     var total = 0.0;
@@ -451,7 +521,7 @@ class AffinityEngine {
     String? weather,
     List<String> contributions,
   ) {
-    final condition = (weather ?? '').trim().toLowerCase();
+    final condition = canonicalWeather(weather ?? '');
     if (condition.isEmpty ||
         !_weatherConditions.contains(condition) ||
         items.isEmpty) {
