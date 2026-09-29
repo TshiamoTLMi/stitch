@@ -461,17 +461,22 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    ElevatedButton.icon(
-                      onPressed: _seeding || userId.isEmpty ? null : () => _seedDemoData(userId),
-                      icon: _seeding
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.data_array),
-                      label: Text(_seeding ? 'Seeding Demo Data...' : 'Seed Demo Data'),
-                    ),
+                    // Sprint 9: never expose synthetic Firestore seeding in release.
+                    if (DemoDataService.isDemoEnabled)
+                      ElevatedButton.icon(
+                        onPressed: _seeding || userId.isEmpty
+                            ? null
+                            : () => _seedDemoData(userId),
+                        icon: _seeding
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.data_array),
+                        label:
+                            Text(_seeding ? 'Seeding Demo Data...' : 'Seed Demo Data'),
+                      ),
                     const SizedBox(height: 8),
                     ElevatedButton.icon(
                       onPressed: _resetting || userId.isEmpty ? null : () => _resetCurrentUserData(userId),

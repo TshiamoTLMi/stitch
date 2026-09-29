@@ -121,10 +121,15 @@ are listed separately and are never marked passed by source inspection alone.
 - [x] T034 Add an isolate performance threshold: `CandidateGenerator.rankAsync` ranks
   synchronously when the wardrobe has fewer than `isolateThreshold` (default 20) items,
   because the serialise + spawn cost exceeds the scoring work at that size.
-- [ ] T035 **Remaining legacy consumer**: `event_planner_page.dart` still calls
-  `OutfitBotService.generateSuggestionsForEvent` (which internally uses the legacy
-  `generate()`/`_scoreItem`). Migrate the Event Planner to the affinity engine, then delete
-  `OutfitBotService.generate`, `generateSuggestionsForEvent` and `_scoreItem` entirely.
+- [x] T035 **Remaining legacy consumer**: `event_planner_page.dart` no longer calls
+  `OutfitBotService.generateSuggestionsForEvent`. Added
+  `lib/core/services/event_outfit_suggester.dart`, which pre-loads the bundled 127-rule
+  matrix once per page and ranks with `CandidateGenerator.rank()` using the engine's
+  five-variable context (occasion + weather). Cards now render
+  `Style Match 87%: Blouse + Trousers + Loafers - <engine reason>`. `OutfitBotService`
+  was reduced to `checkReadiness()` only: `generate()`, `generateSuggestionsForEvent()`,
+  `_scoreItem()` and `_isAccessory()` are deleted, and the app has exactly one scoring
+  path. Covered by `test/core/services/event_outfit_suggester_test.dart` (8 tests).
 - [x] T036 **Location configuration**: added `lib/models/weather_location.dart` (6 curated SA
   city presets, equality/JSON round-trip) and made `WeatherService` location-aware: the
   selected place is persisted atomically to `weather_location.json`, restored on launch,

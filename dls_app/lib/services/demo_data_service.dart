@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 import '../core/constants/wardrobe_taxonomy.dart';
 
@@ -29,7 +30,21 @@ class DemoSeedResult {
 class DemoDataService {
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
+  /// Gated on `kDebugMode` or `--dart-define=DLS_DEMO_MODE=true`, matching
+  /// `MockWardrobeSeeder`. A release build must never write synthetic wardrobe
+  /// data into a real user's Firestore account.
+  static const bool demoEnvFlag = bool.fromEnvironment('DLS_DEMO_MODE');
+  static bool get isDemoEnabled => kDebugMode || demoEnvFlag;
+
   Future<DemoSeedResult> seedForUser(String userId) async {
+    if (!isDemoEnabled) {
+      return DemoSeedResult(
+        itemsCreated: 0,
+        historyCreated: 0,
+        eventsCreated: 0,
+      );
+    }
+
     final now = DateTime.now();
 
     final existingLegacyDemo = await _firestore
