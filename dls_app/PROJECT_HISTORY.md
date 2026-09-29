@@ -677,3 +677,40 @@ Final iOS build validation cannot be completed from this Windows environment bec
   - Production-like Web reset/OAuth, upload, low-network, PWA, and smoke checks.
   - Firebase Console configuration and deployed-rule verification.
   - iOS/macOS validation on an authorized Mac.
+
+## 30. Sprint 9 Slice 1 - Seed Wardrobe Dataset + SpecKit 002 (2026-09-29)
+
+### Completed in this update
+
+1. Audited the existing codebase and classified models/services as implemented, partial,
+   missing, conflicting, or reusable (recorded in the Sprint 9 SpecKit).
+2. Recorded dataset provenance BEFORE generating data, per policy:
+   - Source: Wikimedia Commons "Europeana Fashion - MoMu - Thesaurus drawings" (David Ring).
+   - Licence: CC0 1.0 (Public Domain Dedication); `AttributionRequired = false`.
+   - Verified via the Commons API on multiple files (Blouse, Anorak, T-shirt drawing).
+3. Created SpecKit feature `specs/002-on-device-outfit-engine/` (`spec.md`, `plan.md`,
+   `tasks.md`).
+4. Added deterministic seed generator `tooling/seed_generator/main.dart`. It imports the REAL
+   taxonomy from `lib/core/constants/wardrobe_taxonomy.dart`, so no enum is duplicated.
+5. Generated the development seed wardrobe:
+   - `assets/seed/wardrobe_seed.json` - 332 items with stable UUIDv5 ids.
+   - `assets/seed/dataset_manifest.json` - provenance + transformations + limitations.
+   - Registered `assets/seed/` in `pubspec.yaml`.
+
+### Validation evidence
+
+- Generator self-validation: 332 items, 332 unique ids, 8 parent categories, all `clean`,
+  CC0-only image references.
+- Independent JSON re-check: items=332, uniqueIds=332, uniqueImages=31, allClean=True.
+- Live URL checks: 6 image references returned `200 image/jpeg`.
+- `flutter analyze` -> `No issues found!`
+
+### Risk status
+
+- Remote CC0 image URLs only; offline image rendering is temporarily relaxed (accepted).
+- Local asset bundling is a follow-up step.
+
+### Next action plan
+
+- Continue Sprint 9 phases 3-9: affinity rules, weather service, affinity engine, local
+  feedback adaptation, dev-only seeder, additive UI, tests.

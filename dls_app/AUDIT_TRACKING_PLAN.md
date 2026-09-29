@@ -471,8 +471,33 @@ Next action plan:
 Status: IN-PROGRESS
 
 Implementation summary:
-- Sprint opened and scope defined from `FEATURE_PLANS.md` P1.
-- No code changes have landed yet.
+- Phase 1 audit completed: classified existing models/services as implemented / partial /
+  missing / conflicting / reusable.
+- Dataset provenance recorded before generating data (Wikimedia Commons "Europeana Fashion -
+  MoMu - Thesaurus drawings", CC0 1.0, AttributionRequired = false).
+- Created SpecKit feature `specs/002-on-device-outfit-engine/` (spec, plan, tasks).
+- Added deterministic seed generator `tooling/seed_generator/main.dart` importing the real
+  taxonomy from `lib/core/constants/wardrobe_taxonomy.dart` (no duplicated enums).
+- Generated `assets/seed/wardrobe_seed.json` (332 items) and
+  `assets/seed/dataset_manifest.json`; registered `assets/seed/` in `pubspec.yaml`.
+
+Validation evidence:
+- Generator self-validation passed: 332 items, 332 unique UUIDv5 ids, all statuses `clean`,
+  8 parent categories, CC0-only image references.
+- Independent re-check via PowerShell JSON parse: items=332, uniqueIds=332, uniqueImages=31,
+  allClean=True, distinctParents=8.
+- Image URLs spot-checked live: 4 jpg + 2 tif Special:FilePath URLs all returned
+  `200 image/jpeg` (MediaWiki renders .tif thumbnails).
+- `flutter analyze` -> `No issues found!`
+
+Risk status:
+- Images are remote CC0 URLs (offline rendering temporarily relaxed; accepted).
+- `deriveColorGroup()` returns `neutral` for most colours (existing helper limitation).
+- Local image bundling deferred.
+
+Next action plan:
+- Author `assets/ml_seed_rules.json` (>=100 affinity rules).
+- Implement weather service, affinity engine, local feedback weights, and dev-only seeder.
 
 Planned scope:
 1. AI Style DNA v1 - explainable style profile from onboarding + closet metadata.
