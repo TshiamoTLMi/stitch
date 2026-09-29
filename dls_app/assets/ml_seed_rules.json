@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "name": "DLS affinity rule matrix",
+  "description": "Recommendation priors for the on-device outfit engine. These are soft priors, not hard restrictions. Every slot/category/style/colour value is validated against lib/core/constants/wardrobe_taxonomy.dart by test/core/engine/rules_matrix_test.dart.",
+  "categoryCompatibility": [
+    { "id": "cc-01", "structure": "standard", "required": ["Tops", "Bottoms", "Footwear"], "optional": ["Accessories"], "suitability": 1.0, "note": "Core three-piece fit." },
+    { "id": "cc-02", "structure": "outerwear_layered", "required": ["Tops", "Bottoms", "Footwear", "Outerwear"], "optional": ["Accessories"], "suitability": 0.95, "note": "Layered for cool or wet weather." },
+    { "id": "cc-03", "structure": "one_piece", "required": ["Dresses & Jumpsuits", "Footwear"], "optional": ["Accessories"], "suitability": 1.0, "note": "Dress or jumpsuit with shoes." },
+    { "id": "cc-04", "structure": "one_piece_layered", "required": ["Dresses & Jumpsuits", "Footwear", "Outerwear"], "optional": ["Accessories"], "suitability": 0.9, "note": "One-piece with an outer layer." },
+    { "id": "cc-05", "structure": "formal", "required": ["Tops", "Bottoms", "Footwear", "Outerwear", "Accessories"], "optional": [], "suitability": 1.0, "note": "Five-slot formal fit." },
+    { "id": "cc-06", "structure": "formal_one_piece", "required": ["Dresses & Jumpsuits", "Footwear", "Accessories"], "optional": ["Outerwear"], "suitability": 0.95, "note": "Formal dress with accessories." },
+    { "id": "cc-07", "structure": "casual_streetwear", "required": ["Tops", "Bottoms", "Footwear"], "optional": ["Accessories", "Essentials & Intimates"], "suitability": 0.9, "note": "Relaxed fit, optional headwear or extras." },
+    { "id": "cc-08", "structure": "athleisure", "required": ["Activewear & Leisure", "Footwear"], "optional": ["Accessories"], "suitability": 1.0, "note": "Gym-to-street." },
+    { "id": "cc-09", "structure": "active_layered", "required": ["Activewear & Leisure", "Footwear", "Outerwear"], "optional": ["Accessories"], "suitability": 0.8, "note": "Activewear with a layer for warm-up." },
+    { "id": "cc-10", "structure": "warm_weather_light", "required": ["Tops", "Bottoms", "Footwear"], "optional": ["Accessories"], "preferredSubcategories": ["Shorts", "Sandals", "Tank tops", "T-shirts"], "suitability": 0.85, "note": "Lightweight hot-weather pairing." },
+    { "id": "cc-11", "structure": "cold_weather_layered", "required": ["Tops", "Bottoms", "Footwear", "Outerwear"], "optional": ["Essentials & Intimates", "Accessories"], "preferredSubcategories": ["Sweaters", "Knitwear", "Puffer jackets", "Boots"], "suitability": 0.9, "note": "Heavy layered fit." },
+    { "id": "cc-12", "structure": "essentials_minimal", "required": ["Tops", "Footwear"], "optional": ["Essentials & Intimates", "Accessories"], "suitability": 0.6, "note": "Minimal two-slot fit when the wardrobe is thin." }
+  ],
+  "styleEventAffinity": [
+    { "id": "se-01", "style": "formal", "event": "Work", "score": 1.0 },
+    { "id": "se-02", "style": "formal", "event": "Braai", "score": 0.1 },
+    { "id": "se-03", "style": "formal", "event": "Date", "score": 0.7 },
+    { "id": "se-04", "style": "formal", "event": "Groove", "score": 0.15 },
+    { "id": "se-05", "style": "formal", "event": "Formal event", "score": 1.0 },
+    { "id": "se-06", "style": "casual", "event": "Work", "score": 0.4 },
+    { "id": "se-07", "style": "casual", "event": "Braai", "score": 0.9 },
+    { "id": "se-08", "style": "casual", "event": "Date", "score": 0.6 },
+    { "id": "se-09", "style": "casual", "event": "Groove", "score": 0.7 },
+    { "id": "se-10", "style": "casual", "event": "Formal event", "score": 0.2 },
+    { "id": "se-11", "style": "streetwear", "event": "Work", "score": 0.3 },
+    { "id": "se-12", "style": "streetwear", "event": "Braai", "score": 0.6 },
+    { "id": "se-13", "style": "streetwear", "event": "Date", "score": 0.75 },
+    { "id": "se-14", "style": "streetwear", "event": "Groove", "score": 0.95 },
+    { "id": "se-15", "style": "streetwear", "event": "Formal event", "score": 0.15 },
+    { "id": "se-16", "style": "smart_casual", "event": "Work", "score": 0.95 },
+    { "id": "se-17", "style": "smart_casual", "event": "Braai", "score": 0.6 },
+    { "id": "se-18", "style": "smart_casual", "event": "Date", "score": 0.85 },
+    { "id": "se-19", "style": "smart_casual", "event": "Groove", "score": 0.55 },
+    { "id": "se-20", "style": "smart_casual", "event": "Formal event", "score": 0.75 },
+    { "id": "se-21", "style": "sportswear", "event": "Work", "score": 0.1 },
+    { "id": "se-22", "style": "sportswear", "event": "Braai", "score": 0.4 },
+    { "id": "se-23", "style": "sportswear", "event": "Date", "score": 0.2 },
+    { "id": "se-24", "style": "sportswear", "event": "Groove", "score": 0.3 },
+    { "id": "se-25", "style": "sportswear", "event": "Formal event", "score": 0.05 }
+  ],
+  "weatherSuitability": {
+    "note": "Scores are priors, not hard filters. A garment scoring low in one condition is still valid; the engine blends this with event, style, colour and category scores.",
+    "conditions": [
+      { "id": "hot", "kind": "temperature", "tempMinC": 24, "tempMaxC": 45, "layeringNeeded": "none" },
+      { "id": "warm", "kind": "temperature", "tempMinC": 16, "tempMaxC": 23, "layeringNeeded": "none" },
+      { "id": "mild", "kind": "temperature", "tempMinC": 10, "tempMaxC": 15, "layeringNeeded": "light" },
+      { "id": "cold", "kind": "temperature", "tempMinC": 2, "tempMaxC": 9, "layeringNeeded": "mid" },
+      { "id": "freezing", "kind": "temperature", "tempMinC": -15, "tempMaxC": 1, "layeringNeeded": "heavy" },
+      { "id": "rain", "kind": "condition", "tempMinC": null, "tempMaxC": null, "layeringNeeded": "waterproof" }
+    ],
+    "classes": [
+      {
+        "id": "top_light",
+        "subcategories": ["T-shirts", "Tank tops", "Crop tops", "Blouses"],
+        "layering": "single", "sleeve": "short", "waterproof": false,
+        "scores": { "hot": 1.0, "warm": 0.9, "mild": 0.6, "cold": 0.15, "freezing": 0.05, "rain": 0.35 }
+      },
+      {
+        "id": "top_layer",
+        "subcategories": ["Knitwear", "Sweaters", "Button-down shirts"],
+        "layering": "mid", "sleeve": "long", "waterproof": false,
+        "scores": { "hot": 0.2, "warm": 0.6, "mild": 0.95, "cold": 0.9, "freezing": 0.55, "rain": 0.5 }
+      },
+      {
+        "id": "bottom_casual",
+        "subcategories": ["Jeans", "Trousers", "Skirts"],
+        "layering": "single", "sleeve": "none", "waterproof": false,
+        "scores": { "hot": 0.5, "warm": 0.8, "mild": 0.95, "cold": 0.7, "freezing": 0.4, "rain": 0.45 }
+      },
+      {
+        "id": "bottom_light",
+        "subcategories": ["Shorts"],
+        "layering": "none", "sleeve": "none", "waterproof": false,
+        "scores": { "hot": 1.0, "warm": 0.7, "mild": 0.3, "cold": 0.05, "freezing": 0.0, "rain": 0.2 }
+      },
+      {
+        "id": "bottom_athleisure",
+        "subcategories": ["Active Leggings", "Sweatpants"],
+        "layering": "single", "sleeve": "none", "waterproof": false,
+        "scores": { "hot": 0.55, "warm": 0.85, "mild": 0.9, "cold": 0.7, "freezing": 0.4, "rain": 0.3 }
+      },
+      {
+        "id": "outerwear_light",
+        "subcategories": ["Blazers", "Cardigans"],
+        "layering": "outer", "sleeve": "long", "waterproof": false,
+        "scores": { "hot": 0.1, "warm": 0.45, "mild": 0.8, "cold": 0.85, "freezing": 0.4, "rain": 0.4 }
+      },
+      {
+        "id": "outerwear_heavy",
+        "subcategories": ["Puffer jackets", "Trench coats", "Hoodies"],
+        "layering": "outer", "sleeve": "long", "waterproof": true,
+        "scores": { "hot": 0.0, "warm": 0.1, "mild": 0.4, "cold": 0.95, "freezing": 1.0, "rain": 0.9 }
+      },
+      {
+        "id": "one_piece",
+        "subcategories": ["Casual dresses", "Evening dresses", "Jumpsuits", "Rompers"],
+        "layering": "single", "sleeve": "varies", "waterproof": false,
+        "scores": { "hot": 0.8, "warm": 0.9, "mild": 0.8, "cold": 0.35, "freezing": 0.1, "rain": 0.3 }
+      },
+      {
+        "id": "activewear",
+        "subcategories": ["Sports bras", "Gym tops"],
+        "layering": "single", "sleeve": "varies", "waterproof": false,
+        "scores": { "hot": 0.7, "warm": 0.85, "mild": 0.85, "cold": 0.3, "freezing": 0.1, "rain": 0.25 }
+      },
+      {
+        "id": "footwear_closed",
+        "subcategories": ["Sneakers", "Boots", "Heels", "Flats", "Loafers"],
+        "layering": "footwear", "sleeve": "none", "waterproof": false,
+        "scores": { "hot": 0.6, "warm": 0.8, "mild": 0.9, "cold": 0.85, "freezing": 0.5, "rain": 0.6 }
+      },
+      {
+        "id": "footwear_open",
+        "subcategories": ["Sandals"],
+        "layering": "footwear", "sleeve": "none", "waterproof": false,
+        "scores": { "hot": 1.0, "warm": 0.7, "mild": 0.25, "cold": 0.0, "freezing": 0.0, "rain": 0.1 }
+      },
+      {
+        "id": "accessory",
+        "subcategories": ["Bags", "Belts", "Hats", "Scarves", "Jewelry"],
+        "layering": "accessory", "sleeve": "none", "waterproof": false,
+        "scores": { "hot": 0.5, "warm": 0.75, "mild": 0.9, "cold": 0.85, "freezing": 0.6, "rain": 0.5 }
+      }
+    ]
+  },
+  "colorHarmony": {
+    "note": "Pairwise score for two colour groups in one outfit. Groups come from deriveColorGroup(): neutral / warm / cool.",
+    "matrix": {
+      "neutral": { "neutral": 0.9, "warm": 0.75, "cool": 0.75 },
+      "warm": { "neutral": 0.75, "warm": 0.8, "cool": 0.45 },
+      "cool": { "neutral": 0.75, "warm": 0.45, "cool": 0.8 }
+    },
+    "patterns": [
+      { "id": "ch-01", "pattern": "monochromatic", "rule": "Every slot uses a single colour group.", "score": 0.9 },
+      { "id": "ch-02", "pattern": "neutral_dominant", "rule": "At least two neutral slots and at most one accent group.", "score": 0.85 },
+      { "id": "ch-03", "pattern": "complementary", "rule": "Warm and cool accents paired deliberately.", "score": 0.45 },
+      { "id": "ch-04", "pattern": "all_accent", "rule": "No neutral slot present; reads loud.", "score": 0.35 }
+    ]
+  },
+  "defaultWeights": {
+    "w_style": 0.25,
+    "w_event": 0.25,
+    "w_weather": 0.2,
+    "w_color": 0.15,
+    "w_category": 0.15
+  }
+}

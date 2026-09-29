@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -28,8 +29,14 @@ class FirebaseService {
     }
   }
 
+  /// Uploads a picked photo.
+  ///
+  /// Pass [preReadBytes] on web, where `image_picker` hands back a `blob:` URL
+  /// that has no [File] on disk. Compression goes through `compressWithList`
+  /// because `compressWithFile` has no web implementation.
   Future<void> uploadClothingItem(
-    File imageFile, {
+    File? imageFile, {
+    Uint8List? preReadBytes,
     required String parentCategory,
     required String subcategory,
     required String categoryType,
@@ -41,15 +48,23 @@ class FirebaseService {
     String status = 'clean',
     String gender = 'Unisex',
   }) async {
+    final rawBytes = preReadBytes ??
+        (imageFile != null ? await imageFile.readAsBytes() : null);
+    if (rawBytes == null || rawBytes.isEmpty) {
+      throw Exception('No image data to upload.');
+    }
+
     final id = _uuid.v4();
-    final compressedBytes = await FlutterImageCompress.compressWithFile(
-      imageFile.absolute.path,
+    // [QA TEST POINT] Compression limits are enforced here, before upload:
+    // 1080px long edge and 80% JPEG quality, targeting < 300 KB per item.
+    final compressedBytes = await FlutterImageCompress.compressWithList(
+      rawBytes,
       minWidth: 1080,
-      quality: 70,
+      quality: 80,
       format: CompressFormat.jpeg,
     );
 
-    if (compressedBytes == null || compressedBytes.isEmpty) {
+    if (compressedBytes.isEmpty) {
       throw Exception('Image compression failed.');
     }
 
@@ -87,7 +102,8 @@ class FirebaseService {
       throw Exception('Image upload failed: $uploadError');
     }
 
-    final localImagePath = await _saveLocalImage(id, compressedBytes);
+    // Web has no app-owned documents directory; the Storage URL is the source.
+    final localImagePath = kIsWeb ? null : await _saveLocalImage(id, compressedBytes);
 
     await _firestore.collection('clothing_items').doc(id).set({
       'id': id,

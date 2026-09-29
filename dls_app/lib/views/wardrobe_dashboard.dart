@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../core/utils/item_image.dart';
+import '../core/widgets/responsive_body.dart';
 import '../services/firebase_service.dart';
 import '../services/wardrobe_repository.dart';
 
@@ -154,8 +156,10 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
+    return ResponsiveBody(
+      maxWidth: 1100,
+      child: CustomScrollView(
+        slivers: [
         // ── Header ───────────────────────────────────────────────────────
         SliverToBoxAdapter(
           child: Padding(
@@ -327,8 +331,10 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
             return SliverPadding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
               sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                // Responsive: 2 columns on a phone, more as the window widens,
+                // so desktop web does not stretch two giant cards.
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 240,
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,
                   childAspectRatio: 0.70,
@@ -359,6 +365,7 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
           },
         ),
       ],
+      ),
     );
   }
 }
@@ -374,6 +381,11 @@ class _WardrobeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageUrl =
         (data['imageUrl'] as String?) ?? (data['image_url'] as String?) ?? '';
+    final imageProvider = resolveImageSource(
+      url: imageUrl,
+      localPath: (data['localImagePath'] as String?) ??
+          (data['local_image_path'] as String?),
+    );
     final category = (data['category'] as String?) ?? 'Item';
     final status = ((data['status'] as String?) ?? 'clean').toLowerCase();
     final isClean = status == 'clean';
@@ -393,7 +405,7 @@ class _WardrobeCard extends StatelessWidget {
           // Image area
           Positioned.fill(
             bottom: 52,
-            child: imageUrl.isEmpty
+            child: imageProvider == null
                 ? const ColoredBox(
                     color: Color(0xFF0E0E0E),
                     child: Center(
@@ -404,10 +416,9 @@ class _WardrobeCard extends StatelessWidget {
                       ),
                     ),
                   )
-                : Image.network(
-                    imageUrl,
+                : Image(
+                    image: ResizeImage(imageProvider, width: 420),
                     fit: BoxFit.cover,
-                    cacheWidth: 420,
                     filterQuality: FilterQuality.low,
                     loadingBuilder: (_, child, prog) => prog == null
                         ? child
@@ -823,7 +834,12 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                                         size: 44),
                                   ),
                                 )
-                              : Image.network(imageUrl, fit: BoxFit.cover),
+                              : Image(
+                                  image: resolveImageSource(
+                                          url: imageUrl,
+                                          localPath: _localImagePath) ??
+                                      NetworkImage(imageUrl),
+                                  fit: BoxFit.cover),
                     ),
                   ),
                   // Replace photo button — bottom-right corner of image

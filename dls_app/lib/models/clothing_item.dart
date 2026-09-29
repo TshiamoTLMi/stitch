@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../core/constants/wardrobe_taxonomy.dart';
+
 class ClothingItem {
   ClothingItem({
     required this.id,
@@ -8,7 +10,7 @@ class ClothingItem {
     required this.categoryType,
     this.fit,
     required this.color,
-    required this.colorGroup,
+    required String colorGroup,
     required this.styleTags,
     required this.season,
     required this.status,
@@ -19,7 +21,22 @@ class ClothingItem {
     required this.userId,
     required this.createdAt,
     required this.updatedAt,
-  });
+    this.wearCount = 0,
+    this.lastWornDate,
+  }) : colorGroup = _resolveColorGroup(colorGroup, color);
+
+  /// Colour groups written by pre-Sprint-9 data. They are re-derived from the
+  /// colour so the harmony engine never sees a stale group.
+  static const Set<String> legacyColorGroups = <String>{'dark', 'light', 'bright'};
+
+  /// Returns a current colour group, re-deriving it from [color] when the stored
+  /// value is missing or a legacy `dark`/`light`/`bright` value.
+  static String _resolveColorGroup(String? stored, String color) {
+    final value = (stored ?? '').trim().toLowerCase();
+    if (value.isNotEmpty && !legacyColorGroups.contains(value)) return value;
+    return deriveColorGroup(color);
+  }
+
 
   final String id;
   final String parentCategory;
@@ -38,6 +55,13 @@ class ClothingItem {
   final String userId;
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// How many times this garment has been logged as worn. Drives the
+  /// utilisation-rate and "unworn shelf" analytics.
+  final int wearCount;
+
+  /// When this garment was last logged as worn. `null` means never worn.
+  final DateTime? lastWornDate;
 
   // Legacy convenience alias used by older screens.
   String get category => subcategory;
@@ -63,6 +87,12 @@ class ClothingItem {
       'createdAt': Timestamp.fromDate(createdAt),
       'updated_at': Timestamp.fromDate(updatedAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+
+      // Wear tracking (Sprint 11 analytics). `wearCount` is always written so
+      // Firestore and the local analytics log agree on a garment's history.
+      'wearCount': wearCount,
+      if (lastWornDate != null)
+        'lastWornDate': Timestamp.fromDate(lastWornDate!),
 
       // Legacy compatibility fields kept during migration.
       'category': subcategory,
@@ -112,6 +142,43 @@ class ClothingItem {
       updatedAt: _readDate(data['updatedAt']) ??
           _readDate(data['updated_at']) ??
           DateTime.now(),
+      wearCount: (data['wearCount'] as num?)?.toInt() ??
+          (data['wear_count'] as num?)?.toInt() ??
+          0,
+      lastWornDate: _readDate(data['lastWornDate']) ??
+          _readDate(data['last_worn_date']),
+    );
+  }
+
+  /// Returns a copy with the supplied fields replaced. Used when development
+  /// seed rows are re-owned by the signed-in user.
+  ClothingItem copyWith({
+    String? userId,
+    String? imageUrl,
+    String? localImagePath,
+    int? wearCount,
+    DateTime? lastWornDate,
+  }) {
+    return ClothingItem(
+      id: id,
+      parentCategory: parentCategory,
+      subcategory: subcategory,
+      categoryType: categoryType,
+      fit: fit,
+      color: color,
+      colorGroup: colorGroup,
+      styleTags: styleTags,
+      season: season,
+      status: status,
+      gender: gender,
+      imageUrl: imageUrl ?? this.imageUrl,
+      localImagePath: localImagePath ?? this.localImagePath,
+      storagePath: storagePath,
+      userId: userId ?? this.userId,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      wearCount: wearCount ?? this.wearCount,
+      lastWornDate: lastWornDate ?? this.lastWornDate,
     );
   }
 

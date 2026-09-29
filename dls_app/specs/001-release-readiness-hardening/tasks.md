@@ -164,6 +164,70 @@ These tasks are deliberately separate from source implementation. Record each re
 3. Add US4 automated smoke/config checks, then run the separately listed Android, Web, Firebase, PWA, launcher, low-network, and preservation gates.
 4. Close audit documents, rollback/disposition, and release-owner sign-off only after every applicable evidence record is dated and owned.
 
+## Sprint 10: Cross-Platform Engineering Pass (web + Android)
+
+**Platform decision:** iPhone is served by the **Flutter Web build** (Safari), not a
+native iOS build. All code must therefore run in a browser on Chrome, Edge and
+Safari as well as on Android.
+
+Completed engineering work (all verified by `flutter analyze`, `flutter test`,
+`flutter build web --release` and `flutter build apk --release`):
+
+- [x] T040 `KvStore` cross-platform key/value layer
+      (`lib/core/storage/kv_store_{base,io,web,memory}.dart`, conditional export).
+      Atomic file on Android, `localStorage` on web, in-memory fallback.
+- [x] T041 `FeedbackStore` web-safe. `load()`/`writeAtomically()` no longer call
+      `path_provider` outside a try/catch, so the styling engine boots in a
+      browser and learned weights survive a Safari reload.
+- [x] T042 `WeatherService` web-safe. `cached_weather.json` and
+      `weather_location.json` persist through `KvStore` instead of `dart:io`.
+- [x] T043 `CandidateGenerator.rankAsync()` short-circuits on `kIsWeb` (no isolate
+      to hand off to) and still falls back to inline `rank()` on any failure.
+- [x] T044 Upload path web-safe. `image_picker` returns a `blob:` URL on web, so
+      the screen now takes an `XFile`, reads bytes, previews with `Image.memory`,
+      and `firebase_service` compresses via `compressWithList`.
+- [x] T045 `dart:io` crash points guarded: `wardrobe_repository._deleteLocalImage`,
+      `item_image.resolveImageSource`, `firebase_service._saveLocalImage`.
+- [x] T046 Android release manifest declares `INTERNET` + `ACCESS_NETWORK_STATE`
+      (previously debug/profile only, so release APKs had no network).
+- [x] T047 Responsive layout. `ResponsiveBody` (760 default, 1100 dashboard) caps
+      content width so cards do not stretch across a desktop browser; the wardrobe
+      grid moved to `SliverGridDelegateWithMaxCrossAxisExtent`; the upload form
+      gutter widens past 900px. Covered by 5 viewport tests.
+- [x] T048 Generator engine-load failures now surface a visible banner instead of
+      being swallowed by a `catch` that referenced a deleted legacy path.
+
+**Still manual — these require a human, a real device, a deployed URL and
+Firebase console access, and remain open:** T033-T039 above.
+
+- [x] T049 **Wardrobe Analytics & Style Log**: `lib/core/analytics/analytics_store.dart`
+      appends `OutfitLogEntry` (occasion, weather, Style Match %, all five S/E/W/C/K
+      component scores, garment ids) and `FeedbackLogEntry` (like/dislike, score,
+      weight snapshot) to `style_analytics.json` via `KvStore`, with a 200-entry
+      retention cap. `ClothingItem` gained `wearCount`/`lastWornDate` (persisted to
+      Firestore and read back from legacy snake_case keys). `applyWear()` rolls a
+      wear onto only the garments in a logged outfit.
+- [x] T050 **Analytics metrics**: `wardrobe_analytics_service.dart` computes the
+      Wardrobe Health Index (3:1 top-to-bottom balance weighted 60% with
+      versatility 40%), 30/60/90-day utilisation with most-worn / underutilised /
+      unworn splits, neutral/warm/cool colour distribution, category breakdown, and
+      a Monday-bucketed weekly Style Score trend. No Flutter imports, fully unit
+      tested.
+- [x] T051 **Analytics UI**: `lib/views/analytics/wardrobe_analytics_page.dart` adds
+      a sixth "Insights" tab with summary tiles, progress-bar charts, a weekly trend
+      strip, an unworn shelf carousel and a Style History list. Wrapped in
+      `ResponsiveBody` (1100px) and uses `FittedBox`/`ellipsis` so it holds up from
+      360px to 1440px.
+- [x] T052 **Client-side image compression**: uploads compress via
+      `compressWithList` at a 1080px long edge and 80% JPEG quality, targeting
+      < 300 KB per item. `resolveItemImage()` now wraps asset providers in
+      `ResizeImage(240x240, fit)` so a 332-item wardrobe never holds
+      full-resolution bitmaps.
+- [x] T053 **QA annotations**: `/// [QA TEST POINT]` blocks added above the
+      bootstrap seeding gate, affinity weight loading, `user_weights.json` atomic
+      persistence, weather caching/city override, `resolveItemImage()` fallbacks,
+      upload compression, the analytics tab, and the analytics log itself.
+
 ## Traceability Notes
 
 - **FR-001-FR-005** map to T007-T013.

@@ -4,7 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../controllers/wardrobe_controller.dart';
+import '../../core/services/event_outfit_suggester.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/responsive_body.dart';
+import '../../models/clothing_item.dart';
 import '../../models/event_model.dart';
 import '../../services/calendar_sync_service.dart';
 import '../../services/event_service.dart';
@@ -22,13 +25,44 @@ class EventPlannerPage extends StatefulWidget {
 
 class _EventPlannerPageState extends State<EventPlannerPage> {
   final _eventNameController = TextEditingController();
-  final _bot = OutfitBotService();
+  EventOutfitSuggester? _suggester;
+  // Readiness banner only -- not a scoring path.
+  final _readinessBot = OutfitBotService();
   final _calendarSync = CalendarSyncService();
   String _occasion = 'Event';
   DateTime _date = DateTime.now().add(const Duration(days: 1));
   bool _importingCalendar = false;
 
   static const occasions = ['Work', 'Date', 'Groove', 'Braai', 'Event'];
+
+  @override
+  void initState() {
+    super.initState();
+    // Sprint 9: pre-load the on-device affinity engine for event suggestions.
+    _loadSuggester();
+  }
+
+  Future<void> _loadSuggester() async {
+    try {
+      final suggester = await EventOutfitSuggester.load();
+      if (mounted) setState(() => _suggester = suggester);
+    } catch (_) {
+      // Suggestions stay empty until the matrix can be read.
+    }
+  }
+
+  /// Engine-backed suggestions; falls back to nothing rather than a legacy path.
+  List<String> _suggestionsFor(
+    EventModel event,
+    List<ClothingItem> items,
+  ) {
+    if (event.recommendedOutfits.isNotEmpty) return event.recommendedOutfits;
+    return _suggester?.suggest(
+          wardrobe: items,
+          occasion: event.occasion,
+        ) ??
+        const <String>[];
+  }
 
   @override
   void dispose() {
@@ -44,10 +78,11 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
     }
 
     final wardrobe = context.read<WardrobeController>().items;
-    final suggestions = _bot.generateSuggestionsForEvent(
-      wardrobe: wardrobe,
-      occasion: _occasion,
-    );
+    final suggestions = _suggester?.suggest(
+          wardrobe: wardrobe,
+          occasion: _occasion,
+        ) ??
+        const <String>[];
 
     final event = EventModel(
       id: '',
@@ -55,12 +90,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
       name: name,
       date: _date,
       occasion: _occasion,
-      recommendedOutfits: suggestions
-          .map(
-            (s) =>
-                'Score ${s.score}: ${s.top?.category ?? '-'} + ${s.bottom?.category ?? '-'} + ${s.shoes?.category ?? '-'}',
-          )
-          .toList(),
+      recommendedOutfits: suggestions,
     );
 
     await context.read<EventService>().createEvent(event);
@@ -121,10 +151,11 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
   @override
   Widget build(BuildContext context) {
     final wardrobe = context.watch<WardrobeController>().items;
-    final readiness = _bot.checkReadiness(wardrobe);
+    final readiness = _readinessBot.checkReadiness(wardrobe);
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+    return ResponsiveBody(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       children: [
         Text('Event Planner', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 10),
@@ -225,18 +256,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
 
             return Column(
               children: events.map((event) {
-                final suggestions = event.recommendedOutfits.isNotEmpty
-                    ? event.recommendedOutfits
-                    : _bot
-                        .generateSuggestionsForEvent(
-                          wardrobe: wardrobe,
-                          occasion: event.occasion,
-                        )
-                        .map(
-                          (s) =>
-                              'Score ${s.score}: ${s.top?.category ?? '-'} + ${s.bottom?.category ?? '-'} + ${s.shoes?.category ?? '-'}',
-                        )
-                        .toList();
+                final suggestions = _suggestionsFor(event, wardrobe);
 
                 return Card(
                   child: Padding(
@@ -273,6 +293,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
           },
         ),
       ],
+      ),
     );
   }
 }

@@ -677,3 +677,87 @@ Final iOS build validation cannot be completed from this Windows environment bec
   - Production-like Web reset/OAuth, upload, low-network, PWA, and smoke checks.
   - Firebase Console configuration and deployed-rule verification.
   - iOS/macOS validation on an authorized Mac.
+
+## 30. Sprint 9 Slice 1 - Seed Wardrobe Dataset + SpecKit 002 (2026-09-29)
+
+### Completed in this update
+
+1. Audited the existing codebase and classified models/services as implemented, partial,
+   missing, conflicting, or reusable (recorded in the Sprint 9 SpecKit).
+2. Recorded dataset provenance BEFORE generating data, per policy:
+   - Source: Wikimedia Commons "Europeana Fashion - MoMu - Thesaurus drawings" (David Ring).
+   - Licence: CC0 1.0 (Public Domain Dedication); `AttributionRequired = false`.
+   - Verified via the Commons API on multiple files (Blouse, Anorak, T-shirt drawing).
+3. Created SpecKit feature `specs/002-on-device-outfit-engine/` (`spec.md`, `plan.md`,
+   `tasks.md`).
+4. Added deterministic seed generator `tooling/seed_generator/main.dart`. It imports the REAL
+   taxonomy from `lib/core/constants/wardrobe_taxonomy.dart`, so no enum is duplicated.
+5. Generated the development seed wardrobe:
+   - `assets/seed/wardrobe_seed.json` - 332 items with stable UUIDv5 ids.
+   - `assets/seed/dataset_manifest.json` - provenance + transformations + limitations.
+   - Registered `assets/seed/` in `pubspec.yaml`.
+
+### Validation evidence
+
+- Generator self-validation: 332 items, 332 unique ids, 8 parent categories, all `clean`,
+  CC0-only image references.
+- Independent JSON re-check: items=332, uniqueIds=332, uniqueImages=31, allClean=True.
+- Live URL checks: 6 image references returned `200 image/jpeg`.
+- `flutter analyze` -> `No issues found!`
+
+### Risk status
+
+- Remote CC0 image URLs only; offline image rendering is temporarily relaxed (accepted).
+- Local asset bundling is a follow-up step.
+
+### Next action plan
+
+- Continue Sprint 9 phases 3-9: affinity rules, weather service, affinity engine, local
+  feedback adaptation, dev-only seeder, additive UI, tests.
+
+## 31. Sprint 9 Remediation - Taxonomy, Drift, Seed Localisation (2026-09-29)
+
+### Completed in this update
+
+1. Pushed `72a1346` to `origin/dev`; `dev` is in sync with its remote tracking branch.
+2. Fixed `deriveColorGroup()` in `lib/core/constants/wardrobe_taxonomy.dart`:
+   - Added an explicit `colorGroupMembership` map and `colorGroupOptions`.
+   - Neutrals: black, white, grey, navy, beige, tan, brown, cream.
+   - Warm accents: red, pink, yellow, orange.
+   - Cool accents: blue, green, teal, purple, olive.
+   - No valid taxonomy colour falls back to `neutral` any more.
+3. Removed architectural drift:
+   - `OutfitImageService` no longer fetches over HTTP; it resolves bundled assets or local
+     file paths, with an injectable asset loader for tests.
+   - Added `lib/core/utils/item_image.dart` and wired `ClothingItemCard` to prefer
+     `localImagePath`.
+   - `DemoDataService` Unsplash URLs removed; demo items now point at bundled assets.
+   - Replaced non-enum style tags (`minimal`, `soft_life`) with valid `styleTagOptions`.
+4. Upgraded the seed dataset to local assets:
+   - Generator emits `localImagePath` (bundled) plus the validated CC0 `imageUrl`.
+   - Added `tooling/seed_generator/download_seed_images.ps1` (User-Agent, pacing,
+     retry/backoff) and `tooling/seed_generator/validate_seed.ps1`.
+   - Downloaded 31 CC0 images into `assets/seed/images/` and registered the directory in
+     `pubspec.yaml`.
+
+### Dataset decision
+
+- Continued with the CC0 Wikimedia Commons MoMu thesaurus drawings set.
+- Did **not** switch to the suggested "MIT-licensed Fashion Product Images": its images are
+  retailer photography and it is not MIT-licensed, so it cannot be bundled.
+
+### Validation evidence
+
+- `flutter analyze` -> `No issues found!`
+- `flutter test` -> `All tests passed!` (43 tests, up from 42)
+- `validate_seed.ps1` -> VALIDATION PASSED: 332 items, 332 unique UUIDv5 ids, 8 parents,
+  41 subcategories, 16 colours, colour groups `cool/neutral/warm`, 31 local images present.
+
+### Defect found and fixed
+
+- Wikimedia rejects non-standard thumbnail widths (`?width=800` -> HTTP 400/429). Permitted
+  sizes are 20/40/60/120/250/330/500/960/1280/1920/3840; the generator now uses 500.
+
+### Next action plan
+
+- Resume Sprint 9 Phase 3 (`assets/ml_seed_rules.json`) then Phases 5-7.

@@ -1,0 +1,5959 @@
+{
+  "version": 1,
+  "namespace": "a6c1f0a2-1f3b-4c7d-9e21-5b8d0c4a7f10",
+  "itemCount": 332,
+  "items": [
+    {
+      "id": "615f1515-3a61-5a57-a9f1-f2fd6cbcfd54",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "d7e18b8b-441d-54b6-98e4-68c69f2ab5f5",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "25b5b1e2-2033-5683-a9ab-907f2b995a96",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6c59c80e-d1b9-599f-8811-e4bc3a3b1208",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "d67e6cc0-cee0-5b0b-9c98-db165f65f664",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f1f74273-670d-514d-912d-ada868388716",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "75aa89dc-5d28-5fdd-8bcd-8d18e4741558",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f95d1097-3808-5a39-b449-a90684933de6",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0d6fc44b-2501-58b1-b67d-5f7c2e8995f7",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3c17c562-1d07-5fab-8505-b0b34a8711b7",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "44603ae7-a600-58c7-959c-66d2590b897c",
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "categoryType": "top",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0c963dbf-caf1-5c27-a926-15f4bdc0314e",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6417e318-9213-57a3-8db3-c9dade5e6f54",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "76fadd00-8eb2-5ff0-a895-646b35925797",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "df56a3a0-e40b-5a62-aeb7-448cf752333e",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "30c82a0c-294e-50cd-8c72-c4a7799fd109",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c18877f4-f72e-57b8-9682-2e276d12de92",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e7dfdfa6-39bc-58c4-ab21-e01ee8626a99",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2951963b-cfa0-539c-ba43-b2e989011025",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5791a261-49d4-5854-af3b-c2a45419d095",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ad99fd7e-bf44-5ce9-ac1e-505ee997709b",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "31cc495b-55da-57f2-95a7-96c16a5c0fbc",
+      "parentCategory": "Tops",
+      "subcategory": "Button-down shirts",
+      "categoryType": "top",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "efaf990d-9111-5f15-8ff7-498ad12298d5",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8462c09f-e96c-5c7e-885e-470da15d58d0",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ef4f3796-5220-56dc-8e29-fa1146316ed1",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5cd50da1-d085-50d9-9102-680952b02c22",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a68da0ff-669e-5634-b3cd-da2af3d281ea",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e648aad2-06bb-5720-ae47-6c13d468a7a5",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "30d439b9-1419-5af8-8ef2-f7d2fc6f95e7",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "d9203c33-f897-5346-86d5-5c1ca1a8f7af",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ddd0bba3-5060-5203-86d6-eba4f8605523",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "dd5cf8e7-e718-50c3-b796-88b4ae5d9da4",
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "027508fb-2856-5830-9794-7ecf4663d75d",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "67619591-c9c5-5a52-8ee7-6f112a0f9211",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "fea3820e-8113-5ef2-afb6-8a1bb4742c95",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "18726d2a-4966-5e6c-a039-707e35c7a749",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a878ff5e-a88f-5d3b-a636-6b4533abcee9",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6253b0e0-eba4-5032-8223-b997ff2d170a",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9c4cb6a5-05fd-5031-b49a-2caebad350f0",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "790d0ec3-7a55-5c4d-a338-04e79cfbd9ec",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "b6e19830-48b6-5526-b2ef-83b32ef27da5",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "511b9ba2-b165-5ea0-b3fa-d744d7bf324c",
+      "parentCategory": "Tops",
+      "subcategory": "Tank tops",
+      "categoryType": "top",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f9bf503f-ff92-5de1-967f-8b11c897670b",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "553fbc12-ea62-5bca-9d69-365407a429d6",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8ef19648-a381-5e71-af24-e7e7c809925a",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "b4e470b5-e49c-5bce-8d06-2fb0e60a4d8b",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1c4e3923-0a69-5051-b1a0-58fa2bba932e",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f867395f-944e-592e-ac52-d672b371907e",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2f16f7fc-6b47-55b2-a52d-01c446c05034",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1830c6eb-beb6-5737-9dfb-1fae9a5ca1bd",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e9d953a1-b5f3-5c7d-be1f-e2137a63c7bd",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e53c86df-d32e-5862-8b0a-6c387a0fce14",
+      "parentCategory": "Tops",
+      "subcategory": "Crop tops",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7fdd63d0-d6ea-58d3-89cd-126a3a0516c9",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a114b4ab-ab9f-5a7d-814d-97251e0b959d",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2aa2c47c-bc24-5938-b56b-f1625c4d0fd2",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ff2433a7-7416-5cca-b812-6516c023fd2f",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "80023742-2710-50f6-b9df-6b0c958919ff",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a541e88b-bbd5-5c4a-bf24-178349d1466f",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7e2ad6d5-dace-5b63-b67b-d7c6ff1d15a2",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3aaec85e-14d6-5c23-8883-c561270175c7",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6bc51faa-e9d6-5b42-a1a4-a770a43f2f09",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2f62752f-8dc7-53ab-9d94-ed526871a766",
+      "parentCategory": "Tops",
+      "subcategory": "Knitwear",
+      "categoryType": "top",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "94ae18ef-66bc-5acb-a792-f7189e1e220d",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9616e004-debf-587b-896d-41a5dc50219e",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "fcec087f-a1f3-5b25-a9ae-a0fb9f1be83a",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "12fadbd2-db42-5e18-9c44-570b2f9ce71e",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2df6f7bd-e28f-584c-a2bc-9e6b89e3f235",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7590ca15-2046-5ce8-8524-fe2c8e87dfea",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "cfe45039-40ad-5987-b587-6091b2778a74",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7d9d47e7-c37f-5ee6-a6e4-7b153fd2a2da",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "da34d7f9-3712-59e4-a3fb-4dbce8b30288",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ff234404-6b9d-54a4-a209-f43cf201cd0c",
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "categoryType": "top",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a9bd21b7-a76f-5c1c-ab56-ad8b40689fdd",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Regular",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3d8cbe1b-b5de-540e-aa83-a6c3fad6b8a1",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9a322a91-ca4d-531f-9624-594b9b3c0346",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Slim",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "951f8a4f-7382-575c-b0e4-d4edd8d58308",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Slim",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "708c0bb6-5e0f-5099-b115-fbce1ae75f4c",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Regular",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ce7a2481-e9d2-575a-81cc-06f132dcef0b",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c912f818-22be-56bb-8800-3c4c5eb00107",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "544ef052-af98-53a0-a1ca-ef82610eb76f",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Slim",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "29ecad44-c612-5372-b61e-e32e6475482e",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Slim",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0134ba46-c8a6-5c23-8c28-4eaaf50ac6bb",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c9f7e86f-8570-5553-a27b-8b76b6c09385",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c16de67c-d096-5516-8408-42f238c0e6a4",
+      "parentCategory": "Bottoms",
+      "subcategory": "Jeans",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "40e8b451-dd58-574b-aef3-ae5a3f9d1b7d",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7fa7865d-7115-5c07-a456-3cf24dfbf196",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0b33cf7e-33bb-5567-8376-bd5b946697f0",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Regular",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ecd120ff-b265-5a72-a7e9-8f112043e4e8",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "67594f4a-413e-5d0b-b4ec-06434e322215",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Slim",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2e8be612-21d2-5c0e-a916-c772d3c2df60",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Slim",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "be304ca3-c7e8-56cc-92f2-ef38f5662ed4",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Regular",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1b671691-9ff7-53d4-92a9-39409dd875c9",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "253ebbf0-fd76-54da-adca-4f85b7e6b88b",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2ed4d7a4-1d7e-590a-b7c4-2b2c5a498f09",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Regular",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "54db3f36-bd0b-5305-b894-00d0117c1798",
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "categoryType": "bottom",
+      "fit": "Oversized",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e6830421-ecbf-5e08-a103-c3035c1ee0bb",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "53986359-332c-572c-92aa-ccfb5a7f3160",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "822c21a0-fcb2-52ec-a71b-51c6087f8f78",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0452a8f0-d5d4-54a3-aa19-28367681691f",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5554e730-c5a7-5f19-a4ba-93070461b5ba",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8e920d72-2492-599d-aa3c-eff181489949",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9125193b-4506-5970-93ef-74439247013f",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4ee0dd69-90bb-549f-9d29-87fc8d85dad3",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "cbcff871-fae3-50d9-b3bf-43799778ebda",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "cc3ce2d1-7c2b-5bfd-9169-1f03ac409a93",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "376f9c60-9362-59b3-b51c-9cfaaaaadaec",
+      "parentCategory": "Bottoms",
+      "subcategory": "Leggings",
+      "categoryType": "bottom",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8e08e6b8-cc65-5d02-bccf-6cb77963eacf",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1761802d-4e55-57b1-bcf9-e429453d53ac",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e986ce64-2608-5be0-8902-e082d1246c80",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5ba4d7c4-386c-5c0e-a271-b34023540d93",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "32199733-26f6-5c71-8e65-cee9005bbd6d",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "d4958385-a08c-5951-af9c-1afd487abe13",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "98e06185-11f5-5890-ad61-29dda4e66462",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e3a49235-5d6e-5f5a-8d18-7dca13b0006a",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "05e98e52-09d0-506c-9b9a-ae2313b61b19",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "40506ced-6e87-597d-b919-0a9b9b733a1f",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "b5c6a616-58da-5bb2-9043-6cd7ee7585b4",
+      "parentCategory": "Bottoms",
+      "subcategory": "Skirts",
+      "categoryType": "bottom",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apron%20(protective%20wear).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-apron.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a4527e89-9fbb-5d78-ba19-9fa63cfd92c6",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "00b9dcd4-94b3-5518-b8ee-e05790d7445a",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2e972f92-4fac-5a2b-8e15-898e0285e4ce",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7f7eda34-9dcc-5865-9c96-916ca12fae15",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "dbd54499-b4ed-5705-b3c8-18d3435638f3",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "21fdf08d-45e9-56ac-8ae5-febd3fff5461",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "36bfd878-8f2e-574f-990e-4fafe6c0d07c",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9a31a755-8ad0-5b9b-974a-003f46513d13",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "548990b3-eb53-581a-bf30-31a14591dac9",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "12b07348-737a-5536-903c-f8af584303cc",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "96f2d280-b13f-5f77-80e5-55acbfb53bf5",
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "categoryType": "bottom",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c14b36ed-2c4b-5e17-92ae-1f242eb23628",
+      "parentCategory": "Outerwear",
+      "subcategory": "Blazers",
+      "categoryType": "top",
+      "fit": "Oversized",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "cd04fedd-dd10-5995-97bc-4f261db5a6dc",
+      "parentCategory": "Outerwear",
+      "subcategory": "Blazers",
+      "categoryType": "top",
+      "fit": "Oversized",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "46316ef2-f7a3-5797-bd49-8e32c6a3c138",
+      "parentCategory": "Outerwear",
+      "subcategory": "Blazers",
+      "categoryType": "top",
+      "fit": "Oversized",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "aa013b29-13c5-5e5a-9a19-b1e297d4a027",
+      "parentCategory": "Outerwear",
+      "subcategory": "Blazers",
+      "categoryType": "top",
+      "fit": "Slim",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0997d2f0-2f88-5821-bb1c-4260ff3a977c",
+      "parentCategory": "Outerwear",
+      "subcategory": "Blazers",
+      "categoryType": "top",
+      "fit": "Slim",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "243fa998-c30e-5217-9c12-b703e1f50c77",
+      "parentCategory": "Outerwear",
+      "subcategory": "Blazers",
+      "categoryType": "top",
+      "fit": "Oversized",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1e4b61e5-c514-575f-b459-4671ceb8d82f",
+      "parentCategory": "Outerwear",
+      "subcategory": "Blazers",
+      "categoryType": "top",
+      "fit": "Slim",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7254bb1a-7c1b-5147-a00a-fe1f96c92e26",
+      "parentCategory": "Outerwear",
+      "subcategory": "Blazers",
+      "categoryType": "top",
+      "fit": "Slim",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c90501a1-65c5-585c-a320-b9d2cff07632",
+      "parentCategory": "Outerwear",
+      "subcategory": "Trench coats",
+      "categoryType": "top",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "133ca380-98ab-52b5-a005-ab52c999545f",
+      "parentCategory": "Outerwear",
+      "subcategory": "Trench coats",
+      "categoryType": "top",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c412ccae-da07-552c-9a4f-d8c992b8cca6",
+      "parentCategory": "Outerwear",
+      "subcategory": "Trench coats",
+      "categoryType": "top",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c1948a2f-567c-5cc3-ae9b-b4fa78e2fba6",
+      "parentCategory": "Outerwear",
+      "subcategory": "Trench coats",
+      "categoryType": "top",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4e89f6e8-0643-5d97-9ad5-473d022169fd",
+      "parentCategory": "Outerwear",
+      "subcategory": "Trench coats",
+      "categoryType": "top",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ab16d1ab-223e-5cfa-9758-6c6ff042e4ca",
+      "parentCategory": "Outerwear",
+      "subcategory": "Trench coats",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1b20ce42-0bae-58bc-aba8-c61a89ff7389",
+      "parentCategory": "Outerwear",
+      "subcategory": "Trench coats",
+      "categoryType": "top",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "66e21f3b-29f4-58ad-865a-e7261b463f93",
+      "parentCategory": "Outerwear",
+      "subcategory": "Trench coats",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "formal"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8abbf852-89ec-5167-bc11-3d5f2df4f948",
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "categoryType": "top",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f08345b0-7d21-552c-875f-ad0acf3f39c9",
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3c88d829-4847-56c2-90f1-a8650771e004",
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "categoryType": "top",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "d51f0041-17bc-55f1-bf31-a6ecf5e4b598",
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "categoryType": "top",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f6890d6c-0a1f-5ce9-9fb3-8538e5fe18ed",
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "categoryType": "top",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e18039c1-8650-52a4-bd25-a1969ce4fb39",
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "25d0f4ae-5683-5654-8134-8bab8f07fcd8",
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "90fa8e05-a6a8-5aad-820c-09e2a06937a0",
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "streetwear",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "14411dac-0cba-59f1-958b-340edaf8ce99",
+      "parentCategory": "Outerwear",
+      "subcategory": "Puffer jackets",
+      "categoryType": "top",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Barracoat.tif?width=500",
+      "localImagePath": "assets/seed/images/outerwear-barracoat.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "28af3495-a0a4-52d8-aaa2-bfb1c8044620",
+      "parentCategory": "Outerwear",
+      "subcategory": "Puffer jackets",
+      "categoryType": "top",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Barracoat.tif?width=500",
+      "localImagePath": "assets/seed/images/outerwear-barracoat.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "250c020a-c496-5741-bafa-d85beaae2c49",
+      "parentCategory": "Outerwear",
+      "subcategory": "Puffer jackets",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Barracoat.tif?width=500",
+      "localImagePath": "assets/seed/images/outerwear-barracoat.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2304f82f-2901-5068-a777-c8abf60a5341",
+      "parentCategory": "Outerwear",
+      "subcategory": "Puffer jackets",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Barracoat.tif?width=500",
+      "localImagePath": "assets/seed/images/outerwear-barracoat.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "637ed3aa-73b1-5822-be93-6abb6419ce4f",
+      "parentCategory": "Outerwear",
+      "subcategory": "Puffer jackets",
+      "categoryType": "top",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Barracoat.tif?width=500",
+      "localImagePath": "assets/seed/images/outerwear-barracoat.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9ea4530c-105e-5f37-86da-f941b0f36a67",
+      "parentCategory": "Outerwear",
+      "subcategory": "Puffer jackets",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Barracoat.tif?width=500",
+      "localImagePath": "assets/seed/images/outerwear-barracoat.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "b765c387-a39d-5ea6-9fa7-f3fbf91204a2",
+      "parentCategory": "Outerwear",
+      "subcategory": "Puffer jackets",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Barracoat.tif?width=500",
+      "localImagePath": "assets/seed/images/outerwear-barracoat.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "14e34cd2-c885-5df6-824c-f15030d76528",
+      "parentCategory": "Outerwear",
+      "subcategory": "Puffer jackets",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "sportswear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Barracoat.tif?width=500",
+      "localImagePath": "assets/seed/images/outerwear-barracoat.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5980359f-4b00-57cc-b8bc-3150e412422c",
+      "parentCategory": "Outerwear",
+      "subcategory": "Cardigans",
+      "categoryType": "top",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8dfe1483-6946-5e36-8cde-cb92673b4ae1",
+      "parentCategory": "Outerwear",
+      "subcategory": "Cardigans",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "88795bc4-2732-520e-a59a-f3c7617c4dd3",
+      "parentCategory": "Outerwear",
+      "subcategory": "Cardigans",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5175108a-22e5-50c0-8cdc-c0c4309f7bdc",
+      "parentCategory": "Outerwear",
+      "subcategory": "Cardigans",
+      "categoryType": "top",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a0070620-8483-5b96-9869-799bf6b86d69",
+      "parentCategory": "Outerwear",
+      "subcategory": "Cardigans",
+      "categoryType": "top",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f608021b-0210-5d73-9094-238de1bcc7d1",
+      "parentCategory": "Outerwear",
+      "subcategory": "Cardigans",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7a243fbc-d9d5-554c-9435-cce589d63552",
+      "parentCategory": "Outerwear",
+      "subcategory": "Cardigans",
+      "categoryType": "top",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "563586d8-c3ea-5b65-8348-965ba6659247",
+      "parentCategory": "Outerwear",
+      "subcategory": "Cardigans",
+      "categoryType": "top",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spencer%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-spencer.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0bbbf66a-ea1b-5ff3-90d4-e5b11e1e355a",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "categoryType": "full",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "676e2d14-d5f5-5d05-b822-913d2f3ce93b",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "categoryType": "full",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "329288d2-8ca9-5703-991d-3108c7dc2c3d",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "categoryType": "full",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f4ebecaf-4949-541c-bcf7-1438e6d1f2aa",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "categoryType": "full",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f5e29bd0-d066-58d6-9655-9d9c340250b2",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "categoryType": "full",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3e074416-c337-5d1e-8a77-48721187b1c5",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "categoryType": "full",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "fed064c7-c5ea-5080-b328-a09bd2d0106f",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "categoryType": "full",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Spring",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3fab5466-0719-5b79-a8fa-b645d71fb245",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "categoryType": "full",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7138ecd1-3b12-553c-afcc-a7c37ec5c5ff",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Evening dresses",
+      "categoryType": "full",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Strapless%20dress.jpg?width=500",
+      "localImagePath": "assets/seed/images/dresses-strapless.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3b47dd77-a7f0-5d09-85b1-e1d0d305a601",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Evening dresses",
+      "categoryType": "full",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Strapless%20dress.jpg?width=500",
+      "localImagePath": "assets/seed/images/dresses-strapless.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "753ee57a-dc98-5705-acba-86ac4979e1cc",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Evening dresses",
+      "categoryType": "full",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Strapless%20dress.jpg?width=500",
+      "localImagePath": "assets/seed/images/dresses-strapless.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "dc88a10b-d8eb-52dd-85d7-331152e1e043",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Evening dresses",
+      "categoryType": "full",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Strapless%20dress.jpg?width=500",
+      "localImagePath": "assets/seed/images/dresses-strapless.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4960a0e4-d6e6-589b-9a84-c5343fe7bc45",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Evening dresses",
+      "categoryType": "full",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Strapless%20dress.jpg?width=500",
+      "localImagePath": "assets/seed/images/dresses-strapless.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a9d8042d-ab47-5e19-a75b-8fac3965920f",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Evening dresses",
+      "categoryType": "full",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Strapless%20dress.jpg?width=500",
+      "localImagePath": "assets/seed/images/dresses-strapless.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "39ab7cd2-e0df-57bf-aa9b-6358a817f59f",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Evening dresses",
+      "categoryType": "full",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Strapless%20dress.jpg?width=500",
+      "localImagePath": "assets/seed/images/dresses-strapless.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "013cd085-6131-58ed-97d2-8845b24e6eb6",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Evening dresses",
+      "categoryType": "full",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Strapless%20dress.jpg?width=500",
+      "localImagePath": "assets/seed/images/dresses-strapless.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6213f1e1-15c6-5748-8c0e-612f9e37d497",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Jumpsuits",
+      "categoryType": "full",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smoking%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-smoking-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "b5d2b2f2-c264-5904-9eac-9cad62f8610a",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Jumpsuits",
+      "categoryType": "full",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smoking%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-smoking-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "44361ffd-7ab3-5b6d-8bae-317b367925fd",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Jumpsuits",
+      "categoryType": "full",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smoking%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-smoking-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1533388b-67ce-54b1-b2c4-498ae390ecb1",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Jumpsuits",
+      "categoryType": "full",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smoking%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-smoking-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "eb97db1b-5017-51bf-8355-928f0dbf0941",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Jumpsuits",
+      "categoryType": "full",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smoking%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-smoking-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "39b1e464-17fe-5bc1-9712-94696eed9a36",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Jumpsuits",
+      "categoryType": "full",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smoking%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-smoking-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "bdecf5e2-a04d-5530-a0d2-c69434a27b08",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Jumpsuits",
+      "categoryType": "full",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smoking%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-smoking-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6d678f46-1d10-53cf-bedd-1a01942e63d8",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Jumpsuits",
+      "categoryType": "full",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smoking%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-smoking-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7e308b83-5037-5759-9a60-95fdd3a63de0",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Rompers",
+      "categoryType": "full",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Baby%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-baby-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ed6c2c9a-58bf-564e-99e0-66a3257081ef",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Rompers",
+      "categoryType": "full",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Baby%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-baby-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f8fcc1cd-5fa6-5593-9f58-c8d69acffd1b",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Rompers",
+      "categoryType": "full",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Baby%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-baby-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "cb10938b-a989-5dd1-95a6-62225385f491",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Rompers",
+      "categoryType": "full",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Baby%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-baby-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e12deaa9-4ddf-567e-9e66-1130b1440834",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Rompers",
+      "categoryType": "full",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Baby%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-baby-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "221a41ed-5246-5b7b-bbcc-f64e87f83d9d",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Rompers",
+      "categoryType": "full",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Baby%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-baby-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0b982575-c539-5a68-b164-5cd2f20b260c",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Rompers",
+      "categoryType": "full",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Baby%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-baby-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2225801f-7e1a-5002-8390-a4264a9d6aa7",
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Rompers",
+      "categoryType": "full",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Baby%20suit.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-baby-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1998f986-0c6b-5545-9404-68f008408927",
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "categoryType": "shoes",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear",
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7e7998b0-4d39-515d-b656-29c60f05d606",
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "categoryType": "shoes",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear",
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6a77cb7b-5f66-59f1-9158-fd24b7c44c43",
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "categoryType": "shoes",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear",
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a3c29aa7-f077-5015-9a35-03716e9ed148",
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "categoryType": "shoes",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear",
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4a705eaf-245c-5161-a44e-45885cf9da3d",
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear",
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6c1880f5-52b2-5cd5-912d-905fe2156222",
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "categoryType": "shoes",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear",
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ae121813-2018-58d9-ab33-b016d6047abb",
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "categoryType": "shoes",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear",
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f73f44f2-e78f-5945-a6fd-47b7a0b6cbc2",
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear",
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "be7fc7fc-c29f-55ce-83e8-3bc341ec80f1",
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "categoryType": "shoes",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apr%C3%A8s-ski%20boots.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-apres-ski-boots.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "649668cd-0b33-570d-aa14-1a5afcebd40d",
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "categoryType": "shoes",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apr%C3%A8s-ski%20boots.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-apres-ski-boots.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "987e9662-7264-5c9c-923a-c9d184fe0a8a",
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "categoryType": "shoes",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apr%C3%A8s-ski%20boots.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-apres-ski-boots.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f4970764-00b2-5f4e-941f-7de50ece85bb",
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "categoryType": "shoes",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apr%C3%A8s-ski%20boots.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-apres-ski-boots.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "51e8b032-a175-5740-8e00-27580c49519f",
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "categoryType": "shoes",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apr%C3%A8s-ski%20boots.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-apres-ski-boots.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9673862c-0524-5389-b4a4-1b06f21dfad5",
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "categoryType": "shoes",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apr%C3%A8s-ski%20boots.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-apres-ski-boots.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3a43e948-b41e-5a62-baba-5daf997dd38b",
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "categoryType": "shoes",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apr%C3%A8s-ski%20boots.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-apres-ski-boots.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "eacc2d6c-855d-5699-b5ab-996ae8a39c50",
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "categoryType": "shoes",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Apr%C3%A8s-ski%20boots.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-apres-ski-boots.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c8c7c60a-b3ad-5693-a013-2cc0d21c8df8",
+      "parentCategory": "Footwear",
+      "subcategory": "Heels",
+      "categoryType": "shoes",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stilettos.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-stilettos.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e5c53b51-d520-5a61-ae5f-71bcb73097d3",
+      "parentCategory": "Footwear",
+      "subcategory": "Heels",
+      "categoryType": "shoes",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stilettos.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-stilettos.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3806b669-7196-54a1-b534-38938ac48374",
+      "parentCategory": "Footwear",
+      "subcategory": "Heels",
+      "categoryType": "shoes",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stilettos.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-stilettos.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e41c5489-d977-5a5e-8a6f-a6ca7fe18272",
+      "parentCategory": "Footwear",
+      "subcategory": "Heels",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stilettos.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-stilettos.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c0db76fb-08f6-59cc-b41a-e0454fc902b2",
+      "parentCategory": "Footwear",
+      "subcategory": "Heels",
+      "categoryType": "shoes",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stilettos.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-stilettos.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "53ec1aa5-a951-5cbc-bf2f-ce03bafbb52d",
+      "parentCategory": "Footwear",
+      "subcategory": "Heels",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stilettos.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-stilettos.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8a972140-d386-59e9-9348-42e1c62c5616",
+      "parentCategory": "Footwear",
+      "subcategory": "Heels",
+      "categoryType": "shoes",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stilettos.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-stilettos.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "47267080-a268-59ac-993f-015d33f1dd69",
+      "parentCategory": "Footwear",
+      "subcategory": "Heels",
+      "categoryType": "shoes",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stilettos.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-stilettos.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "13bb46ed-9d3e-5dea-8f65-057bd32c7424",
+      "parentCategory": "Footwear",
+      "subcategory": "Flats",
+      "categoryType": "shoes",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ballet%20flats.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-ballet-flats.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f7fcaa27-d8d3-5123-9510-44674b34ce1e",
+      "parentCategory": "Footwear",
+      "subcategory": "Flats",
+      "categoryType": "shoes",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ballet%20flats.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-ballet-flats.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6d2a1444-c6cb-5e96-bbf0-b372a12bdc6a",
+      "parentCategory": "Footwear",
+      "subcategory": "Flats",
+      "categoryType": "shoes",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ballet%20flats.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-ballet-flats.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6b3e09c6-538b-5db7-8b30-39afe4d850ba",
+      "parentCategory": "Footwear",
+      "subcategory": "Flats",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ballet%20flats.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-ballet-flats.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c3c3e152-3f00-5f1a-be88-0aa85d00a32e",
+      "parentCategory": "Footwear",
+      "subcategory": "Flats",
+      "categoryType": "shoes",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ballet%20flats.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-ballet-flats.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "eb0a14cb-ad44-5429-b092-04d6dbb2ac03",
+      "parentCategory": "Footwear",
+      "subcategory": "Flats",
+      "categoryType": "shoes",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ballet%20flats.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-ballet-flats.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5e36b566-cc51-52af-8d52-8610e970d597",
+      "parentCategory": "Footwear",
+      "subcategory": "Flats",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ballet%20flats.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-ballet-flats.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7fd51866-6453-5dfd-a250-67576c18c61e",
+      "parentCategory": "Footwear",
+      "subcategory": "Flats",
+      "categoryType": "shoes",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ballet%20flats.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-ballet-flats.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "14dbccd7-5cee-5c5a-b716-c9557f2b39e5",
+      "parentCategory": "Footwear",
+      "subcategory": "Sandals",
+      "categoryType": "shoes",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Slippers%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-slippers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7677ed72-e0f9-5b25-a1b0-0ac923739a7b",
+      "parentCategory": "Footwear",
+      "subcategory": "Sandals",
+      "categoryType": "shoes",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Slippers%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-slippers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4fae223a-0b11-5f86-a91c-973eee7a79b2",
+      "parentCategory": "Footwear",
+      "subcategory": "Sandals",
+      "categoryType": "shoes",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Slippers%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-slippers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "dab43403-79f2-5892-8099-2cce0179eabc",
+      "parentCategory": "Footwear",
+      "subcategory": "Sandals",
+      "categoryType": "shoes",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Slippers%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-slippers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "deabc2a2-8b24-5c21-aac0-3e74cb58eadd",
+      "parentCategory": "Footwear",
+      "subcategory": "Sandals",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Slippers%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-slippers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ad441d68-cde6-5da2-8a88-c70efc342b07",
+      "parentCategory": "Footwear",
+      "subcategory": "Sandals",
+      "categoryType": "shoes",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Slippers%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-slippers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "81f5932d-d466-52e9-8ae7-646b1b016f11",
+      "parentCategory": "Footwear",
+      "subcategory": "Sandals",
+      "categoryType": "shoes",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Slippers%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-slippers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6e729a3b-a876-5e96-9db3-bb1f224355a4",
+      "parentCategory": "Footwear",
+      "subcategory": "Sandals",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Slippers%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-slippers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6dd897cf-71c0-59fb-ad92-966e90e4c8fa",
+      "parentCategory": "Footwear",
+      "subcategory": "Loafers",
+      "categoryType": "shoes",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e68b0689-2ae5-55b7-b1fd-ce7c7bf32461",
+      "parentCategory": "Footwear",
+      "subcategory": "Loafers",
+      "categoryType": "shoes",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5bbc2460-ef16-53e9-9ee5-f36721945ec9",
+      "parentCategory": "Footwear",
+      "subcategory": "Loafers",
+      "categoryType": "shoes",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "642528e9-9f02-5782-941c-85995a7f2f0d",
+      "parentCategory": "Footwear",
+      "subcategory": "Loafers",
+      "categoryType": "shoes",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "28d612ed-6c67-5fff-a310-1157148e3823",
+      "parentCategory": "Footwear",
+      "subcategory": "Loafers",
+      "categoryType": "shoes",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "46ac07df-69df-5d01-aabf-739603ee563e",
+      "parentCategory": "Footwear",
+      "subcategory": "Loafers",
+      "categoryType": "shoes",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9ea2789a-d090-5197-b87c-3c1305eb1d4c",
+      "parentCategory": "Footwear",
+      "subcategory": "Loafers",
+      "categoryType": "shoes",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ce4978a3-a5d8-5812-afd5-525e55671e2e",
+      "parentCategory": "Footwear",
+      "subcategory": "Loafers",
+      "categoryType": "shoes",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a4df7085-d13b-5f1e-9245-4dc7df43314e",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "d9938d34-957e-5339-bc96-db178f038a8a",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "d484af48-71c4-58db-9f32-67bcf8f0ca5c",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f3fa9172-887f-52dd-9410-3cb20b23542e",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4d1c54a8-544b-59d4-badb-e49a997115f1",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1c61f6b3-2b13-5f9f-a9ef-3ab2258ed0cb",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "897d14b7-9865-5da4-a151-1f8c62a445f9",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "a036d311-1070-5ec7-9afa-488299ad2a90",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ea60001f-7beb-5523-883a-4dec0f9d05a4",
+      "parentCategory": "Accessories",
+      "subcategory": "Bags",
+      "categoryType": "accessory",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Suitcase%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-suitcase.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ed725de7-4c95-5d85-81a3-0a397a708090",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3cf4c883-077d-5b19-b90f-32233de68f43",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "996e3181-edd4-58c7-9aa3-4dd620ddcdaa",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "211f2c17-0ea7-52c2-8d42-8293f3e332bb",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "cabece61-0d95-524b-a070-6517b745e0cd",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "3b017ef8-b4c5-5f13-a09a-5d447747cd8b",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6ab37d3e-045b-5b03-b29f-9400696604bc",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2fcb5b8e-33e0-5c4d-97aa-2f7c6bc5e62c",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6062ebed-4c67-51d3-88ea-a9368b0e503e",
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "categoryType": "accessory",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2780eca9-6f8a-51cf-9252-cc0217d53a3e",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0e2df5e2-1f6b-54cc-96b7-1f92bd7f0431",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "730b8a2a-3177-50d2-bae0-0965e4ac90c4",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "384ef7d2-a14c-5f7e-9275-233c83946f92",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "34806f74-29d3-58f0-9930-4e7a08359ff3",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "bc7726ae-6fc4-5611-a055-59e3a0f4a816",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7bfdb6b3-5c81-529f-a9de-788f8c6e0843",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8c942a85-f6d7-5d6d-ae59-bcc505583b17",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2d225bcf-5f43-5ded-90dc-164d36882ded",
+      "parentCategory": "Accessories",
+      "subcategory": "Hats",
+      "categoryType": "accessory",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beret.jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-beret.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e19eebdb-57da-5534-9428-a666013bada1",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "dd85957b-aa6d-5e27-8881-b42781ce8f31",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "eafb88ee-e41a-5408-a5d4-0e452a01b886",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "12e92462-98a6-54fd-a476-3984a92376d6",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0d66edb0-0425-5506-9586-859698456b99",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "55443398-5374-5600-8008-ab647d97bc58",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5df5a6a9-9439-5abb-9166-419c0cde3f65",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "adf50495-e401-5dd1-bb70-74e75a2c4c75",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "5aa377de-d9c8-516f-9409-1c1e8c42b5c6",
+      "parentCategory": "Accessories",
+      "subcategory": "Scarves",
+      "categoryType": "accessory",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "smart_casual",
+        "casual"
+      ],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stole%20(outerwear).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-stole.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0ecc6caa-3807-5c43-9c1c-b4e107418a8c",
+      "parentCategory": "Accessories",
+      "subcategory": "Jewelry",
+      "categoryType": "accessory",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Amulet%20(jewelry).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-amulet.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "aeb1f2d2-21a8-52b9-ac6a-2137fd4403fe",
+      "parentCategory": "Accessories",
+      "subcategory": "Jewelry",
+      "categoryType": "accessory",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Amulet%20(jewelry).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-amulet.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "b61797ea-e23e-525d-af43-1e7904e57765",
+      "parentCategory": "Accessories",
+      "subcategory": "Jewelry",
+      "categoryType": "accessory",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Amulet%20(jewelry).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-amulet.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e97c35fa-0b24-5599-b12e-25e9120bf8f6",
+      "parentCategory": "Accessories",
+      "subcategory": "Jewelry",
+      "categoryType": "accessory",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Amulet%20(jewelry).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-amulet.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1faa873f-6fc9-5e1b-ad00-2e7ee793c51c",
+      "parentCategory": "Accessories",
+      "subcategory": "Jewelry",
+      "categoryType": "accessory",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Amulet%20(jewelry).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-amulet.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1e2fe771-1c47-55b6-bcd8-e68ae5385206",
+      "parentCategory": "Accessories",
+      "subcategory": "Jewelry",
+      "categoryType": "accessory",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Amulet%20(jewelry).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-amulet.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "b10289b9-ac39-5b49-958e-9d7fa1d68e98",
+      "parentCategory": "Accessories",
+      "subcategory": "Jewelry",
+      "categoryType": "accessory",
+      "color": "black",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Amulet%20(jewelry).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-amulet.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4c07fdb5-0bb9-5988-ba03-9d7d16293237",
+      "parentCategory": "Accessories",
+      "subcategory": "Jewelry",
+      "categoryType": "accessory",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal",
+        "smart_casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Amulet%20(jewelry).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-amulet.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "cbbaec0a-d6af-5919-86e1-e25808a3c225",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sports bras",
+      "categoryType": "top",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Swim%20suit.jpg?width=500",
+      "localImagePath": "assets/seed/images/activewear-swim-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "6deab940-c79c-536b-9ad3-5bfbcaec7d26",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sports bras",
+      "categoryType": "top",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Swim%20suit.jpg?width=500",
+      "localImagePath": "assets/seed/images/activewear-swim-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4e799cf2-31ab-5457-885a-f9a8a6cf554c",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sports bras",
+      "categoryType": "top",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Swim%20suit.jpg?width=500",
+      "localImagePath": "assets/seed/images/activewear-swim-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "45219b8c-5ed8-550c-b4ba-05a546f312a3",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sports bras",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Swim%20suit.jpg?width=500",
+      "localImagePath": "assets/seed/images/activewear-swim-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "377e8845-522b-56f5-a8c8-bdb0f0a3c884",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sports bras",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Swim%20suit.jpg?width=500",
+      "localImagePath": "assets/seed/images/activewear-swim-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8484381d-b348-5a47-a36e-3fb72a6565f8",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sports bras",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Swim%20suit.jpg?width=500",
+      "localImagePath": "assets/seed/images/activewear-swim-suit.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "24736a68-26c6-5eaa-ae4e-d830dba2348c",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Active Leggings",
+      "categoryType": "bottom",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4c5a4056-2a3c-5d3c-8cc0-f7329eeaa01a",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Active Leggings",
+      "categoryType": "bottom",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "7fa9b9f1-2b57-5623-8e98-a06d2a27d436",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Active Leggings",
+      "categoryType": "bottom",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1c98af98-19df-5c3a-9493-a33021c560c6",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Active Leggings",
+      "categoryType": "bottom",
+      "color": "orange",
+      "colorGroup": "warm",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "8ce6c2d0-b90a-58d3-9a37-ab20a5cf2e9b",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Active Leggings",
+      "categoryType": "bottom",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "71a050d9-fa8b-561c-b8ce-15f3bd636b0b",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Active Leggings",
+      "categoryType": "bottom",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e1ec129f-03f6-5c61-998f-1d6cb0e322a1",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sweatpants",
+      "categoryType": "bottom",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "sportswear",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "43ed45e7-c337-5231-b88c-551ce66c1d2d",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sweatpants",
+      "categoryType": "bottom",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "20094b1e-e0eb-5f66-a74e-b9d006ab056c",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sweatpants",
+      "categoryType": "bottom",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "sportswear",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "01f33796-ff48-5114-9fb6-8fb387cee6f1",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sweatpants",
+      "categoryType": "bottom",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f295c562-7897-5214-b244-6e45fa025bf9",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sweatpants",
+      "categoryType": "bottom",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "sportswear",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "24f31260-5795-5052-be02-7127ccf0ab33",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Sweatpants",
+      "categoryType": "bottom",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear",
+        "streetwear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "81d22740-5229-5d35-a724-2a64ac2a264c",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Gym tops",
+      "categoryType": "top",
+      "color": "green",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c9f6f444-fb3c-53f5-883d-cd113bd4e26d",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Gym tops",
+      "categoryType": "top",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "256ecf6a-da78-57d3-a32a-edaa61ec9f1f",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Gym tops",
+      "categoryType": "top",
+      "color": "olive",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "50c35346-9c0c-593f-8402-63c236f725e7",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Gym tops",
+      "categoryType": "top",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4555fc52-2be0-5d4c-99bd-8fbb6bf7a8c6",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Gym tops",
+      "categoryType": "top",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4f7d9dbf-8aea-5320-9a85-3fdf8ed02719",
+      "parentCategory": "Activewear & Leisure",
+      "subcategory": "Gym tops",
+      "categoryType": "top",
+      "color": "beige",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "sportswear"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caraco.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-caraco.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "d1892d26-a9eb-5d35-8839-29190ef55745",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Underwear",
+      "categoryType": "accessory",
+      "color": "cream",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9ed42156-86b6-56bc-9a78-d2138d858f56",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Underwear",
+      "categoryType": "accessory",
+      "color": "yellow",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "1b5c8acc-a968-5e9c-9685-d61767cbbe61",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Underwear",
+      "categoryType": "accessory",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "0bc904cf-bced-55cf-a76b-b7201e4d0cbb",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Underwear",
+      "categoryType": "accessory",
+      "color": "brown",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bodice.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-bodice.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "354da06d-43a6-5977-a0f1-3960bc2aaf0c",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Socks",
+      "categoryType": "accessory",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Socks.jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-socks.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "f5043117-03e6-59e3-8710-d82ef2dcf855",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Socks",
+      "categoryType": "accessory",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Socks.jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-socks.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "e165ebf7-e8c3-5adc-9e7a-a7d9bf5814ea",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Socks",
+      "categoryType": "accessory",
+      "color": "grey",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual",
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Socks.jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-socks.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "90c909b9-d919-50c4-b38a-1c5835209238",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Hosiery",
+      "categoryType": "accessory",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "fa5288d6-3928-5fa8-96ea-04fcd36c8e63",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Hosiery",
+      "categoryType": "accessory",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "455f004a-4989-5e4c-bf67-15155bc50072",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Hosiery",
+      "categoryType": "accessory",
+      "color": "tan",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "formal"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Stockings%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-stockings.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "ea13b9b7-7b96-56d6-9d14-219c6e5ddba9",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Sleepwear",
+      "categoryType": "accessory",
+      "color": "red",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bathrobe.jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-bathrobe.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "c17f0140-c66e-5e60-9655-f0a5e7a0597d",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Sleepwear",
+      "categoryType": "accessory",
+      "color": "pink",
+      "colorGroup": "warm",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bathrobe.jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-bathrobe.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "9041a2af-647d-5944-8739-130756c22536",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Sleepwear",
+      "categoryType": "accessory",
+      "color": "white",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bathrobe.jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-bathrobe.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "4e856645-23cb-5ce3-be50-d284fd8446f4",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Loungewear",
+      "categoryType": "accessory",
+      "color": "blue",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Banyan%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-banyan.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "38703cb1-e11c-501b-b800-3644c32b41a4",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Loungewear",
+      "categoryType": "accessory",
+      "color": "navy",
+      "colorGroup": "neutral",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Banyan%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-banyan.jpg",
+      "userId": "seed"
+    },
+    {
+      "id": "2666f6c4-d63e-5532-ac1f-1204a47925ce",
+      "parentCategory": "Essentials & Intimates",
+      "subcategory": "Loungewear",
+      "categoryType": "accessory",
+      "color": "purple",
+      "colorGroup": "cool",
+      "styleTags": [
+        "casual"
+      ],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Banyan%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/essentials-banyan.jpg",
+      "userId": "seed"
+    }
+  ]
+}

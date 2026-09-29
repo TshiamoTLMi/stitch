@@ -157,9 +157,15 @@ class _UploadPageState extends State<UploadPage> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(26),
                     child: _imageBytes == null
-                        ? Image.network(
-                            'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80',
-                            fit: BoxFit.cover,
+                        ? const ColoredBox(
+                            color: AppTheme.surfaceHigh,
+                            child: Center(
+                              child: Icon(
+                                Icons.add_a_photo_outlined,
+                                color: AppTheme.onSurfaceVariant,
+                                size: 34,
+                              ),
+                            ),
                           )
                         : Image.memory(_imageBytes!, fit: BoxFit.cover),
                   ),
