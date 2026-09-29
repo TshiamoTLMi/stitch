@@ -129,11 +129,29 @@ Use this checklist each sprint closeout.
 
 ## 8. Forward Process Plan
 
-### Sprint 7 Plan (final pending scope)
+### Sprint 7 Plan (code phase complete; device gates pending)
 
 1. Physical Android smoke validation (real handset).
 2. Physical iOS smoke validation (macOS + Xcode managed hardware).
 3. Release hardening after physical test outcomes.
+
+### Sprint 8 Plan (ACTIVE - preflight gate cleared)
+
+Focus: Release Readiness & Preflight Verification.
+
+1. Re-run `tooling\preflight_check.ps1` to reconfirm the baseline (analyze + full/focused tests + Android debug/release + Web release).
+2. Confirm branch hygiene; fast-forward `test` into the `dev` working branch.
+3. Keep release-readiness evidence current in `PRE_GO_LIVE_CHECKLIST.md`.
+
+### Sprint 9 Plan (IN-PROGRESS)
+
+Focus: P1 AI Personalization & On-Device Outfit Engine.
+
+1. AI Style DNA v1 from onboarding + closet metadata (explainable tags).
+2. AI Outfit Ranking v2 using event/weather context and preference history.
+3. Feedback loop (like/dislike) feeding future ranking.
+4. On-device outfit engine hardening (rule engine + offline fallbacks).
+5. Onboarding retention (resumable progress + completion state).
 
 ## 9. Audit Update Procedure
 
@@ -415,3 +433,57 @@ Next action plan:
 - Record each result using `specs/001-release-readiness-hardening/contracts/release-evidence.md`.
 - Do not mark go-live ready until applicable P0 gates and external dependencies are green or
    explicitly accepted by the release owner.
+
+## 22. Sprint 8 Audit - Release Readiness & Preflight Verification (2026-09-29)
+
+Status: Active - preflight gate cleared
+
+Implementation summary:
+- Re-ran the repository baseline gate end-to-end via `tooling\preflight_check.ps1`.
+- Confirmed branch hygiene and fast-forward merged `test` into `dev`, the active delivery branch
+  defined in section 3.
+
+Validation evidence:
+- `flutter analyze` -> passed (no issues).
+- `flutter test` -> passed (full suite).
+- Focused story tests (`auth_controller`, `login_recovery`, `recommendation`, `event`,
+  `notification`, `dashboard_recommendation`, `profile`, `profile_insights`,
+  `release_configuration`) -> passed.
+- `flutter build apk --debug` -> passed.
+- `flutter build apk --release` -> passed (`app-release.apk`, 61.6MB).
+- `flutter build web --release` -> passed (`Built build\web`).
+- Preflight script terminal output -> `All preflight checks passed.`
+- Branch merge -> `Updating 3b1e7b4..419a4eb` (Fast-forward); `dev` now at `419a4eb`.
+
+Risk status:
+- Physical-device Android/iOS gates and production-like Web gates from section 21 remain open and
+  are not proven by local source/build checks.
+
+Next action plan:
+- Execute the outstanding release-evidence tasks with an authorized release owner.
+- Begin Sprint 9 (P1 AI personalization) once release gates are accepted or explicitly deferred.
+
+## 23. Sprint 9 Audit - P1 AI Personalization & On-Device Outfit Engine (IN-PROGRESS)
+
+Status: IN-PROGRESS
+
+Implementation summary:
+- Sprint opened and scope defined from `FEATURE_PLANS.md` P1.
+- No code changes have landed yet.
+
+Planned scope:
+1. AI Style DNA v1 - explainable style profile from onboarding + closet metadata.
+2. AI Outfit Ranking v2 - event/weather context + preference-history scoring.
+3. Feedback loop - like/dislike signals feeding ranking.
+4. On-device outfit engine hardening - rule engine + offline fallbacks.
+5. Onboarding retention - resumable progress and completion state.
+
+Validation evidence:
+- (pending - recorded at sprint close)
+
+Risk status:
+- Changes must remain additive to the frozen `SCREENS.md` design contract.
+- Personalization signals depend on adequate wardrobe/outfit-history volume.
+
+Next action plan:
+- Confirm Sprint 9 entry point and write failing tests before implementation.
