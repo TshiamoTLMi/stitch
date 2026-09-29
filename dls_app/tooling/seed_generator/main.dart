@@ -31,8 +31,13 @@ const String kSeedNamespace = 'a6c1f0a2-1f3b-4c7d-9e21-5b8d0c4a7f10';
 const String kCommonsBase =
     'https://commons.wikimedia.org/wiki/Special:FilePath/';
 
-/// Thumbnail width. Also makes MediaWiki render non-web formats (.tif).
-const int kThumbWidth = 800;
+/// Thumbnail width used for the source CC0 image URL.
+///
+/// MUST be one of Wikimedia's standard thumbnail sizes
+/// (`$wgThumbnailSteps`): 20, 40, 60, 120, 250, 330, 500, 960, 1280, 1920, 3840.
+/// Non-standard widths are rejected with HTTP 400/429
+/// (https://w.wiki/GHai). 500 is used for wardrobe cards.
+const int kThumbWidth = 500;
 
 /// Fixed salt so ids/style/colour assignment is deterministic across runs.
 const int kSeedSalt = 20260929;
@@ -52,59 +57,100 @@ const Map<String, int> kParentTargets = <String, int>{
   'Essentials & Intimates': 16,
 };
 
-/// DLS subcategory -> CC0 MoMu thesaurus drawing filename (verified to exist
-/// via the Commons API). Some subcategories reuse the closest available
-/// drawing; documented as a DLS-derived mapping in dataset_manifest.json.
+/// Local seed image file name -> CC0 MoMu thesaurus source file name.
+///
+/// Images are downloaded once into `assets/seed/images/` by
+/// `tooling/seed_generator/download_seed_images.ps1`; the app then loads them
+/// from the asset bundle (local-first, offline-capable).
+const Map<String, String> kSeedImageSources = <String, String>{
+  'tops-t-shirt.jpg': 'T-shirt (drawing).jpg',
+  'tops-blouse.jpg': 'Blouse.jpg',
+  'tops-caraco.jpg': 'Caraco.jpg',
+  'tops-bodice.jpg': 'Bodice.jpg',
+  'tops-sweater.jpg': 'Sweater (clothing).jpg',
+  'bottoms-breeches.jpg': 'Breeches.jpg',
+  'bottoms-stockings.jpg': 'Stockings (drawing).jpg',
+  'bottoms-apron.jpg': 'Apron (protective wear).jpg',
+  'bottoms-bermuda.jpg': 'Bermuda (clothing).jpg',
+  'dresses-sun-dress.jpg': 'Sun dress.tif',
+  'dresses-strapless.jpg': 'Strapless dress.jpg',
+  'dresses-smoking-suit.jpg': 'Smoking suit.tif',
+  'dresses-baby-suit.jpg': 'Baby suit.tif',
+  'outerwear-spencer.jpg': 'Spencer (clothing).jpg',
+  'outerwear-anorak.jpg': 'Anorak.jpg',
+  'outerwear-barracoat.jpg': 'Barracoat.tif',
+  'activewear-swim-suit.jpg': 'Swim suit.jpg',
+  'essentials-bathrobe.jpg': 'Bathrobe.jpg',
+  'essentials-banyan.jpg': 'Banyan (clothing).jpg',
+  'essentials-socks.jpg': 'Socks.jpg',
+  'accessories-suitcase.jpg': 'Suitcase (drawing).jpg',
+  'accessories-belt.jpg': 'Belt (clothing).jpg',
+  'accessories-beret.jpg': 'Beret.jpg',
+  'accessories-stole.jpg': 'Stole (outerwear).jpg',
+  'accessories-amulet.jpg': 'Amulet (jewelry).jpg',
+  'footwear-sport-shoes.jpg': 'Sport shoes.jpg',
+  'footwear-apres-ski-boots.jpg': 'Après-ski boots.jpg',
+  'footwear-stilettos.jpg': 'Stilettos.jpg',
+  'footwear-ballet-flats.jpg': 'Ballet flats.jpg',
+  'footwear-slippers.jpg': 'Slippers (drawing).jpg',
+  'footwear-bluchers.jpg': 'Bluchers.tif',
+};
+
+/// Directory that holds the downloaded CC0 seed images.
+const String kSeedImageDir = 'assets/seed/images';
+
+/// DLS subcategory -> LOCAL seed image file name. Some subcategories reuse the
+/// closest available CC0 drawing; documented in dataset_manifest.json.
 const Map<String, String> kSubcategoryImage = <String, String>{
   // Tops
-  'T-shirts': 'T-shirt (drawing).jpg',
-  'Button-down shirts': 'Blouse.jpg',
-  'Blouses': 'Blouse.jpg',
-  'Tank tops': 'Caraco.jpg',
-  'Crop tops': 'Bodice.jpg',
-  'Knitwear': 'Sweater (clothing).jpg',
-  'Sweaters': 'Sweater (clothing).jpg',
+  'T-shirts': 'tops-t-shirt.jpg',
+  'Button-down shirts': 'tops-blouse.jpg',
+  'Blouses': 'tops-blouse.jpg',
+  'Tank tops': 'tops-caraco.jpg',
+  'Crop tops': 'tops-bodice.jpg',
+  'Knitwear': 'tops-sweater.jpg',
+  'Sweaters': 'tops-sweater.jpg',
   // Bottoms
-  'Jeans': 'Breeches.jpg',
-  'Trousers': 'Breeches.jpg',
-  'Leggings': 'Stockings (drawing).jpg',
-  'Skirts': 'Apron (protective wear).jpg',
-  'Shorts': 'Bermuda (clothing).jpg',
+  'Jeans': 'bottoms-breeches.jpg',
+  'Trousers': 'bottoms-breeches.jpg',
+  'Leggings': 'bottoms-stockings.jpg',
+  'Skirts': 'bottoms-apron.jpg',
+  'Shorts': 'bottoms-bermuda.jpg',
   // Dresses & Jumpsuits
-  'Casual dresses': 'Sun dress.tif',
-  'Evening dresses': 'Strapless dress.jpg',
-  'Jumpsuits': 'Smoking suit.tif',
-  'Rompers': 'Baby suit.tif',
+  'Casual dresses': 'dresses-sun-dress.jpg',
+  'Evening dresses': 'dresses-strapless.jpg',
+  'Jumpsuits': 'dresses-smoking-suit.jpg',
+  'Rompers': 'dresses-baby-suit.jpg',
   // Outerwear
-  'Blazers': 'Spencer (clothing).jpg',
-  'Trench coats': 'Anorak.jpg',
-  'Hoodies': 'Anorak.jpg',
-  'Puffer jackets': 'Barracoat.tif',
-  'Cardigans': 'Spencer (clothing).jpg',
+  'Blazers': 'outerwear-spencer.jpg',
+  'Trench coats': 'outerwear-anorak.jpg',
+  'Hoodies': 'outerwear-anorak.jpg',
+  'Puffer jackets': 'outerwear-barracoat.jpg',
+  'Cardigans': 'outerwear-spencer.jpg',
   // Activewear & Leisure
-  'Sports bras': 'Swim suit.jpg',
-  'Active Leggings': 'Stockings (drawing).jpg',
-  'Sweatpants': 'Bermuda (clothing).jpg',
-  'Gym tops': 'Caraco.jpg',
+  'Sports bras': 'activewear-swim-suit.jpg',
+  'Active Leggings': 'bottoms-stockings.jpg',
+  'Sweatpants': 'bottoms-bermuda.jpg',
+  'Gym tops': 'tops-caraco.jpg',
   // Essentials & Intimates
-  'Underwear': 'Bodice.jpg',
-  'Socks': 'Socks.jpg',
-  'Hosiery': 'Stockings (drawing).jpg',
-  'Sleepwear': 'Bathrobe.jpg',
-  'Loungewear': 'Banyan (clothing).jpg',
+  'Underwear': 'tops-bodice.jpg',
+  'Socks': 'essentials-socks.jpg',
+  'Hosiery': 'bottoms-stockings.jpg',
+  'Sleepwear': 'essentials-bathrobe.jpg',
+  'Loungewear': 'essentials-banyan.jpg',
   // Accessories
-  'Bags': 'Suitcase (drawing).jpg',
-  'Belts': 'Belt (clothing).jpg',
-  'Hats': 'Beret.jpg',
-  'Scarves': 'Stole (outerwear).jpg',
-  'Jewelry': 'Amulet (jewelry).jpg',
+  'Bags': 'accessories-suitcase.jpg',
+  'Belts': 'accessories-belt.jpg',
+  'Hats': 'accessories-beret.jpg',
+  'Scarves': 'accessories-stole.jpg',
+  'Jewelry': 'accessories-amulet.jpg',
   // Footwear
-  'Sneakers': 'Sport shoes.jpg',
-  'Boots': 'Après-ski boots.jpg',
-  'Heels': 'Stilettos.jpg',
-  'Flats': 'Ballet flats.jpg',
-  'Sandals': 'Slippers (drawing).jpg',
-  'Loafers': 'Bluchers.tif',
+  'Sneakers': 'footwear-sport-shoes.jpg',
+  'Boots': 'footwear-apres-ski-boots.jpg',
+  'Heels': 'footwear-stilettos.jpg',
+  'Flats': 'footwear-ballet-flats.jpg',
+  'Sandals': 'footwear-slippers.jpg',
+  'Loafers': 'footwear-bluchers.jpg',
 };
 
 /// Colours used to vary the seed wardrobe. The colour group is derived with the
@@ -222,8 +268,9 @@ Map<String, dynamic> _buildItem({
   final seasons = kSubcategorySeasons[subcategory] ?? const <String>['All Season'];
   final season = seasons[_pick(globalIndex, 23, seasons.length)];
   final gender = kSubcategoryGender[subcategory] ?? 'Unisex';
-  final filename =
-      kSubcategoryImage[subcategory] ?? 'T-shirt (drawing).jpg';
+  final imageFile = kSubcategoryImage[subcategory] ?? 'tops-t-shirt.jpg';
+  final sourceFile =
+      kSeedImageSources[imageFile] ?? 'T-shirt (drawing).jpg';
   final fit = requiresFit(subcategory)
       ? fitOptions[_pick(globalIndex, 37, fitOptions.length)]
       : null;
@@ -247,7 +294,8 @@ Map<String, dynamic> _buildItem({
     'season': season,
     'status': 'clean',
     'gender': gender,
-    'imageUrl': _thumbUrl(filename),
+    'imageUrl': _thumbUrl(sourceFile),
+    'localImagePath': '$kSeedImageDir/$imageFile',
     'userId': kOwnerUserId,
   };
 }
@@ -291,6 +339,10 @@ void main() {
     if (!image.startsWith(kCommonsBase)) {
       throw StateError('Non-CC0 image reference: $image');
     }
+    final localImage = item['localImagePath'] as String;
+    if (!localImage.startsWith('$kSeedImageDir/')) {
+      throw StateError('Seed item missing a local asset path: $localImage');
+    }
     if (!kColors.contains(item['color'])) {
       throw StateError('Unknown colour: ${item['color']}');
     }
@@ -310,6 +362,21 @@ void main() {
     counts[parent] = (counts[parent] ?? 0) + 1;
   }
   final imageFiles = kSubcategoryImage.values.toSet();
+  final missingImages = imageFiles
+      .where((file) => !File('$kSeedImageDir/$file').existsSync())
+      .toList()
+    ..sort();
+
+  // Emits the download plan consumed by download_seed_images.ps1.
+  File('tooling/seed_generator/seed_image_downloads.json').writeAsStringSync(
+    const JsonEncoder.withIndent('  ').convert(<String, dynamic>{
+      'base': kCommonsBase,
+      'thumbWidth': kThumbWidth,
+      'images': kSeedImageSources.map(
+        (local, source) => MapEntry(local, _thumbUrl(source)),
+      ),
+    }),
+  );
 
   final seedFile = File('assets/seed/wardrobe_seed.json');
   seedFile.parent.createSync(recursive: true);
@@ -337,9 +404,12 @@ void main() {
     'itemCount': items.length,
     'uniqueImageCount': imageFiles.length,
     'distributionByParentCategory': counts,
-    'imageDelivery': 'remote CC0 URL (Special:FilePath, width=800)',
+    'imageDelivery':
+        'local bundled asset under $kSeedImageDir (source CC0 URL retained in imageUrl)',
     'imageBundlingStatus':
-        'NOT bundled locally in this slice; local assets are a follow-up step',
+        'bundled locally; downloaded once via tooling/seed_generator/download_seed_images.ps1',
+    'uniqueLocalImageCount': imageFiles.length,
+    'missingLocalImages': missingImages,
     'transformations': <String>[
       'category normalization (DLS taxonomy import, not duplicated)',
       'colour normalization + colourGroup via deriveColorGroup()',
@@ -361,7 +431,11 @@ void main() {
 
   stdout.writeln('Seed items: ${items.length}');
   stdout.writeln('Unique ids: ${ids.length}');
-  stdout.writeln('Unique CC0 images: ${imageFiles.length}');
+  stdout.writeln('Unique local images: ${imageFiles.length}');
+  stdout.writeln('Missing local images: ${missingImages.length}');
+  if (missingImages.isNotEmpty) {
+    stdout.writeln('  (run download_seed_images.ps1) ${missingImages.join(', ')}');
+  }
   counts.forEach((parent, count) => stdout.writeln('  $parent: $count'));
   stdout.writeln('Wrote assets/seed/wardrobe_seed.json');
   stdout.writeln('Wrote assets/seed/dataset_manifest.json');

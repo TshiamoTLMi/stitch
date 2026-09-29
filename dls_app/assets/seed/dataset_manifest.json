@@ -5,7 +5,7 @@
   "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
   "attributionRequired": false,
   "attribution": "Drawings by David Ring, commissioned by Europeana Fashion, scanned by MoMu. CC0 - credit appreciated but not required.",
-  "generatedAt": "2026-09-29T09:11:23.620397Z",
+  "generatedAt": "2026-09-29T09:47:14.444813Z",
   "generator": "tooling/seed_generator/main.dart",
   "itemCount": 332,
   "uniqueImageCount": 31,
@@ -19,8 +19,10 @@
     "Activewear & Leisure": 24,
     "Essentials & Intimates": 16
   },
-  "imageDelivery": "remote CC0 URL (Special:FilePath, width=800)",
-  "imageBundlingStatus": "NOT bundled locally in this slice; local assets are a follow-up step",
+  "imageDelivery": "local bundled asset under assets/seed/images (source CC0 URL retained in imageUrl)",
+  "imageBundlingStatus": "bundled locally; downloaded once via tooling/seed_generator/download_seed_images.ps1",
+  "uniqueLocalImageCount": 31,
+  "missingLocalImages": [],
   "transformations": [
     "category normalization (DLS taxonomy import, not duplicated)",
     "colour normalization + colourGroup via deriveColorGroup()",

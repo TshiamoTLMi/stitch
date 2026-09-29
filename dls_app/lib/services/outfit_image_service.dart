@@ -1,20 +1,36 @@
-import 'dart:math';
 import 'dart:async';
+import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:image/image.dart' as img;
 
 import '../models/clothing_item.dart';
 import '../models/outfit_result.dart';
 
+/// Composes a single "outfit board" image from the items in an [OutfitResult].
+///
+/// Local-first: item images are resolved from the bundled asset bundle
+/// (`assets/...`) or from a local file path (`localImagePath`). This service
+/// deliberately performs NO network requests (Sprint 9 remediation), so the
+/// generated board works offline.
 class OutfitImageService {
-  OutfitImageService({http.Client? client, Duration? requestTimeout})
-      : _client = client ?? http.Client(),
-        _requestTimeout = requestTimeout ?? const Duration(seconds: 12);
+  OutfitImageService({
+    Future<Uint8List?> Function(String assetPath)? assetLoader,
+  }) : _assetLoader = assetLoader ?? _loadBundledAsset;
 
-  final http.Client _client;
-  final Duration _requestTimeout;
+  /// Resolves bytes for a bundled asset path. Injectable for tests.
+  final Future<Uint8List?> Function(String assetPath) _assetLoader;
+
+  static Future<Uint8List?> _loadBundledAsset(String assetPath) async {
+    try {
+      final data = await rootBundle.load(assetPath);
+      return data.buffer.asUint8List();
+    } catch (_) {
+      return null;
+    }
+  }
 
   Future<Uint8List> composeOutfitImage({
     required OutfitResult result,
@@ -61,21 +77,11 @@ class OutfitImageService {
     ClothingItem? item, {
     required bool cleanupBackground,
   }) async {
-    if (item == null || item.imageUrl.trim().isEmpty) {
-      return null;
-    }
-
+    final bytes = await _readLocalBytes(item);
+    if (bytes == null) return null;
     try {
-      final response = await _client
-          .get(Uri.parse(item.imageUrl.trim()))
-          .timeout(_requestTimeout);
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        return null;
-      }
-      final decoded = img.decodeImage(response.bodyBytes);
-      if (decoded == null) {
-        return null;
-      }
+      final decoded = img.decodeImage(bytes);
+      if (decoded == null) return null;
       final rgba = decoded.convert(numChannels: 4);
       if (!cleanupBackground) {
         return rgba;
@@ -85,6 +91,34 @@ class OutfitImageService {
       return null;
     }
   }
+
+  /// Local-first resolution order:
+  /// 1. `localImagePath` as a bundled asset (`assets/...`)
+  /// 2. `localImagePath` as a file on disk
+  /// 3. `imageUrl` when it is itself a bundled asset path
+  ///
+  /// Returns null when nothing local is available. Never performs HTTP.
+  Future<Uint8List?> _readLocalBytes(ClothingItem? item) async {
+    if (item == null) return null;
+
+    final localPath = item.localImagePath?.trim() ?? '';
+    if (localPath.isNotEmpty) {
+      if (_isBundledAsset(localPath)) return _assetLoader(localPath);
+      try {
+        final file = File(localPath);
+        if (await file.exists()) return file.readAsBytes();
+      } catch (_) {
+        return null;
+      }
+      return null;
+    }
+
+    final url = item.imageUrl.trim();
+    if (_isBundledAsset(url)) return _assetLoader(url);
+    return null;
+  }
+
+  bool _isBundledAsset(String path) => path.startsWith('assets/');
 
   img.Image _removeFlatBackground(img.Image source) {
     final corners = <img.Color>[

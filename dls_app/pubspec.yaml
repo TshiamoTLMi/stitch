@@ -46,6 +46,7 @@ flutter:
 
   assets:
     - assets/seed/
+    - assets/seed/images/
 
 flutter_launcher_icons:
   android: "launcher_icon"

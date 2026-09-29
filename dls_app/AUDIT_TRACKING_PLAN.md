@@ -499,6 +499,69 @@ Next action plan:
 - Author `assets/ml_seed_rules.json` (>=100 affinity rules).
 - Implement weather service, affinity engine, local feedback weights, and dev-only seeder.
 
+## 24. Sprint 9 Remediation - Taxonomy, Legacy Drift, Seed Localisation (2026-09-29)
+
+Status: Complete (code phase)
+
+### Remediation summary
+
+1. **Colour group mapping fixed** (`lib/core/constants/wardrobe_taxonomy.dart`)
+   - Replaced the `neutral/dark/light/bright` fallback logic with an explicit
+     `colorGroupMembership` map covering every taxonomy colour.
+   - Groups: `neutral` (black, white, grey, gray, navy, beige, tan, brown, cream),
+     `warm` (red, pink, yellow, orange), `cool` (blue, green, teal, purple, olive).
+   - Added `colorGroupOptions` plus keyword tolerance. No valid taxonomy colour now
+     defaults to `neutral`.
+2. **Local-first image mandate restored**
+   - `OutfitImageService` no longer performs HTTP. It resolves bundled assets
+     (`assets/...`) then local file paths, via an injectable asset loader for tests.
+   - Added `lib/core/utils/item_image.dart` (`resolveItemImage`) and wired
+     `ClothingItemCard` to prefer `localImagePath` over the network URL.
+   - `DemoDataService` no longer hardcodes Unsplash URLs; demo items reference local
+     bundled assets and its colour grouping now delegates to `deriveColorGroup`.
+3. **Enum drift removed** - non-enum style tags (`minimal`, `soft_life`) replaced with
+   valid `styleTagOptions` values in demo seed data.
+4. **Seed dataset localised** - the generator now emits `localImagePath` (bundled asset)
+   and keeps the validated CC0 `imageUrl` for provenance. Added
+   `download_seed_images.ps1` and a durable `validate_seed.ps1`.
+
+### Dataset provenance decision (recorded, not assumed)
+
+- Source used: Wikimedia Commons "Europeana Fashion - MoMu - Thesaurus drawings", CC0 1.0.
+- The suggested "MIT-licensed Fashion Product Images" dataset was **not** used: its images
+  are retailer product photography (Myntra) and it is not MIT-licensed, so it cannot be
+  bundled with DLS. Documented rather than assumed.
+
+### Validation evidence
+
+- `flutter analyze` -> `No issues found!`
+- `flutter test` -> `All tests passed!` (43 tests, previously 42)
+- `tooling/seed_generator/validate_seed.ps1` -> VALIDATION PASSED:
+  items 332, unique ids 332, parents 8, subcategories 41, colours 16,
+  colour groups `cool, neutral, warm`, 31 local images all present on disk.
+- Distribution: Tops 72, Bottoms 56, Outerwear 40, Dresses & Jumpsuits 32,
+  Footwear 48, Accessories 44, Activewear & Leisure 24, Essentials & Intimates 16.
+
+### Defect found and fixed during remediation
+
+- Wikimedia rejects non-standard thumbnail widths (`?width=800` -> HTTP 400/429).
+  Permitted sizes are 20/40/60/120/250/330/500/960/1280/1920/3840; the generator now
+  uses 500 and documents the constraint. The downloader also gained a User-Agent,
+  pacing, and retry/backoff.
+
+### Risk status
+
+- The closet grid now renders bundled seed assets offline. Other item surfaces
+  (generator result, profile) still use the network URL - follow-up.
+- `DemoDataService` deprecation is documented in-source. The `@Deprecated` annotation was
+  withheld because its live usages would raise `deprecated_member_use_from_same_package`
+  warnings and break the zero-issue analyze gate.
+
+### Next action plan
+
+- Sprint 9 Phase 3: author `assets/ml_seed_rules.json` (>=100 affinity rules).
+- Phase 5: affinity engine; Phase 6: local feedback weight store; Phase 7: dev-only seeder.
+
 Planned scope:
 1. AI Style DNA v1 - explainable style profile from onboarding + closet metadata.
 2. AI Outfit Ranking v2 - event/weather context + preference-history scoring.

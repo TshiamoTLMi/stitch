@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
+import '../core/utils/item_image.dart';
 import '../models/clothing_item.dart';
 
 class ClothingItemCard extends StatelessWidget {
@@ -31,12 +32,19 @@ class ClothingItemCard extends StatelessWidget {
                 Positioned.fill(
                   child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                    child: item.imageUrl.isEmpty
-                        ? Container(
+                    child: Builder(
+                      builder: (context) {
+                        final provider = resolveItemImage(item);
+                        if (provider == null) {
+                          return Container(
                             color: AppTheme.surfaceHighest,
-                            child: const Center(child: Icon(Icons.image_not_supported)),
-                          )
-                        : Image.network(item.imageUrl, fit: BoxFit.cover),
+                            child: const Center(
+                                child: Icon(Icons.image_not_supported)),
+                          );
+                        }
+                        return Image(image: provider, fit: BoxFit.cover);
+                      },
+                    ),
                   ),
                 ),
                 Positioned(

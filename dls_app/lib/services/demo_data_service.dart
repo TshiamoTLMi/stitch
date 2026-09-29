@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../core/constants/wardrobe_taxonomy.dart';
+
 class DemoSeedResult {
   DemoSeedResult({
     required this.itemsCreated,
@@ -18,6 +20,12 @@ class DemoSeedResult {
   final int eventsRepaired;
 }
 
+/// Seeds a small demo dataset for an existing signed-in user.
+///
+/// Deprecated (Sprint 9): superseded by the bundled seed wardrobe
+/// (`assets/seed/wardrobe_seed.json`) and the upcoming `MockWardrobeSeeder`.
+/// All hardcoded third-party (Unsplash) image URLs have been removed; demo
+/// items now reference local bundled CC0 assets under `assets/seed/images/`.
 class DemoDataService {
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
@@ -47,12 +55,12 @@ class DemoDataService {
         'subcategory': 'Button-down shirts',
         'categoryType': 'top',
         'color': 'white',
-        'colorGroup': 'neutral',
-        'styleTags': ['minimal', 'smart_casual'],
+        'colorGroup': deriveColorGroup('white'),
+        'styleTags': ['smart_casual', 'formal'],
         'season': 'All Season',
         'status': 'clean',
         'gender': 'Unisex',
-        'image_url': 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=900&q=80',
+        'image_url': 'assets/seed/images/tops-blouse.jpg',
       },
       {
         'parentCategory': 'Bottoms',
@@ -60,24 +68,24 @@ class DemoDataService {
         'categoryType': 'bottom',
         'fit': 'Regular',
         'color': 'black',
-        'colorGroup': 'neutral',
-        'styleTags': ['minimal', 'formal'],
+        'colorGroup': deriveColorGroup('black'),
+        'styleTags': ['formal', 'smart_casual'],
         'season': 'All Season',
         'status': 'clean',
         'gender': 'Unisex',
-        'image_url': 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=900&q=80',
+        'image_url': 'assets/seed/images/bottoms-breeches.jpg',
       },
       {
         'parentCategory': 'Footwear',
         'subcategory': 'Loafers',
         'categoryType': 'shoes',
         'color': 'brown',
-        'colorGroup': 'dark',
-        'styleTags': ['formal'],
+        'colorGroup': deriveColorGroup('brown'),
+        'styleTags': ['formal', 'smart_casual'],
         'season': 'All Season',
         'status': 'clean',
         'gender': 'Unisex',
-        'image_url': 'https://images.unsplash.com/photo-1614252369475-531eba835eb1?auto=format&fit=crop&w=900&q=80',
+        'image_url': 'assets/seed/images/footwear-bluchers.jpg',
       },
       {
         'parentCategory': 'Outerwear',
@@ -85,36 +93,36 @@ class DemoDataService {
         'categoryType': 'top',
         'fit': 'Oversized',
         'color': 'olive',
-        'colorGroup': 'dark',
+        'colorGroup': deriveColorGroup('olive'),
         'styleTags': ['streetwear', 'smart_casual'],
         'season': 'Winter',
         'status': 'clean',
         'gender': 'Unisex',
-        'image_url': 'https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=900&q=80',
+        'image_url': 'assets/seed/images/outerwear-spencer.jpg',
       },
       {
         'parentCategory': 'Accessories',
         'subcategory': 'Jewelry',
         'categoryType': 'accessory',
-        'color': 'gold',
-        'colorGroup': 'bright',
-        'styleTags': ['soft_life'],
+        'color': 'yellow',
+        'colorGroup': deriveColorGroup('yellow'),
+        'styleTags': ['formal', 'smart_casual'],
         'season': 'All Season',
         'status': 'clean',
         'gender': 'Unisex',
-        'image_url': 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=900&q=80',
+        'image_url': 'assets/seed/images/accessories-amulet.jpg',
       },
       {
         'parentCategory': 'Tops',
         'subcategory': 'T-shirts',
         'categoryType': 'top',
         'color': 'blue',
-        'colorGroup': 'neutral',
+        'colorGroup': deriveColorGroup('blue'),
         'styleTags': ['casual', 'streetwear'],
         'season': 'Summer',
         'status': 'in_wash',
         'gender': 'Unisex',
-        'image_url': 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=900&q=80',
+        'image_url': 'assets/seed/images/tops-t-shirt.jpg',
       },
     ];
 
@@ -373,12 +381,5 @@ class DemoDataService {
     }
   }
 
-  String _mapColorGroup(String color) {
-    final value = color.toLowerCase();
-    if (value == 'black' || value == 'white' || value == 'grey') return 'neutral';
-    if (value == 'navy' || value == 'brown' || value == 'olive') return 'dark';
-    if (value == 'beige' || value.contains('pastel')) return 'light';
-    if (value == 'red' || value == 'yellow' || value == 'gold') return 'bright';
-    return 'neutral';
-  }
+  String _mapColorGroup(String color) => deriveColorGroup(color);
 }
