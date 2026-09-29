@@ -178,4 +178,164 @@ void main() {
       expect(hot.styleMatchPercent, greaterThan(cold.styleMatchPercent));
     });
   });
+
+  group('background isolate ranking', () {
+    test('produces the same result as the synchronous path', () async {
+      final generator = CandidateGenerator(engine: engine);
+      final sync = generator.rank(
+          wardrobe: seedWardrobe, occasion: 'Work', weather: 'mild', limit: 5);
+      final isolated = await generator.rankAsync(
+        rulesJson: engine.sourceJson!,
+        weights: engine.defaultWeights,
+        wardrobe: seedWardrobe,
+        occasion: 'Work',
+        weather: 'mild',
+        limit: 5,
+      );
+      expect(isolated, isNotEmpty);
+      expect(isolated.map((o) => o.id).toList(), sync.map((o) => o.id).toList());
+      expect(isolated.first.styleMatchPercent, sync.first.styleMatchPercent);
+    });
+
+    test('round-trips structure, items and components', () async {
+      final generator = CandidateGenerator(engine: engine);
+      final isolated = await generator.rankAsync(
+        rulesJson: engine.sourceJson!,
+        weights: engine.defaultWeights,
+        wardrobe: seedWardrobe,
+        occasion: 'Date',
+        weather: 'cold',
+        limit: 3,
+      );
+      expect(isolated, isNotEmpty);
+      final top = isolated.first;
+      expect(top.structure, isNotNull);
+      expect(top.items, isNotEmpty);
+      expect(top.styleMatchPercent, inInclusiveRange(0, 100));
+      expect(top.breakdown.reasons, isNotEmpty);
+      expect(top.contributionKeys, isNotEmpty);
+      for (final component in <double>[
+        top.breakdown.style,
+        top.breakdown.event,
+        top.breakdown.weather,
+        top.breakdown.color,
+        top.breakdown.category,
+      ]) {
+        expect(component, inInclusiveRange(0.0, 1.0));
+      }
+    });
+
+    test('applies learned weight overrides passed across the boundary', () async {
+      final generator = CandidateGenerator(engine: engine);
+      final colourOnly = await generator.rankAsync(
+        rulesJson: engine.sourceJson!,
+        weights: const <String, double>{
+          'w_style': 0.0,
+          'w_event': 0.0,
+          'w_weather': 0.0,
+          'w_color': 1.0,
+          'w_category': 0.0,
+        },
+        wardrobe: seedWardrobe,
+        occasion: 'Groove',
+        limit: 1,
+      );
+      expect(colourOnly, isNotEmpty);
+      // With all weight on colour, the score must be exactly the colour
+      // component - proving the override crossed the isolate boundary.
+      final top = colourOnly.first;
+      expect(top.styleMatchPercent,
+          (top.breakdown.color * 100).round().clamp(0, 100));
+    });
+  });
+
+  group('weight overrides', () {
+    test('applyWeights can be called repeatedly and changes the score', () {
+      final engine = AffinityEngine(
+        File('assets/ml_seed_rules.json').readAsStringSync(),
+      );
+      final items = <ClothingItem>[
+        _item('t', 'Tops', 'T-shirts', 'red', <String>['casual']),
+        _item('b', 'Bottoms', 'Shorts', 'beige', <String>['casual']),
+        _item('f', 'Footwear', 'Sneakers', 'white', <String>['casual']),
+      ];
+      final base = engine.score(items: items, occasion: 'Braai');
+
+      // `applyWeights` merges a complete, normalised vector - exactly what
+      // `FeedbackStore` hands over. A second write must not throw
+      // (regression: `_weights` used to be `late final`).
+      engine.applyWeights(const <String, double>{
+        'w_style': 0.0,
+        'w_event': 0.0,
+        'w_weather': 0.0,
+        'w_color': 1.0,
+        'w_category': 0.0,
+      });
+      final colourOnly = engine.score(items: items, occasion: 'Braai');
+      expect(colourOnly.styleMatchPercent,
+          (colourOnly.color * 100).round().clamp(0, 100));
+
+      engine.applyWeights(const <String, double>{
+        'w_style': 1.0,
+        'w_event': 0.0,
+        'w_weather': 0.0,
+        'w_color': 0.0,
+        'w_category': 0.0,
+      });
+      final styleOnly = engine.score(items: items, occasion: 'Braai');
+      expect(styleOnly.styleMatchPercent,
+          (styleOnly.style * 100).round().clamp(0, 100));
+      expect(base.styleMatchPercent, isNot(colourOnly.styleMatchPercent));
+    });
+  });
+
+  group('all six weather conditions', () {
+    const conditions = <String>[
+      'hot',
+      'warm',
+      'mild',
+      'cold',
+      'freezing',
+      'rain',
+    ];
+
+    test('each condition maps to its own dropdown label', () {
+      final labels = conditions.map(AffinityEngine.weatherLabelFor).toSet();
+      expect(labels, hasLength(6));
+      expect(
+        labels,
+        containsAll(<String>['Hot', 'Warm', 'Mild', 'Cold', 'Freezing', 'Rainy']),
+      );
+    });
+
+    test('an unknown condition falls back to Mild', () {
+      expect(AffinityEngine.weatherLabelFor('meteor-shower'), 'Mild');
+    });
+
+    test('every condition produces a structurally valid ranking', () {
+      final generator = CandidateGenerator(engine: engine, bucketCap: 4);
+      for (final condition in conditions) {
+        final ranked = generator.rank(
+          wardrobe: seedWardrobe,
+          occasion: 'Braai',
+          weather: condition,
+          limit: 1,
+        );
+        expect(ranked, isNotEmpty, reason: 'no candidate for $condition');
+        expect(engine.rejectionReason(ranked.first.items), isNull);
+      }
+    });
+
+    test('rain lowers a non-waterproof fit compared with mild weather', () {
+      final generator = CandidateGenerator(engine: engine, bucketCap: 4);
+      const target = 'casual-tee|shorts|sneakers';
+      final wet = generator
+          .rank(wardrobe: curated, occasion: 'Braai', weather: 'rain', limit: 0)
+          .firstWhere((o) => o.id == target);
+      final mild = generator
+          .rank(wardrobe: curated, occasion: 'Braai', weather: 'mild', limit: 0)
+          .firstWhere((o) => o.id == target);
+      expect(wet.breakdown.weather, lessThan(mild.breakdown.weather));
+    });
+  });
 }

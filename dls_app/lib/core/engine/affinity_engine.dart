@@ -122,9 +122,20 @@ class _Validation {
 /// Local-first, weighted affinity engine. Pure and synchronous, so a candidate
 /// set can be scored in an isolate without changing this code.
 class AffinityEngine {
-  AffinityEngine(String rulesJson) {
+  AffinityEngine(
+    String rulesJson, {
+    Map<String, double>? weightOverrides,
+  }) {
     _parse(rulesJson);
+    _sourceJson = rulesJson;
+    if (weightOverrides != null) applyWeights(weightOverrides);
   }
+
+  /// The raw rule matrix this engine was parsed from. Handing this to a
+  /// background isolate avoids re-reading the asset bundle off the main thread.
+  late final String? _sourceJson;
+
+  String? get sourceJson => _sourceJson;
 
   /// Loads the matrix from a bundled asset at runtime.
   static Future<AffinityEngine> fromAsset(String assetPath) async {
@@ -137,7 +148,9 @@ class AffinityEngine {
   late final Set<String> _weatherConditions;
   late final Map<String, Map<String, double>> _colorMatrix;
   late final Map<String, double> _colorPatternScores;
-  late final Map<String, double> _weights;
+  // Deliberately NOT `late final`: `applyWeights()` re-assigns it when user
+  // feedback is applied, which would throw on a second write.
+  late Map<String, double> _weights;
 
   Set<String> get weatherConditions => _weatherConditions;
   Map<String, double> get defaultWeights => Map.unmodifiable(_weights);
@@ -146,6 +159,9 @@ class AffinityEngine {
 
   /// Applies user-adapted weights (from `FeedbackStore`) over the matrix
   /// defaults. Used to make past feedback affect future scoring.
+  ///
+  /// Expects a complete, normalised five-key vector (the store guarantees this);
+  /// merging a partial map would leave the total above 1.0.
   void applyWeights(Map<String, double> overrides) {
     _weights = <String, double>{..._weights, ...overrides};
   }
@@ -374,6 +390,20 @@ class AffinityEngine {
     'sunny': 'warm',
     'rainy': 'rain',
   };
+
+  /// One UI label per engine condition - no condition collapses into another.
+  static const Map<String, String> weatherLabels = <String, String>{
+    'hot': 'Hot',
+    'warm': 'Warm',
+    'mild': 'Mild',
+    'cold': 'Cold',
+    'freezing': 'Freezing',
+    'rain': 'Rainy',
+  };
+
+  /// The dropdown label for an engine condition, defaulting to `Mild`.
+  static String weatherLabelFor(String condition) =>
+      weatherLabels[condition] ?? weatherLabels['mild']!;
 
   /// Canonical occasion key, or the normalised input when it has no alias.
   static String canonicalEvent(String value) {

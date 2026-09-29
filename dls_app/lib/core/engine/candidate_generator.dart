@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show compute;
+
 import '../../models/clothing_item.dart';
 import 'affinity_engine.dart';
 
@@ -179,5 +181,194 @@ class CandidateGenerator {
     if (limit > 0 && capped.length > limit) return capped.sublist(0, limit);
     return capped;
   }
+
+  // --- Background (isolate) ranking -----------------------------------------
+  //
+  // Only JSON-encodable values cross the isolate boundary, so the request and
+  // the result are both plain maps/lists of primitives.
+
+  static Map<String, dynamic> _encodeItem(ClothingItem item) =>
+      <String, dynamic>{
+        'id': item.id,
+        'parentCategory': item.parentCategory,
+        'subcategory': item.subcategory,
+        'categoryType': item.categoryType,
+        'color': item.color,
+        'colorGroup': item.colorGroup,
+        'styleTags': item.styleTags,
+        'season': item.season,
+        'status': item.status,
+        'gender': item.gender,
+        'imageUrl': item.imageUrl,
+        'localImagePath': item.localImagePath,
+        'userId': item.userId,
+      };
+
+  /// Builds the serialisable request for [rankInBackground].
+  static Map<String, dynamic> buildRankingPayload({
+    required String rulesJson,
+    required Map<String, double> weights,
+    required List<ClothingItem> wardrobe,
+    required String occasion,
+    String? weather,
+    String? targetStyle,
+    int limit = 3,
+    int bucketCap = 4,
+    int maxCandidates = 60,
+    int? candidateCap,
+  }) {
+    return <String, dynamic>{
+      'rulesJson': rulesJson,
+      'weights': weights,
+      'items': wardrobe.map(_encodeItem).toList(),
+      'occasion': occasion,
+      'weather': weather,
+      'targetStyle': targetStyle,
+      'limit': limit,
+      'bucketCap': bucketCap,
+      'maxCandidates': maxCandidates,
+      'candidateCap': candidateCap,
+    };
+  }
+
+  /// Isolate entry point. Static so it can be passed to `compute()`.
+  static Map<String, dynamic> rankInBackground(Map<String, dynamic> payload) {
+    final engine = AffinityEngine(
+      payload['rulesJson'] as String,
+      weightOverrides: (payload['weights'] as Map?)?.cast<String, double>(),
+    );
+    final wardrobe = ((payload['items'] as List?) ?? const <dynamic>[])
+        .cast<Map<String, dynamic>>()
+        .map((raw) => ClothingItem.fromMap(raw['id'] as String, raw))
+        .toList();
+
+    final ranked = CandidateGenerator(
+      engine: engine,
+      bucketCap: (payload['bucketCap'] as num?)?.toInt() ?? 4,
+      maxCandidates: (payload['maxCandidates'] as num?)?.toInt() ?? 60,
+    ).rank(
+      wardrobe: wardrobe,
+      occasion: (payload['occasion'] as String?) ?? '',
+      weather: payload['weather'] as String?,
+      targetStyle: payload['targetStyle'] as String?,
+      limit: (payload['limit'] as num?)?.toInt() ?? 3,
+      candidateCap: (payload['candidateCap'] as num?)?.toInt(),
+    );
+
+    return <String, dynamic>{
+      'candidates': ranked.map(_encodeOutfit).toList(),
+    };
+  }
+
+  static Map<String, dynamic> _encodeOutfit(ScoredOutfit outfit) =>
+      <String, dynamic>{
+        'structure': outfit.structure.ruleId,
+        'styleMatchPercent': outfit.styleMatchPercent,
+        'reasons': outfit.breakdown.reasons,
+        'contributions': outfit.contributionKeys,
+        'itemIds': outfit.items.map((item) => item.id).toList(),
+        'components': <String, double>{
+          'style': outfit.breakdown.style,
+          'event': outfit.breakdown.event,
+          'weather': outfit.breakdown.weather,
+          'color': outfit.breakdown.color,
+          'category': outfit.breakdown.category,
+        },
+      };
+
+  /// Rebuilds [ScoredOutfit]s from an isolate result, resolving item ids
+  /// against the wardrobe the caller passed in.
+  static List<ScoredOutfit> decodeRankingResult(
+    Map<String, dynamic> payload,
+    List<ClothingItem> wardrobe, {
+    int limit = 3,
+  }) {
+    final byId =
+        <String, ClothingItem>{for (final item in wardrobe) item.id: item};
+    final raw = (payload['candidates'] as List?) ?? const <dynamic>[];
+
+    final results = <ScoredOutfit>[];
+    for (final entry in raw.cast<Map<String, dynamic>>()) {
+      final structure =
+          AffinityStructure.fromRuleId(entry['structure'] as String? ?? '');
+      if (structure == null) continue;
+
+      final items = ((entry['itemIds'] as List?) ?? const <dynamic>[])
+          .cast<String>()
+          .map((id) => byId[id])
+          .whereType<ClothingItem>()
+          .toList();
+      if (items.isEmpty) continue;
+
+      final components =
+          ((entry['components'] as Map?) ?? const <String, dynamic>{})
+              .map((k, v) => MapEntry(k as String, (v as num).toDouble()));
+
+      results.add(ScoredOutfit(
+        structure: structure,
+        items: items,
+        breakdown: AffinityBreakdown(
+          structure: structure,
+          style: components['style'] ?? 0,
+          event: components['event'] ?? 0,
+          weather: components['weather'] ?? 0,
+          color: components['color'] ?? 0,
+          category: components['category'] ?? 0,
+          styleMatchPercent: (entry['styleMatchPercent'] as num?)?.toInt() ?? 0,
+          reasons: ((entry['reasons'] as List?) ?? const <dynamic>[])
+              .cast<String>()
+              .toList(),
+          contributions:
+              ((entry['contributions'] as List?) ?? const <dynamic>[])
+                  .cast<String>()
+                  .toList(),
+        ),
+      ));
+    }
+
+    if (limit > 0 && results.length > limit) return results.sublist(0, limit);
+    return results;
+  }
+
+  /// Ranks on a background isolate, falling back to the synchronous path when
+  /// isolates are unavailable (for example on web or in a plain unit test).
+  Future<List<ScoredOutfit>> rankAsync({
+    required String rulesJson,
+    required Map<String, double> weights,
+    required List<ClothingItem> wardrobe,
+    String occasion = '',
+    String? weather,
+    String? targetStyle,
+    int limit = 3,
+    int? candidateCap,
+  }) async {
+    final payload = buildRankingPayload(
+      rulesJson: rulesJson,
+      weights: weights,
+      wardrobe: wardrobe,
+      occasion: occasion,
+      weather: weather,
+      targetStyle: targetStyle,
+      limit: limit,
+      bucketCap: bucketCap,
+      maxCandidates: maxCandidates,
+      candidateCap: candidateCap,
+    );
+
+    try {
+      final result = await compute(rankInBackground, payload);
+      return decodeRankingResult(result, wardrobe, limit: limit);
+    } catch (_) {
+      return rank(
+        wardrobe: wardrobe,
+        occasion: occasion,
+        weather: weather,
+        targetStyle: targetStyle,
+        limit: limit,
+        candidateCap: candidateCap,
+      );
+    }
+  }
 }
+
 

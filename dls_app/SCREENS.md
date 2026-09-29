@@ -175,7 +175,10 @@
 
 ### Key Elements
 - `Outfit Choice Bot` headline
-- Weather card: `surfaceLow`, `wb_sunny` gold icon, hardcoded "Johannesburg: 24°C, Sunny"
+- Weather card: `surfaceLow`, `wb_sunny` gold icon, **auto-detected** via `WeatherService`
+  (Open-Meteo) with source badge (`live` / `cached` / `default`) and a neutral fallback of
+  22°C Warm. Options map 1-to-1 to the engine's six conditions: `Hot`, `Warm`, `Mild`,
+  `Cold`, `Freezing`, `Rainy` — manual override always available.
 - Dropdowns: Occasion · Mood · Weather (pill-shaped, `surfaceLow` fill)
 - `Find My Fit` elevated button (gold, full width)
 - Result card: style score, top/bottom/shoes/outerwear items, caption

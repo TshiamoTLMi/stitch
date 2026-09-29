@@ -99,6 +99,19 @@ are listed separately and are never marked passed by source inspection alone.
   re-owned items, a populated wardrobe is skipped, and a forced re-seed creates no
   duplicate ids. Seeding moved to `WardrobeController.initialize()` so every tab shares
   the dataset on launch.
+- [x] T030 Run candidate generation and scoring on a background isolate via
+  `compute()`. `CandidateGenerator.rankInBackground` is a static entry point taking a
+  JSON-encodable payload (rules JSON, learned weights, encoded wardrobe, context); results are
+  decoded back to `ScoredOutfit` by item id. A synchronous fallback keeps web and plain unit
+  tests working. `AffinityEngine` now exposes `sourceJson` and accepts `weightOverrides` so
+  the matrix never has to be re-read off the main thread.
+- [x] T031 Expand the Weather selector to all six engine conditions (`Hot`, `Warm`, `Mild`,
+  `Cold`, `Freezing`, `Rainy`) via `AffinityEngine.weatherLabels`, so `mild`/`warm` and
+  `cold`/`freezing` no longer collapse. `WeatherService` output maps 1-to-1.
+- [x] T032 Fix `AffinityEngine._weights` regression: the field was `late final`, so
+  `applyWeights()` threw on its second write (silently degrading feedback to the default
+  vector). It is now mutable, with a regression test in
+  `test/core/engine/candidate_generator_test.dart`.
 
 ## Phase 8: UI + offline
 

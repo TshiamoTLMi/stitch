@@ -42,7 +42,14 @@ class OutfitGeneratorPage extends StatefulWidget {
 class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   static const occasions = ['Work', 'Date', 'Groove', 'Braai', 'Event'];
   static const moods = ['Minimal', 'Clean Drip', 'Street Flex', 'Soft Life'];
-  static const weathers = ['Sunny', 'Rainy', 'Cold', 'Hot'];
+  static const weathers = [
+    'Hot',
+    'Warm',
+    'Mild',
+    'Cold',
+    'Freezing',
+    'Rainy',
+  ];
 
   final _outfitBot = OutfitBotService();
   final _captionService = CaptionService();
@@ -85,7 +92,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
   String _occasion = 'Braai';
   String _mood = 'Street Flex';
-  String _weather = 'Sunny';
+  String _weather = 'Mild';
 
   @override
   void initState() {
@@ -114,20 +121,9 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     }
   }
 
-  /// Maps a DLS engine condition onto the existing Weather dropdown options.
-  static String _dropdownWeatherFor(String condition) {
-    switch (condition) {
-      case 'hot':
-        return 'Hot';
-      case 'rain':
-        return 'Rainy';
-      case 'cold':
-      case 'freezing':
-        return 'Cold';
-      default:
-        return 'Sunny';
-    }
-  }
+  /// Maps a DLS engine condition onto a Weather dropdown option, one-to-one.
+  static String _dropdownWeatherFor(String condition) =>
+      AffinityEngine.weatherLabelFor(condition);
 
   String get _weatherSourceLabel {
     final context = _weatherContext;
@@ -220,12 +216,21 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     setState(() => _isOffline = offline);
   }
 
-  /// Ranks candidates with the local affinity engine. Returns null when the
-  /// engine is unavailable so the legacy rule-engine path can take over.
-  List<ScoredOutfit>? _rankWithAffinity(List<ClothingItem> wardrobe) {
+  /// Ranks candidates with the local affinity engine on a background isolate.
+  /// Returns null when the engine is unavailable so the legacy rule-engine path
+  /// can take over.
+  Future<List<ScoredOutfit>?> _rankWithAffinity(
+    List<ClothingItem> wardrobe,
+  ) async {
     final generator = _candidateGenerator;
-    if (generator == null || wardrobe.isEmpty) return null;
-    final ranked = generator.rank(
+    final engine = _affinityEngine;
+    final rulesJson = engine?.sourceJson;
+    if (generator == null || engine == null || wardrobe.isEmpty) return null;
+    if (rulesJson == null || rulesJson.isEmpty) return null;
+
+    final ranked = await generator.rankAsync(
+      rulesJson: rulesJson,
+      weights: engine.defaultWeights,
       wardrobe: wardrobe,
       occasion: _occasion,
       weather: _weather,
@@ -365,7 +370,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
     // Sprint 9: local-first affinity path. Falls through to the legacy rule
     // engine when the matrix is unavailable or produces no valid candidate.
-    final ranked = _rankWithAffinity(wardrobe);
+    final ranked = await _rankWithAffinity(wardrobe);
     if (ranked != null) {
       _applyAffinityResult(ranked);
       return;
@@ -740,7 +745,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
           items: weathers
               .map((e) => DropdownMenuItem(value: e, child: Text(e)))
               .toList(),
-          onChanged: (value) => setState(() => _weather = value ?? 'Sunny'),
+          onChanged: (value) => setState(() => _weather = value ?? 'Mild'),
         ),
         const SizedBox(height: 14),
         ElevatedButton(
