@@ -1,0 +1,34 @@
+# Keep the Docker build context small. Without this, the whole `build/` output
+# and the Gradle caches are uploaded to the daemon on every `docker compose build`.
+.git
+.gitignore
+
+# Build output and tool caches (regenerated inside the container).
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# Android/iOS build state (the container builds its own).
+android/.gradle/
+android/local.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+ios/Pods/
+ios/.symlinks/
+
+# IDE / OS noise
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Docs and CI config are not needed to compile.
+*.md
+!README.md
+.github/

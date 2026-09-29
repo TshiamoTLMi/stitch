@@ -1,0 +1,90 @@
+# syntax=docker/dockerfile:1
+#
+# Reproducible Flutter build environment for the DLS app.
+#
+# The Flutter version is PINNED to the exact revision the release candidate was
+# audited on, so a container build cannot silently differ from a local build.
+# Bump FLUTTER_VERSION in lockstep with the team, never "latest".
+#
+#   docker compose build
+#   docker compose run --rm test
+#   docker compose run --rm build-web
+#   docker compose run --rm build-apk
+#
+FROM ubuntu:22.04
+
+# Matches the Flutter 3.41.x toolchain requirement (AGP 8 / Gradle 8).
+ARG JDK_PACKAGE=openjdk-17-jdk
+ARG FLUTTER_VERSION=3.41.6
+ARG ANDROID_CMDLINE_TOOLS=11076708
+# Flutter 3.41 defaults compileSdk/targetSdk from its own constants; install
+# both 35 and 36 plus matching build-tools so either default resolves.
+ARG ANDROID_PLATFORMS="platforms;android-35 platforms;android-36"
+ARG ANDROID_BUILD_TOOLS="build-tools;35.0.0 build-tools;36.0.0"
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    FLUTTER_VERSION=${FLUTTER_VERSION} \
+    ANDROID_HOME=/opt/android-sdk \
+    ANDROID_SDK_ROOT=/opt/android-sdk \
+    PUB_CACHE=/root/.pub-cache \
+    GRADLE_USER_HOME=/root/.gradle \
+    PATH=/opt/flutter/bin:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:$PATH
+
+# libglu1-mesa is required by the Flutter Linux/web tooling; the rest are the
+# usual curl/git/unzip plus JDK 17.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        git \
+        unzip \
+        xz-utils \
+        zip \
+        file \
+        procps \
+        libglu1-mesa \
+        ${JDK_PACKAGE} \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- Flutter SDK -------------------------------------------------------------
+# Downloaded as a pinned release archive rather than `git clone` so the image is
+# reproducible and does not carry ~1GB of git history.
+RUN curl -fsSL -o /tmp/flutter.tar.xz \
+        "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz" \
+    && mkdir -p /opt \
+    && tar -xJf /tmp/flutter.tar.xz -C /opt \
+    && rm /tmp/flutter.tar.xz
+
+# The SDK is owned by root while the app runs as root too, so this only matters
+# if the ownership is ever changed.
+RUN git config --global --add safe.directory /opt/flutter \
+    && git config --global core.autocrlf input \
+    && git config --global --add safe.directory /app
+
+# --- Android SDK ------------------------------------------------------------
+RUN mkdir -p "${ANDROID_HOME}/cmdline-tools" \
+    && curl -fsSL -o /tmp/cmdline-tools.zip \
+        "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS}_latest.zip" \
+    && unzip -q /tmp/cmdline-tools.zip -d "${ANDROID_HOME}/cmdline-tools" \
+    && mv "${ANDROID_HOME}/cmdline-tools/cmdline-tools" "${ANDROID_HOME}/cmdline-tools/latest" \
+    && rm /tmp/cmdline-tools.zip
+
+# Licences MUST be accepted at image build time. Without this the first Gradle
+# run in `build-apk` blocks forever waiting on an interactive prompt.
+RUN yes | sdkmanager --licenses > /dev/null 2>&1 \
+    && sdkmanager --install ${ANDROID_PLATFORMS} ${ANDROID_BUILD_TOOLS} "platform-tools"
+
+# --- Toolchain wiring --------------------------------------------------------
+RUN flutter config --no-analytics \
+    && flutter config --enable-web \
+    && flutter config --android-sdk "${ANDROID_HOME}" \
+    # Pre-download the web + android artefacts into the image so the first
+    # `flutter build` does not re-download ~1GB on every run.
+    && flutter precache --web --universal --android
+
+WORKDIR /app
+
+# Fail fast with a clear message if the toolchain is not wired correctly.
+HEALTHCHECK --interval=5m --timeout=20s --retries=3 \
+    CMD flutter --version > /dev/null || exit 1
+
+CMD ["bash"]

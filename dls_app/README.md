@@ -225,6 +225,58 @@ flutter analyze
 flutter test
 ```
 
+## Containerised Builds (Docker)
+
+The release toolchain is pinned in `Dockerfile.dev` so a container build cannot
+silently differ from a local one. Flutter is pinned to **3.41.6 stable** — the
+exact revision the release candidate was audited on. Bump `FLUTTER_VERSION` in
+lockstep with the team; never switch to `latest`.
+
+Prerequisites: Docker Desktop running (Linux containers mode).
+
+```bash
+# Build the image once (~25 min first time: Flutter SDK + Android SDK downloads)
+docker compose build
+
+# Gate: analyze + full unit test suite
+docker compose run --rm test
+
+# Release web bundle  -> build/web/
+docker compose run --rm build-web
+
+# Release Android APK -> build/app/outputs/flutter-apk/
+docker compose run --rm build-apk
+
+# Interactive shell (codegen, flutter doctor, adb, ...)
+docker compose run --rm shell
+```
+
+### What is cached
+
+| Volume | Holds | Why |
+|---|---|---|
+| `pub-cache` | Dart/Flutter packages | Avoids re-downloading on every run |
+| `gradle-cache` | Gradle distribution + deps | The slowest part of a cold APK build |
+| `android-sdk` | Platform + build-tools images | ~1 GB of downloads |
+| `build-output` | `/app/build` | Keeps generated output off the Windows bind mount |
+| `dart-tool` | `/app/.dart_tool` | Same reason: bind mounts are slow for many small files |
+
+The repository itself is bind-mounted at `/app`, so edits on the host are picked
+up immediately without rebuilding the image.
+
+### Notes and caveats
+
+- **Signing is not configured.** `build-apk` currently produces an APK signed
+  with the debug key and `applicationId = com.example.dls_app`. A real upload
+  keystore is required before any store submission.
+- **The container runs as root** for simplicity, which avoids permission drift
+  across the bind mount. Do not run untrusted code in it.
+- `flutter test` inside the container is slower than on the host on Windows
+  because of the bind mount. The named volumes above are what keep that
+  tolerable.
+- The host repo is mounted with the host's line endings. The image sets
+  `core.autocrlf=input` to avoid `flutter` tripping over CRLF shell scripts.
+
 ## Remaining Phase (Physical Devices)
 
 1. Android physical smoke test on your handset.
