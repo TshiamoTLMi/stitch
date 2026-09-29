@@ -52,7 +52,7 @@ class _HomeShellState extends State<HomeShell> {
     if (!_boundWardrobe) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        context.read<WardrobeController>().bindStream(userId);
+        context.read<WardrobeController>().initialize(userId);
         // Start listening to upcoming events so the bell badge stays fresh.
         context
             .read<EventService>()

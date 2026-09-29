@@ -11,7 +11,7 @@ import '../../controllers/wardrobe_controller.dart';
 import '../../core/engine/affinity_engine.dart';
 import '../../core/engine/candidate_generator.dart';
 import '../../core/engine/feedback_store.dart';
-import '../../core/services/mock_wardrobe_seeder.dart';
+import '../../core/services/weather_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/item_image.dart';
 import '../../models/clothing_item.dart';
@@ -19,6 +19,7 @@ import '../../models/enhanced_outfit.dart';
 import '../../models/outfit.dart';
 import '../../models/user_profile.dart';
 import '../../models/outfit_result.dart';
+import '../../models/weather_context.dart';
 import '../../services/caption_service.dart';
 import '../../services/outfit_history_service.dart';
 import '../../services/outfit_bot_service.dart';
@@ -78,6 +79,10 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   /// the legacy rule engine / cloud stylist path.
   bool _affinityActive = false;
 
+  /// Latest auto-detected weather, or null before the first lookup completes.
+  WeatherContext? _weatherContext;
+  final WeatherService _weatherService = WeatherService();
+
   String _occasion = 'Braai';
   String _mood = 'Street Flex';
   String _weather = 'Sunny';
@@ -91,23 +96,45 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     _aiStylist = AIStylist(feedbackService: _feedbackService);
     _bindConnectivity();
     unawaited(_loadAffinityEngine());
-    unawaited(_seedDevelopmentWardrobe());
+    unawaited(_loadWeather());
   }
 
-  /// Injects the bundled 332-item development wardrobe so the affinity engine
-  /// has real candidates to score. No-op in production builds: a real user's
-  /// empty wardrobe is never auto-filled with mock data.
-  Future<void> _seedDevelopmentWardrobe() async {
+  /// Auto-detects the local weather and pre-selects the closest dropdown value.
+  /// The user can still override it manually.
+  Future<void> _loadWeather() async {
     try {
-      final seeder =
-          MockWardrobeSeeder(repository: context.read<WardrobeRepository>());
-      if (!seeder.isDevelopment) return;
-      final result = await seeder.seedIfEmpty(userId: widget.userId);
-      if (!mounted || !result.seeded) return;
-      context.read<WardrobeController>().applyLocalSeedItems(result.items);
+      final context = await _weatherService.current();
+      if (!mounted) return;
+      setState(() {
+        _weatherContext = context;
+        _weather = _dropdownWeatherFor(context.condition);
+      });
     } catch (_) {
-      // Seeding is a developer convenience; never block the screen.
+      // Weather is a nicety; the engine falls back to a neutral context.
     }
+  }
+
+  /// Maps a DLS engine condition onto the existing Weather dropdown options.
+  static String _dropdownWeatherFor(String condition) {
+    switch (condition) {
+      case 'hot':
+        return 'Hot';
+      case 'rain':
+        return 'Rainy';
+      case 'cold':
+      case 'freezing':
+        return 'Cold';
+      default:
+        return 'Sunny';
+    }
+  }
+
+  String get _weatherSourceLabel {
+    final context = _weatherContext;
+    if (context == null) return '';
+    if (context.isLive) return 'live';
+    if (context.isCached) return 'cached';
+    return 'default';
   }
 
   /// Loads the bundled rule matrix and any persisted user weights. If this
@@ -817,6 +844,15 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                         const SizedBox(height: 2),
                         Text(
                           'Top of ${_ranked.length} candidate fits considered.',
+                          style: const TextStyle(
+                              color: AppTheme.onSurfaceVariant, fontSize: 11),
+                        ),
+                      ],
+                      if (_weatherContext != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          'Auto weather: ${_weatherContext!.label} '
+                          '($_weatherSourceLabel)',
                           style: const TextStyle(
                               color: AppTheme.onSurfaceVariant, fontSize: 11),
                         ),

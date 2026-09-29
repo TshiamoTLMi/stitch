@@ -42,9 +42,14 @@ are listed separately and are never marked passed by source inspection alone.
 
 ## Phase 4: Weather (US: context sensitivity)
 
-- [ ] T011 Add `lib/models/weather_context.dart` + `lib/services/weather_service.dart`
-  (Open-Meteo via existing `http`, local cache via `path_provider`, neutral fallback).
-- [ ] T012 Test cache hit, cache miss + offline, and neutral default.
+- [x] T011 Add `lib/models/weather_context.dart` + `lib/core/services/weather_service.dart`
+  (Open-Meteo via the existing `http`, atomic local cache via `path_provider`, neutral
+  default fallback, WMO 0-99 code mapping into the engine's hot/warm/mild/cold/freezing/rain
+  vocabulary). `geolocator` deliberately not added; default coordinates are used.
+- [x] T012 Tests in `test/core/services/weather_service_test.dart`: temperature bands, WMO
+  mapping (clear/cloudy/rain/snow/unknown), live fetch + cache write, offline -> cache,
+  offline + uncached -> neutral default, non-200 response, corrupt cache recovery, and
+  staleness labelling.
 
 ## Phase 5: Affinity engine (US: explainable local fit)
 
@@ -89,6 +94,11 @@ are listed separately and are never marked passed by source inspection alone.
 - [x] T022 Candidate generation tested against the real 332-item seed dataset in
   `test/core/engine/candidate_generator_test.dart` (every candidate passes structural
   validation, sorted descending, deterministic, occasion/weather change the winner).
+- [x] T023 Production-gating tests in `test/core/services/mock_wardrobe_seeder_test.dart`:
+  a production build never seeds (including with `force: true`), a dev build seeds 332
+  re-owned items, a populated wardrobe is skipped, and a forced re-seed creates no
+  duplicate ids. Seeding moved to `WardrobeController.initialize()` so every tab shares
+  the dataset on launch.
 
 ## Phase 8: UI + offline
 
