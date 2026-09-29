@@ -138,6 +138,14 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   /// (file on Android, `localStorage` on web), so this succeeds on both
   /// targets. If it genuinely fails we keep the engine null and surface a
   /// visible message rather than silently pretending the generator works.
+  ///
+  /// [QA TEST POINT] Affinity engine scoring
+  /// - First launch: weights seed from `assets/ml_seed_rules.json` and the
+  ///   five weights sum to exactly 1.0.
+  /// - Press Like on an outfit: only the implicated dimensions move, and the
+  ///   vector still sums to 1.0 afterwards.
+  /// - Reload the app: adapted weights are reloaded from `user_weights.json`
+  ///   (Android) / `localStorage` (web) and the previous ranking persists.
   Future<void> _loadAffinityEngine() async {
     try {
       final engine = await AffinityEngine.fromAsset(kRulesAsset);

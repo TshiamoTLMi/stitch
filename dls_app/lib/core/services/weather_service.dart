@@ -50,6 +50,16 @@ class WeatherService {
   /// On web `path_provider` has no implementation, so the cache and the city
   /// would silently never persist in Safari. Routing both through [KvStore]
   /// keeps them in `localStorage` there and in the atomic file on mobile.
+  ///
+  /// [QA TEST POINT] Weather context and caching (`cached_weather.json`)
+  /// - Pick a city: the caption updates to that name and the choice survives an
+  ///   app restart (verified in `weather_location.json`).
+  /// - Enable airplane mode, then generate: the card shows the **cached**
+  ///   reading and is labelled `(cached)`, never a fabricated live value.
+  /// - Clear the cache file: the card falls back to the neutral default and is
+  ///   labelled `(default)`.
+  /// - A cached reading from a *different* city must not be shown after
+  ///   switching; the location id is stored alongside the reading.
   Future<KvStore> kvStore() async =>
       _kvStore ??= await createDefaultKvStore();
 

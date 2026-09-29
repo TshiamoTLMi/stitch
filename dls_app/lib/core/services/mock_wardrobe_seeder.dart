@@ -42,6 +42,15 @@ class MockWardrobeSeeder {
   static const String seedAssetPath = 'assets/seed/wardrobe_seed.json';
 
   /// Opt-in demo seeding for a non-debug build, e.g. a pre-prod build.
+  ///
+  /// [QA TEST POINT] Bootstrap seeding gate
+  /// - Debug build: seeds automatically, giving a 332-item wardrobe on first run.
+  /// - Release build **without** `--dart-define=DLS_DEMO_MODE=true`: must stay
+  ///   empty. Verify by installing the release APK and checking the closet.
+  /// - Release build **with** the flag (pre-prod): seeds, so QA can test a full
+  ///   wardrobe on a physical device.
+  /// - Seeding is bootstrap-scoped: it never writes fake items to Firestore, so
+  ///   a release build cannot pollute a real account.
   static const bool demoEnvFlag = bool.fromEnvironment('DLS_DEMO_MODE');
 
   final WardrobeRepository _repository;

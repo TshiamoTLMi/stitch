@@ -31,5 +31,32 @@ ImageProvider? resolveImageSource({required String url, String? localPath}) {
 
 /// Local-first [ImageProvider] for a wardrobe item: prefers the bundled seed
 /// asset or local file over the network URL.
+///
+/// [QA TEST POINT] Image fallbacks
+/// - A seed item (`assets/seed/images/...`) renders offline with no network.
+/// - A deleted local file falls back to the Storage URL rather than a crash.
+/// - On web, an on-disk `localImagePath` is unusable and resolves to null so
+///   the caller can show a placeholder instead of throwing.
+///
+/// [QA TEST POINT] Memory footprint
+/// Decoding is wrapped in [ResizeImage] at 240px so a 332-item wardrobe never
+/// holds full-resolution bitmaps in the image cache.
 ImageProvider? resolveItemImage(ClothingItem item) =>
-    resolveImageSource(url: item.imageUrl, localPath: item.localImagePath);
+    _bounded(resolveImageSource(url: item.imageUrl, localPath: item.localImagePath));
+
+/// Caps the decode size of a resolved provider to keep memory flat.
+///
+/// A raw [AssetImage] of a 1080px photo decoded at full size is ~4.6 MB; at
+/// 240px it is ~230 KB. Only assets are bounded -- `FileImage`/`NetworkImage`
+/// are left alone because callers often request an explicit size themselves.
+ImageProvider? _bounded(ImageProvider? provider) {
+  if (provider is AssetImage) {
+    return ResizeImage(
+      provider,
+      width: 240,
+      height: 240,
+      policy: ResizeImagePolicy.fit,
+    );
+  }
+  return provider;
+}

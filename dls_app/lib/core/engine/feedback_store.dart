@@ -112,6 +112,13 @@ class FeedbackStore {
   /// web -- where `dart:io` and `path_provider` are unavailable and the call
   /// would otherwise throw -- it is `localStorage`, so adaptive learning
   /// survives a reload in Safari. Injectable for tests.
+  ///
+  /// [QA TEST POINT] Feedback persistence (`user_weights.json`)
+  /// - Like an outfit, then check the documents directory: `user_weights.json`
+  ///   exists and **no** `user_weights.json.tmp` is left behind.
+  /// - Force-kill the app mid-write, relaunch: the file is either the old or
+  ///   the new version, never a truncated one.
+  /// - Repeat in Safari: the same round-trip works via `localStorage`.
   Future<KvStore> kvStore() async =>
       _kvStore ??= await createDefaultKvStore();
 

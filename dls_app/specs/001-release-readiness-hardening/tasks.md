@@ -200,6 +200,34 @@ Completed engineering work (all verified by `flutter analyze`, `flutter test`,
 **Still manual — these require a human, a real device, a deployed URL and
 Firebase console access, and remain open:** T033-T039 above.
 
+- [x] T049 **Wardrobe Analytics & Style Log**: `lib/core/analytics/analytics_store.dart`
+      appends `OutfitLogEntry` (occasion, weather, Style Match %, all five S/E/W/C/K
+      component scores, garment ids) and `FeedbackLogEntry` (like/dislike, score,
+      weight snapshot) to `style_analytics.json` via `KvStore`, with a 200-entry
+      retention cap. `ClothingItem` gained `wearCount`/`lastWornDate` (persisted to
+      Firestore and read back from legacy snake_case keys). `applyWear()` rolls a
+      wear onto only the garments in a logged outfit.
+- [x] T050 **Analytics metrics**: `wardrobe_analytics_service.dart` computes the
+      Wardrobe Health Index (3:1 top-to-bottom balance weighted 60% with
+      versatility 40%), 30/60/90-day utilisation with most-worn / underutilised /
+      unworn splits, neutral/warm/cool colour distribution, category breakdown, and
+      a Monday-bucketed weekly Style Score trend. No Flutter imports, fully unit
+      tested.
+- [x] T051 **Analytics UI**: `lib/views/analytics/wardrobe_analytics_page.dart` adds
+      a sixth "Insights" tab with summary tiles, progress-bar charts, a weekly trend
+      strip, an unworn shelf carousel and a Style History list. Wrapped in
+      `ResponsiveBody` (1100px) and uses `FittedBox`/`ellipsis` so it holds up from
+      360px to 1440px.
+- [x] T052 **Client-side image compression**: uploads compress via
+      `compressWithList` at a 1080px long edge and 80% JPEG quality, targeting
+      < 300 KB per item. `resolveItemImage()` now wraps asset providers in
+      `ResizeImage(240x240, fit)` so a 332-item wardrobe never holds
+      full-resolution bitmaps.
+- [x] T053 **QA annotations**: `/// [QA TEST POINT]` blocks added above the
+      bootstrap seeding gate, affinity weight loading, `user_weights.json` atomic
+      persistence, weather caching/city override, `resolveItemImage()` fallbacks,
+      upload compression, the analytics tab, and the analytics log itself.
+
 ## Traceability Notes
 
 - **FR-001-FR-005** map to T007-T013.

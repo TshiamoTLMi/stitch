@@ -11,6 +11,7 @@ import '../../services/event_service.dart';
 import '../../services/notification_service.dart';
 import '../upload_screen.dart';
 import '../wardrobe_dashboard.dart';
+import '../analytics/wardrobe_analytics_page.dart';
 import 'dashboard_page.dart';
 import 'event_planner_page.dart';
 import 'outfit_generator_page.dart';
@@ -77,6 +78,7 @@ class _HomeShellState extends State<HomeShell> {
       OutfitGeneratorPage(userId: userId),
       EventPlannerPage(userId: userId),
       const ProfilePage(),
+      const WardrobeAnalyticsPage(),
     ];
 
     return Scaffold(
@@ -160,6 +162,7 @@ class _HomeShellState extends State<HomeShell> {
             NavigationDestination(icon: Icon(Icons.auto_awesome), label: 'Generate'),
             NavigationDestination(icon: Icon(Icons.calendar_today), label: 'Events'),
             NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+          NavigationDestination(icon: Icon(Icons.insights), label: 'Insights'),
           ],
         ),
       ),

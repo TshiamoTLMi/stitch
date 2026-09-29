@@ -55,10 +55,12 @@ class FirebaseService {
     }
 
     final id = _uuid.v4();
+    // [QA TEST POINT] Compression limits are enforced here, before upload:
+    // 1080px long edge and 80% JPEG quality, targeting < 300 KB per item.
     final compressedBytes = await FlutterImageCompress.compressWithList(
       rawBytes,
       minWidth: 1080,
-      quality: 70,
+      quality: 80,
       format: CompressFormat.jpeg,
     );
 
