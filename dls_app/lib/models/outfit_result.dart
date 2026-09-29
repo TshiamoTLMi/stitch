@@ -7,6 +7,7 @@ class OutfitResult {
     required this.shoes,
     required this.accessory,
     this.outerwear,
+    this.onePiece,
     this.accessories = const <ClothingItem>[],
     required this.score,
     required this.reasoning,
@@ -17,11 +18,19 @@ class OutfitResult {
   final ClothingItem? shoes;
   final ClothingItem? accessory;
   final ClothingItem? outerwear;
+
+  /// A dress or jumpsuit that covers the whole body, instead of a top+bottom
+  /// pairing. Rendered in its own full-height slot.
+  final ClothingItem? onePiece;
+
   final List<ClothingItem> accessories;
   final int score;
   final List<String> reasoning;
 
-  bool get isValid => (top != null || bottom != null) && shoes != null;
+  bool get isOnePiece => onePiece != null;
+
+  bool get isValid =>
+      (top != null || bottom != null || onePiece != null) && shoes != null;
 
   Map<String, dynamic> toJson() {
     return {
@@ -30,6 +39,7 @@ class OutfitResult {
       'shoes_id': shoes?.id,
       'accessory_id': accessory?.id,
       'outerwear_id': outerwear?.id,
+      'one_piece_id': onePiece?.id,
       'accessory_ids': accessories.map((item) => item.id).toList(),
       'score': score,
       'reasoning': reasoning,

@@ -130,6 +130,34 @@ class ClothingItem {
     );
   }
 
+  /// Returns a copy with the supplied fields replaced. Used when development
+  /// seed rows are re-owned by the signed-in user.
+  ClothingItem copyWith({
+    String? userId,
+    String? imageUrl,
+    String? localImagePath,
+  }) {
+    return ClothingItem(
+      id: id,
+      parentCategory: parentCategory,
+      subcategory: subcategory,
+      categoryType: categoryType,
+      fit: fit,
+      color: color,
+      colorGroup: colorGroup,
+      styleTags: styleTags,
+      season: season,
+      status: status,
+      gender: gender,
+      imageUrl: imageUrl ?? this.imageUrl,
+      localImagePath: localImagePath ?? this.localImagePath,
+      storagePath: storagePath,
+      userId: userId ?? this.userId,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
   static DateTime? _readDate(Object? value) {
     if (value is Timestamp) return value.toDate();
     if (value is DateTime) return value;

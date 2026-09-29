@@ -11,6 +11,7 @@ import '../../controllers/wardrobe_controller.dart';
 import '../../core/engine/affinity_engine.dart';
 import '../../core/engine/candidate_generator.dart';
 import '../../core/engine/feedback_store.dart';
+import '../../core/services/mock_wardrobe_seeder.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/item_image.dart';
 import '../../models/clothing_item.dart';
@@ -73,6 +74,10 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   List<ScoredOutfit> _ranked = const <ScoredOutfit>[];
   bool _feedbackSaving = false;
 
+  /// True when the displayed fit came from the local affinity engine rather than
+  /// the legacy rule engine / cloud stylist path.
+  bool _affinityActive = false;
+
   String _occasion = 'Braai';
   String _mood = 'Street Flex';
   String _weather = 'Sunny';
@@ -86,6 +91,23 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     _aiStylist = AIStylist(feedbackService: _feedbackService);
     _bindConnectivity();
     unawaited(_loadAffinityEngine());
+    unawaited(_seedDevelopmentWardrobe());
+  }
+
+  /// Injects the bundled 332-item development wardrobe so the affinity engine
+  /// has real candidates to score. No-op in production builds: a real user's
+  /// empty wardrobe is never auto-filled with mock data.
+  Future<void> _seedDevelopmentWardrobe() async {
+    try {
+      final seeder =
+          MockWardrobeSeeder(repository: context.read<WardrobeRepository>());
+      if (!seeder.isDevelopment) return;
+      final result = await seeder.seedIfEmpty(userId: widget.userId);
+      if (!mounted || !result.seeded) return;
+      context.read<WardrobeController>().applyLocalSeedItems(result.items);
+    } catch (_) {
+      // Seeding is a developer convenience; never block the screen.
+    }
   }
 
   /// Loads the bundled rule matrix and any persisted user weights. If this
@@ -191,6 +213,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     ClothingItem? bottom;
     ClothingItem? outerwear;
     ClothingItem? shoes;
+    ClothingItem? onePiece;
     final accessories = <ClothingItem>[];
 
     for (final item in scored.items) {
@@ -208,9 +231,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
           shoes = item;
           break;
         case OutfitSlot.onePiece:
-          // `OutfitResult` has no dedicated one-piece slot yet, so a dress or
-          // jumpsuit renders in the primary garment slot.
-          top ??= item;
+          onePiece = item;
           break;
         case OutfitSlot.accessory:
           accessories.add(item);
@@ -223,10 +244,35 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       bottom: bottom,
       shoes: shoes,
       outerwear: outerwear,
+      onePiece: onePiece,
       accessory: accessories.isEmpty ? null : accessories.first,
       accessories: accessories,
       score: scored.styleMatchPercent,
       reasoning: scored.breakdown.reasons,
+    );
+  }
+
+  /// Full-height hero slot for a dress/jumpsuit, so a one-piece fit reads as a
+  /// single garment rather than a squashed "top" thumbnail.
+  Widget _onePieceSlot(ClothingItem? item) {
+    final provider = item == null ? null : resolveItemImage(item);
+    return Container(
+      height: 220,
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceHigh,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: provider == null
+          ? const Center(
+              child: Icon(
+                Icons.image_not_supported_outlined,
+                color: AppTheme.onSurfaceVariant,
+              ),
+            )
+          : Image(image: ResizeImage(provider, width: 640), fit: BoxFit.cover),
     );
   }
 
@@ -248,6 +294,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       _stylingTip = null;
       _swapSuggestion = null;
       _aiUnavailable = true;
+      _affinityActive = true;
       _resultVersion++;
       _isAiEnhancing = false;
       _isGenerating = false;
@@ -340,6 +387,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       _stylingTip = null;
       _swapSuggestion = enhanced.swapSuggestion;
       _aiUnavailable = !enhanced.usedAi;
+      _affinityActive = false;
       _resultVersion++;
       _isAiEnhancing = false;
       _isGenerating = false;
@@ -697,7 +745,13 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                 color: AppTheme.onSurfaceVariant, fontWeight: FontWeight.w600),
           ),
         ],
-        if (_aiUnavailable) ...[
+        if (_affinityActive) ...[
+          const SizedBox(height: 8),
+          const Text(
+            'Powered by On-Device Affinity Engine (Offline).',
+            style: TextStyle(color: AppTheme.onSurfaceVariant),
+          ),
+        ] else if (_aiUnavailable) ...[
           const SizedBox(height: 8),
           const Text(
             'Using basic mode. AI stylist unavailable.',
@@ -794,9 +848,15 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                           ],
                         ),
                       ],
-                      const SizedBox(height: 8),
-                      Text('Top: ${_result!.top?.category ?? '-'}'),
-                      Text('Bottom: ${_result!.bottom?.category ?? '-'}'),
+                      if (_result!.isOnePiece) ...[
+                        const SizedBox(height: 10),
+                        _onePieceSlot(_result!.onePiece),
+                        Text('One-piece: ${_result!.onePiece?.category ?? '-'}'),
+                      ] else ...[
+                        const SizedBox(height: 8),
+                        Text('Top: ${_result!.top?.category ?? '-'}'),
+                        Text('Bottom: ${_result!.bottom?.category ?? '-'}'),
+                      ],
                       Text('Shoes: ${_result!.shoes?.category ?? '-'}'),
                       Text('Outerwear: ${_result!.outerwear?.category ?? '-'}'),
                       Text('Accessory: ${_result!.accessory?.category ?? '-'}'),
@@ -808,8 +868,11 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                         spacing: 10,
                         runSpacing: 10,
                         children: [
-                          _FitItemChip(label: 'Top', item: _result!.top),
-                          _FitItemChip(label: 'Bottom', item: _result!.bottom),
+                          if (!_result!.isOnePiece)
+                            _FitItemChip(label: 'Top', item: _result!.top),
+                          if (!_result!.isOnePiece)
+                            _FitItemChip(
+                                label: 'Bottom', item: _result!.bottom),
                           _FitItemChip(label: 'Shoes', item: _result!.shoes),
                           _FitItemChip(
                               label: 'Outerwear', item: _result!.outerwear),

@@ -48,6 +48,18 @@ class WardrobeController extends ChangeNotifier {
     return _wardrobeRepository.deleteClothingItem(id);
   }
 
+  /// Injects development/demo seed items into the local view only. Nothing is
+  /// written to Firestore, so a production account is never polluted.
+  void applyLocalSeedItems(List<ClothingItem> items) {
+    if (items.isEmpty) return;
+    final existingIds = _cachedItems.map((item) => item.id).toSet();
+    final additions =
+        items.where((item) => !existingIds.contains(item.id)).toList();
+    if (additions.isEmpty) return;
+    _cachedItems = <ClothingItem>[..._cachedItems, ...additions];
+    notifyListeners();
+  }
+
   void clearCache() {
     _cachedItems = <ClothingItem>[];
     notifyListeners();
