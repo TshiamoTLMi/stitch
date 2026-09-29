@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/widgets.dart';
 
 import '../../models/clothing_item.dart';
@@ -17,6 +18,8 @@ ImageProvider? resolveImageSource({required String url, String? localPath}) {
   final local = localPath?.trim() ?? '';
   if (local.isNotEmpty) {
     if (local.startsWith('assets/')) return AssetImage(local);
+    // Web has no app-owned file system, so a bare on-disk path is unusable.
+    if (kIsWeb) return null;
     return FileImage(File(local));
   }
 

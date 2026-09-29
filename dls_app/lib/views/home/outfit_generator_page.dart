@@ -63,6 +63,10 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   static const String kRulesAsset = 'assets/ml_seed_rules.json';
   AffinityEngine? _affinityEngine;
   CandidateGenerator? _candidateGenerator;
+
+  /// Set when the on-device engine could not be loaded. Surfaced in the UI
+  /// instead of being swallowed.
+  String? _engineError;
   FeedbackStore? _feedbackStore;
   ScoredOutfit? _scored;
   List<ScoredOutfit> _ranked = const <ScoredOutfit>[];
@@ -127,8 +131,12 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     return 'default';
   }
 
-  /// Loads the bundled rule matrix and any persisted user weights. If this
-  /// fails the page silently falls back to the legacy rule engine.
+  /// Loads the bundled rule matrix and any persisted user weights.
+  ///
+  /// The matrix is an asset and the weights persist through `KvStore`
+  /// (file on Android, `localStorage` on web), so this succeeds on both
+  /// targets. If it genuinely fails we keep the engine null and surface a
+  /// visible message rather than silently pretending the generator works.
   Future<void> _loadAffinityEngine() async {
     try {
       final engine = await AffinityEngine.fromAsset(kRulesAsset);
@@ -140,9 +148,11 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
         _affinityEngine = engine;
         _candidateGenerator = CandidateGenerator(engine: engine);
         _feedbackStore = store;
+        _engineError = null;
       });
-    } catch (_) {
-      // Keep the legacy path; the generator still works without the matrix.
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _engineError = 'Styling engine unavailable: $error');
     }
   }
 
@@ -555,6 +565,24 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
         Text('Outfit Choice Bot',
             style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 8),
+        if (_engineError != null) ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.red.shade100,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              _engineError!,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.red.shade900,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
         if (_isOffline) ...[
           Container(
             width: double.infinity,

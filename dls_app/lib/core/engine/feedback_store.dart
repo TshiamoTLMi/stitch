@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path_provider/path_provider.dart';
 
+import '../storage/kv_store.dart';
 import 'affinity_engine.dart';
 
 /// Which scoring dimensions a contribution key implicates.
@@ -91,6 +93,8 @@ class FeedbackStore {
   final double learningRate;
   final String fileName;
 
+  KvStore? _kvStore;
+
   Map<String, double> get defaults =>
       _engine?.defaultWeights ?? fallbackDefaults;
 
@@ -102,8 +106,35 @@ class FeedbackStore {
     return File('${dir.path}${Platform.pathSeparator}$fileName');
   }
 
+  /// Platform-appropriate persistence.
+  ///
+  /// On Android/iOS this is the atomic file written by [writeAtomically]. On
+  /// web -- where `dart:io` and `path_provider` are unavailable and the call
+  /// would otherwise throw -- it is `localStorage`, so adaptive learning
+  /// survives a reload in Safari. Injectable for tests.
+  Future<KvStore> kvStore() async =>
+      _kvStore ??= await createDefaultKvStore();
+
   /// Reads persisted weights, seeding from the rules matrix on first run.
   Future<FeedbackWeights> load() async {
+    if (kIsWeb) {
+      try {
+        final raw = await (await kvStore()).read(fileName);
+        if (raw != null) {
+          final decoded = jsonDecode(raw);
+          if (decoded is Map<String, dynamic>) {
+            return FeedbackWeights.fromJson(decoded);
+          }
+        }
+      } catch (_) {
+        // Unreadable store: fall through to seeded defaults.
+      }
+      return FeedbackWeights(
+        Map<String, double>.from(defaults),
+        feedbackCount: 0,
+      );
+    }
+
     final file = await targetFile();
     if (!file.existsSync()) {
       final seeded =
@@ -168,9 +199,20 @@ class FeedbackStore {
   /// Atomic replace: write to `user_weights.json.tmp`, then rename over the
   /// target so a crash mid-write cannot corrupt the saved weights.
   Future<void> writeAtomically(FeedbackWeights weights) async {
+    final payload = jsonEncode(weights.toJson());
+
+    if (kIsWeb) {
+      try {
+        await (await kvStore()).write(fileName, payload);
+      } catch (_) {
+        // Storage unavailable (private browsing): keep the in-session value.
+      }
+      return;
+    }
+
     final target = await targetFile();
     final temp = File('${target.path}$tempSuffix');
-    await temp.writeAsString(jsonEncode(weights.toJson()), flush: true);
+    await temp.writeAsString(payload, flush: true);
     try {
       await temp.rename(target.path);
     } catch (_) {
