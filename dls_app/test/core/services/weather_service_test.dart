@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dls_app/core/services/weather_service.dart';
 import 'package:dls_app/models/weather_context.dart';
+import 'package:dls_app/models/weather_location.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -190,6 +191,92 @@ void main() {
         source: WeatherContext.sourceDefault,
       );
       expect(untimed.isStale(), isTrue);
+    });
+  });
+
+  group('location configuration', () {
+    test('presets are well formed and have a default', () {
+      expect(WeatherLocation.presets, isNotEmpty);
+      for (final option in WeatherLocation.presets) {
+        expect(option.name, isNotEmpty);
+        expect(option.latitude, inInclusiveRange(-90.0, 90.0));
+        expect(option.longitude, inInclusiveRange(-180.0, 180.0));
+      }
+      expect(WeatherLocation.defaultLocation, WeatherLocation.presets.first);
+    });
+
+    test('falls back to default coordinates when no place is chosen', () {
+      final service = serviceWith(_offline, tempDir);
+      expect(service.locationName, isNull);
+      expect(service.location.latitude, WeatherService.defaultLatitude);
+      expect(service.location.longitude, WeatherService.defaultLongitude);
+    });
+
+    test('saveLocation persists and loadLocation restores it', () async {
+      const capeTown = WeatherLocation(
+        name: 'Cape Town',
+        latitude: -33.9249,
+        longitude: 18.4241,
+      );
+      await serviceWith(_offline, tempDir).saveLocation(capeTown);
+
+      final file =
+          File('${tempDir.path}${Platform.pathSeparator}weather_location.json');
+      expect(file.existsSync(), isTrue);
+      expect(File('${file.path}.tmp').existsSync(), isFalse);
+
+      final restored = await serviceWith(_offline, tempDir).loadLocation();
+      expect(restored, capeTown);
+    });
+
+    test('loadLocation returns null when nothing was saved', () async {
+      expect(await serviceWith(_offline, tempDir).loadLocation(), isNull);
+    });
+
+    test('ignores a corrupt location file', () async {
+      File('${tempDir.path}${Platform.pathSeparator}weather_location.json')
+          .writeAsStringSync('{not json');
+      expect(await serviceWith(_offline, tempDir).loadLocation(), isNull);
+    });
+
+    test('setLocation repoints the request and tags the reading', () async {
+      late String requested;
+      final client = MockClient((request) async {
+        requested = request.url.toString();
+        return http.Response(
+          jsonEncode(<String, dynamic>{
+            'current_weather': <String, dynamic>{
+              'temperature': 19.0,
+              'weathercode': 0,
+            },
+          }),
+          200,
+        );
+      });
+      final service = serviceWith(client, tempDir);
+      const durban = WeatherLocation(
+        name: 'Durban',
+        latitude: -29.8587,
+        longitude: 31.0218,
+      );
+      await service.setLocation(durban);
+
+      final context = await service.current();
+      expect(requested, contains('-29.8587'));
+      expect(requested, contains('31.0218'));
+      expect(context.locationName, 'Durban');
+      expect(context.locationLabel, contains('Durban'));
+      expect(context.temperatureC, 19.0);
+    });
+
+    test('offline default still names the selected location', () async {
+      final service = serviceWith(_offline, tempDir);
+      await service.setLocation(
+        const WeatherLocation(name: 'Pretoria', latitude: -25.7479, longitude: 28.2293),
+      );
+      final context = await service.current();
+      expect(context.isDefault, isTrue);
+      expect(context.locationName, 'Pretoria');
     });
   });
 }

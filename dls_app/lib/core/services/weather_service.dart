@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import '../../models/weather_context.dart';
+import '../../models/weather_location.dart';
 
 /// Fetches local weather from the free Open-Meteo REST API and maps it into the
 /// DLS engine's condition vocabulary.
@@ -20,33 +21,51 @@ class WeatherService {
   WeatherService({
     http.Client? client,
     Future<Directory> Function()? directoryProvider,
-    double? latitude,
-    double? longitude,
+    WeatherLocation? location,
     Duration timeout = const Duration(seconds: 6),
   })  : _client = client ?? http.Client(),
         _directoryProvider =
             directoryProvider ?? getApplicationDocumentsDirectory,
-        latitude = latitude ?? defaultLatitude,
-        longitude = longitude ?? defaultLongitude,
+        _location = location,
         _timeout = timeout;
 
   static const String endpoint = 'https://api.open-meteo.com/v1/forecast';
   static const double defaultLatitude = -26.2041;
   static const double defaultLongitude = 28.0473;
   static const String cacheFileName = 'cached_weather.json';
+  static const String locationFileName = 'weather_location.json';
   static const String tempSuffix = '.tmp';
 
   final http.Client _client;
   final Future<Directory> Function() _directoryProvider;
-  final double latitude;
-  final double longitude;
   final Duration _timeout;
+  WeatherLocation? _location;
+
+  /// The place in use, falling back to the curated default coordinates.
+  WeatherLocation get location =>
+      _location ??
+      const WeatherLocation(
+        name: 'Johannesburg',
+        latitude: defaultLatitude,
+        longitude: defaultLongitude,
+      );
+
+  /// Name of the user-selected place, or null when only defaults are in use.
+  String? get locationName => _location?.name;
+
+  /// Re-points the service and persists the choice.
+  Future<void> setLocation(WeatherLocation value) async {
+    _location = value;
+    await saveLocation(value);
+  }
 
   /// Neutral fallback used when the device is offline and has no cache.
-  static WeatherContext defaultContext() => const WeatherContext(
+  static WeatherContext defaultContext({String? locationName}) =>
+      WeatherContext(
         temperatureC: 22.0,
         condition: 'warm',
         source: WeatherContext.sourceDefault,
+        locationName: locationName,
       );
 
   /// Maps a temperature to a DLS band.
@@ -90,12 +109,13 @@ class WeatherService {
     } catch (_) {
       // Offline, timed out, or malformed payload: fall through.
     }
-    return await readCache() ?? defaultContext();
+    return await readCache() ?? defaultContext(locationName: locationName);
   }
 
   Future<WeatherContext?> _fetchLive() async {
     final uri = Uri.parse(
-      '$endpoint?latitude=$latitude&longitude=$longitude&current_weather=true',
+      '$endpoint?latitude=${location.latitude}'
+      '&longitude=${location.longitude}&current_weather=true',
     );
     final response = await _client.get(uri).timeout(_timeout);
     if (response.statusCode != 200) return null;
@@ -116,6 +136,7 @@ class WeatherService {
       source: WeatherContext.sourceLive,
       wmoCode: code,
       observedAt: DateTime.now().toUtc(),
+      locationName: locationName,
     );
   }
 
@@ -152,6 +173,46 @@ class WeatherService {
       }
     } catch (_) {
       // A cache write failure must never break the weather read.
+    }
+  }
+
+  // --- Location persistence --------------------------------------------------
+
+  Future<File> _locationFile() async {
+    final dir = await _directoryProvider();
+    if (!dir.existsSync()) dir.createSync(recursive: true);
+    return File('${dir.path}${Platform.pathSeparator}$locationFileName');
+  }
+
+  /// Restores the previously selected location, if any.
+  Future<WeatherLocation?> loadLocation() async {
+    try {
+      final file = await _locationFile();
+      if (!file.existsSync()) return null;
+      final decoded = jsonDecode(await file.readAsString());
+      if (decoded is! Map<String, dynamic>) return null;
+      final location = WeatherLocation.fromJson(decoded);
+      if (location != null) _location = location;
+      return location;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Atomically persists the selected location.
+  Future<void> saveLocation(WeatherLocation value) async {
+    try {
+      final target = await _locationFile();
+      final temp = File('${target.path}$tempSuffix');
+      await temp.writeAsString(jsonEncode(value.toJson()), flush: true);
+      try {
+        await temp.rename(target.path);
+      } catch (_) {
+        if (await target.exists()) await target.delete();
+        await temp.rename(target.path);
+      }
+    } catch (_) {
+      // Never fail the caller because the preference could not be stored.
     }
   }
 }

@@ -125,10 +125,14 @@ are listed separately and are never marked passed by source inspection alone.
   `OutfitBotService.generateSuggestionsForEvent` (which internally uses the legacy
   `generate()`/`_scoreItem`). Migrate the Event Planner to the affinity engine, then delete
   `OutfitBotService.generate`, `generateSuggestionsForEvent` and `_scoreItem` entirely.
-- [ ] T036 **Location configuration**: weather is still pinned to the default Johannesburg
-  coordinates. Add a manual city selector (persisted) and/or an optional `geolocator`
-  fallback so `WeatherContext` can report a real place name alongside temperature,
-  condition and source freshness.
+- [x] T036 **Location configuration**: added `lib/models/weather_location.dart` (6 curated SA
+  city presets, equality/JSON round-trip) and made `WeatherService` location-aware: the
+  selected place is persisted atomically to `weather_location.json`, restored on launch,
+  used for the Open-Meteo request, and surfaced on `WeatherContext.locationName` /
+  `locationLabel`. The generator page exposes a location chip picker and shows
+  `Auto weather: 24°C Rain - Cape Town (live|cache|default)`. `geolocator` is still
+  deliberately not a dependency; a device location can be wired in later by resolving it
+  to a `WeatherLocation`.
 
 ## Phase 8: UI + offline
 

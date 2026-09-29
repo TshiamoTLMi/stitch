@@ -17,6 +17,7 @@ import '../../core/utils/item_image.dart';
 import '../../models/clothing_item.dart';
 import '../../models/outfit_result.dart';
 import '../../models/weather_context.dart';
+import '../../models/weather_location.dart';
 import '../../services/caption_service.dart';
 import '../../services/outfit_history_service.dart';
 import '../../services/outfit_bot_service.dart';
@@ -73,6 +74,9 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
   /// Latest auto-detected weather, or null before the first lookup completes.
   WeatherContext? _weatherContext;
+
+  /// User-selected weather place. Null means "use the default coordinates".
+  WeatherLocation? _location;
   final WeatherService _weatherService = WeatherService();
 
   String _occasion = 'Braai';
@@ -91,6 +95,8 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   /// The user can still override it manually.
   Future<void> _loadWeather() async {
     try {
+      final saved = await _weatherService.loadLocation();
+      if (saved != null) _location = saved;
       final context = await _weatherService.current();
       if (!mounted) return;
       setState(() {
@@ -100,6 +106,13 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     } catch (_) {
       // Weather is a nicety; the engine falls back to a neutral context.
     }
+  }
+
+  /// Switches the weather place, persists it, and refreshes the reading.
+  Future<void> _selectLocation(WeatherLocation option) async {
+    setState(() => _location = option);
+    await _weatherService.setLocation(option);
+    await _loadWeather();
   }
 
   /// Maps a DLS engine condition onto a Weather dropdown option, one-to-one.
@@ -701,10 +714,23 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                       if (_weatherContext != null) ...[
                         const SizedBox(height: 2),
                         Text(
-                          'Auto weather: ${_weatherContext!.label} '
+                          'Auto weather: ${_weatherContext!.locationLabel} '
                           '($_weatherSourceLabel)',
                           style: const TextStyle(
                               color: AppTheme.onSurfaceVariant, fontSize: 11),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [
+                            for (final option in WeatherLocation.presets)
+                              ChoiceChip(
+                                label: Text(option.name),
+                                selected: option == _location,
+                                onSelected: (_) => unawaited(_selectLocation(option)),
+                              ),
+                          ],
                         ),
                       ],
                       if (_scored != null) ...[

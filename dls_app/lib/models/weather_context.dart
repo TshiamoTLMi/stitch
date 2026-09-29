@@ -9,6 +9,7 @@ class WeatherContext {
     required this.source,
     this.wmoCode,
     this.observedAt,
+    this.locationName,
   });
 
   final double temperatureC;
@@ -19,6 +20,9 @@ class WeatherContext {
 
   final int? wmoCode;
   final DateTime? observedAt;
+
+  /// The place this reading came from, when a location is configured.
+  final String? locationName;
 
   static const String sourceLive = 'live';
   static const String sourceCache = 'cache';
@@ -50,6 +54,12 @@ class WeatherContext {
 
   String get label => '${temperatureC.round()}°C $conditionLabel';
 
+  /// Label including the active place, e.g. `24°C Rain - Cape Town`.
+  String get locationLabel {
+    final place = locationName;
+    return (place == null || place.isEmpty) ? label : '$label - $place';
+  }
+
   /// True when this reading is old enough to be treated as stale.
   bool isStale({Duration maxAge = const Duration(hours: 3)}) {
     final at = observedAt;
@@ -62,6 +72,7 @@ class WeatherContext {
         'condition': condition,
         'wmoCode': wmoCode,
         'observedAt': observedAt?.toIso8601String(),
+        'locationName': locationName,
       };
 
   factory WeatherContext.fromJson(Map<String, dynamic> json) {
@@ -71,6 +82,7 @@ class WeatherContext {
       source: sourceCache,
       wmoCode: (json['wmoCode'] as num?)?.toInt(),
       observedAt: DateTime.tryParse((json['observedAt'] as String?) ?? ''),
+      locationName: json['locationName'] as String?,
     );
   }
 }
