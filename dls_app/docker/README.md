@@ -109,17 +109,27 @@ docker run --rm -v dls_android-sdk:/v --entrypoint sh dls-flutter:3.41.6 \
   -c 'du -sh /v'
 ```
 
-A few kilobytes means the mount is in the wrong place — a populated Android SDK
-is roughly 1 GB and a warm Gradle cache several GB.
+A few kilobytes means the mount is in the wrong place. A populated Android SDK
+placed 3.9 GB in `android-sdk` and the warm Gradle cache held 5.1 GB; if `du`
+reports a handful of kilobytes, something is writing elsewhere.
+
+### Do not run two services at once
+
+`build-output` and `dart-tool` are mounted into `test`, `build-web` and
+`build-apk` alike, so two of them running concurrently write the same
+`build/` and `.dart_tool/` trees and corrupt each other. Run them one at a
+time. The caches (`pub-cache`, `gradle-cache`, `android-sdk`) are safe to share
+and are worth sharing.
 
 ## Why the Android SDK is baked into the image
 
 `Dockerfile.dev` installs `platform-tools`, platforms 34–36, build-tools 35 and
-36, NDK 28.2.13676358 and CMake 3.22.1 at image build time. Gradle resolves these
-on demand otherwise, and on a slow link that is the slowest part of the process
-by a wide margin. Baking them in also means the `android-sdk` volume is seeded
-with a complete SDK the first time it is mounted, so a cold volume still costs
-nothing to fill.
+36, NDK 28.2.13676358 and CMake 3.22.1 at image build time, which lands ~3.9 GB
+at `$ANDROID_HOME`. Gradle resolves these on demand otherwise, and on a slow link
+that is the slowest part of the process by a wide margin. Baking them in also
+means the `android-sdk` volume is seeded with a complete SDK the first time it
+is mounted, so a cold volume still costs nothing to fill — even after
+`docker volume rm dls_android-sdk`.
 
 The project does **not** pin an SDK or NDK version itself. `android/app/build.gradle.kts`
 defers to the Flutter Gradle plugin:
