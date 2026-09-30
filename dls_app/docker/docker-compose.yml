@@ -1,0 +1,98 @@
+# Containerised Flutter toolchain for the DLS app.
+#
+# Run from this directory (compose resolves paths relative to this file):
+#
+#   cd docker
+#   docker compose build              # builds the image once (service `test`)
+#   docker compose run --rm test      # analyze + unit tests
+#   docker compose run --rm build-web # build/web
+#   docker compose run --rm build-apk # build/app/outputs/flutter-apk/
+#   docker compose run --rm shell     # interactive bash in the toolchain
+#
+# `context: ..` is the Flutter project root. The Git checkout is its parent,
+# mounted at /workspace so Git metadata is available from /workspace/dls_app.
+# `.dockerignore` must stay at the context root because BuildKit only reads it
+# from there.
+#
+# All services share ONE image. Only `test` carries the `build:` stanza: if every
+# service declared it they would race to create the same tag and the build would
+# fail with "image already exists".
+name: dls
+
+x-flutter: &flutter
+  image: dls-flutter:3.41.6
+  working_dir: /workspace/dls_app
+  environment: &env
+    CI: "true"
+    PUB_CACHE: /root/.pub-cache
+    GRADLE_USER_HOME: /root/.gradle
+    GIT_CONFIG_GLOBAL: /dev/null
+    GIT_CONFIG_COUNT: "1"
+    GIT_CONFIG_KEY_0: core.autocrlf
+    GIT_CONFIG_VALUE_0: "true"
+  volumes: &volumes
+    - ../..:/workspace
+    # Keep generated output off the host bind mount: a Windows bind mount is
+    # slow and thousands of small files crawl through it.
+    - build-output:/workspace/dls_app/build
+    - dart-tool:/workspace/dls_app/.dart_tool
+    - pub-cache:/root/.pub-cache
+    - gradle-cache:/root/.gradle
+    # MUST match the base image ANDROID_HOME, which is /opt/android-sdk-linux
+    # (note the "-linux" suffix). Mounting this at /opt/android-sdk silently
+    # does nothing: the NDK, CMake and platform downloads (~1 GB) land in the
+    # throwaway container layer and are destroyed on `run --rm`, forcing a full
+    # re-download every run.
+    - android-sdk:/opt/android-sdk-linux
+
+services:
+  # Analyze + full unit test suite. This is the gate that must pass before any
+  # release build is attempted, and it owns the image build.
+  test:
+    <<: *flutter
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    command: >
+      bash -c "flutter pub get &&
+               flutter analyze &&
+               flutter test"
+
+  # Production web bundle. Copy build/web/ to any static host (Firebase
+  # Hosting, Cloud Storage, nginx).
+  build-web:
+    <<: *flutter
+    command: >
+      bash -c "flutter pub get &&
+               flutter build web --release"
+
+  # Release APK. Note: the release build type currently falls back to the debug
+  # signing config until a real upload key is provisioned.
+  build-apk:
+    <<: *flutter
+    command: >
+      bash -c "flutter pub get &&
+               flutter build apk --release"
+
+  # Interactive shell for one-off commands (codegen, doctor, adb, manual tests).
+  #
+  # `bash` is the entrypoint rather than the command on purpose. The base image
+  # has no entrypoint, so if `bash` were the command then
+  # `docker compose run --rm shell -c '<cmd>'` would REPLACE it with `-c ...`
+  # and fail with: exec: "-c": executable file not found in $PATH.
+  # As an entrypoint the args are appended instead, giving `bash -c '<cmd>'`.
+  shell:
+    <<: *flutter
+    stdin_open: true
+    tty: true
+    entrypoint: ["bash"]
+    command: ["-i"]
+
+# Named volumes keep the expensive downloads (pub packages, Gradle
+# distribution, Android platform images) across container rebuilds.
+volumes:
+  build-output:
+  dart-tool:
+  pub-cache:
+  gradle-cache:
+  android-sdk:

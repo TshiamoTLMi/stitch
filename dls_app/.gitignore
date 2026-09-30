@@ -52,3 +52,12 @@ app.*.map.json
 # Local diagnostics output
 *.out
 *.err
+
+# Generated analyze dumps (regenerate with `flutter analyze`)
+analyze_machine_output.txt
+
+# Container build artifacts copied out of the named volume by
+# `docker compose run --rm build-apk` / `build-web`. Never committed:
+# the APK is a build output and the web bundle is reproducible.
+/docker-out/
+

@@ -228,6 +228,48 @@ Firebase console access, and remain open:** T033-T039 above.
       persistence, weather caching/city override, `resolveItemImage()` fallbacks,
       upload compression, the analytics tab, and the analytics log itself.
 
+- [x] T054 **Containerised build environment** — VERIFIED WORKING.
+      `docker/Dockerfile.dev` builds on `ghcr.io/cirruslabs/flutter:3.41.6`,
+      which pins Flutter to the audited revision (3.41.6 / db50e20168, byte-identical
+      to the host SDK) and ships Android platform 36 + build-tools 36.0.0 + JDK 21.
+      A prebuilt base was chosen over installing the SDK in-image because the
+      ~1444 MB Linux archive downloaded at ~112 KB/s on this network (3h38m ETA)
+      and failed with curl error 56; the published image removes that failure mode
+      entirely. `docker/docker-compose.yml` provides `test`, `build-web`,
+      `build-apk` and `shell` over one image with YAML anchors; only `test`
+      carries `build:` so the services cannot race on the image tag.
+      `.dockerignore` stays at the project root (BuildKit reads it from the
+      context root).
+      Evidence: image built; `docker compose run --rm test` ->
+      `No issues found!` + `All tests passed!` (183 tests); `build-web` ->
+      `Built build/web`; `build-apk` -> `app-release.apk (67.6MB)`;
+      artifact copy-out verified on the host.
+
+- [x] T055 **Container build-cache correctness** — FIXED. An APK build was
+      taking 4213 s because the `android-sdk` volume was mounted at
+      `/opt/android-sdk` while the base image sets
+      `ANDROID_HOME=/opt/android-sdk-linux`. The volume stayed empty (4.0 K) and
+      ~1 GB of NDK/CMake/platform packages were written to the throwaway
+      container layer, then destroyed by `run --rm` — so every APK build
+      re-downloaded them. Two further defects fixed alongside it: `shell` used
+      `command: bash`, so `run shell -c '<cmd>'` replaced the binary and died
+      with `exec: "-c": executable file not found`; and `ANDROID_SDK_ROOT` was
+      unset, so AGP versions reading it instead of `ANDROID_HOME` resolved to an
+      empty SDK.
+      Fixes: volume now targets `/opt/android-sdk-linux`; `ANDROID_SDK_ROOT` set
+      to match; `shell` uses `entrypoint: ["bash"]`; and the heavy SDK
+      components are baked into the image so a cold volume seeds to 3.9 GB even
+      after `docker volume rm`.
+      Evidence: `du -sh` on the volume before fix = 4.0 K, after = 3.9 GB with
+      NDK 28.2.13676358 + platforms 34/35/36 + build-tools 35/36 + CMake 3.22.1.
+      Identical APK rebuilt with zero SDK downloads in
+      `assembleRelease 370.5s` vs `4213.2s` — an 11.4x speed-up, same 67.6 MB
+      output. `docker compose run --rm shell -c '...'` now executes.
+      Full path/mount table is documented in `docker/README.md`.
+      Caveat: the release build still signs with the debug key and
+      `applicationId` is still `com.example.dls_app`, so it is not
+      store-submittable yet.
+
 ## Traceability Notes
 
 - **FR-001-FR-005** map to T007-T013.

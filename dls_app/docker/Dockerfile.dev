@@ -1,0 +1,66 @@
+# syntax=docker/dockerfile:1
+#
+# Reproducible Flutter build environment for the DLS app.
+#
+# The base image pins Flutter to the exact revision the release candidate was
+# audited on (3.41.6 / db50e20168), so a container build cannot silently differ
+# from a local build. Bump the tag in lockstep with the team, never "latest".
+#
+# Why a prebuilt base instead of installing the SDK here: the Flutter Linux
+# archive is ~1444 MB, and downloading it at image-build time is slow and prone
+# to mid-transfer failures on CI networks. The published image ships the SDK,
+# the Android SDK (platform 36 + build-tools 36.0.0) and a warmed pub cache.
+#
+#   cd docker
+#   docker compose build
+#   docker compose run --rm test
+#   docker compose run --rm build-web
+#   docker compose run --rm build-apk
+#
+FROM ghcr.io/cirruslabs/flutter:3.41.6
+
+# The base image defaults to the unprivileged `ubuntu` user; we run as root so
+# the bind-mounted repository is writable regardless of host file ownership.
+USER root
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PUB_CACHE=/root/.pub-cache \
+    GRADLE_USER_HOME=/root/.gradle \
+    ANDROID_SDK_ROOT=/opt/android-sdk-linux
+
+# Licences MUST be accepted at image build time. Without this the first Gradle
+# run in `build-apk` blocks forever waiting on an interactive prompt.
+# `--licenses` is idempotent: the base image already ships a licenses/ dir.
+RUN yes | sdkmanager --licenses > /dev/null 2>&1 || true
+
+# Pre-install the heavy Android components into the image so that the first
+# `build-apk` does not have to download ~1 GB of NDK/CMake/platform packages.
+# This is the single biggest build-time win: Gradle otherwise resolves these on
+# demand, and because the compose `android-sdk` volume is what persists them,
+# a missed mount turns every build back into a multi-hour download.
+RUN sdkmanager --install \
+        "platform-tools" \
+        "platforms;android-36" \
+        "platforms;android-35" \
+        "platforms;android-34" \
+        "build-tools;36.0.0" \
+        "build-tools;35.0.0" \
+        "ndk;28.2.13676358" \
+        "cmake;3.22.1" \
+    || echo "WARNING: an SDK component failed to install; build-apk will retry at build time"
+
+# Wire up web + point Flutter at the SDK the base image already provides.
+RUN flutter config --no-analytics \
+    && flutter config --enable-web \
+    && flutter config --android-sdk "${ANDROID_HOME}" \
+    # Pre-download the web + android artefacts so the first `flutter build`
+    # does not re-download the Dart/Gradle artefacts on every run.
+    && flutter precache --web --android --universal
+
+WORKDIR /app
+
+# Fail fast with a clear message if the toolchain is not wired correctly.
+HEALTHCHECK --interval=5m --timeout=20s --retries=3 \
+    CMD flutter --version > /dev/null || exit 1
+
+CMD ["bash"]

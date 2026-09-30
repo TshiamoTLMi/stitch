@@ -65,17 +65,23 @@ class CandidateGenerator {
     }
 
     buckets.forEach((slot, items) {
-      items.sort((a, b) {
-        final left = engine.itemPrior(a,
-            occasion: occasion, weather: weather, targetStyle: targetStyle);
-        final right = engine.itemPrior(b,
-            occasion: occasion, weather: weather, targetStyle: targetStyle);
-        if (left != right) return right.compareTo(left);
-        return a.id.compareTo(b.id);
-      });
-      if (items.length > bucketCap) {
-        items.removeRange(bucketCap, items.length);
-      }
+      final rankedItems = items
+          .map((item) => (
+                item: item,
+                prior: engine.itemPrior(item,
+                    occasion: occasion,
+                    weather: weather,
+                    targetStyle: targetStyle),
+              ))
+          .toList()
+        ..sort((a, b) {
+          final byPrior = b.prior.compareTo(a.prior);
+          return byPrior != 0 ? byPrior : a.item.id.compareTo(b.item.id);
+        });
+      buckets[slot] = rankedItems
+          .take(bucketCap)
+          .map((rankedItem) => rankedItem.item)
+          .toList();
     });
 
     return buckets;

@@ -1,0 +1,64 @@
+name: Test branch QA
+
+on:
+  push:
+    branches: [test]
+  pull_request:
+    branches: [test]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qa-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dls_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+          cache-dependency-path: |
+            dls_app/android/**/*.gradle*
+            dls_app/android/gradle/wrapper/gradle-wrapper.properties
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.6'
+          channel: stable
+          cache: true
+
+      - name: Resolve packages
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Unit and widget tests
+        run: flutter test
+
+      - name: Build web QA bundle
+        run: flutter build web --release
+
+      - name: Build Android QA APK
+        run: flutter build apk --debug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-web-${{ github.sha }}
+          path: dls_app/build/web/
+          if-no-files-found: error
+          retention-days: 14
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-android-${{ github.sha }}
+          path: dls_app/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
