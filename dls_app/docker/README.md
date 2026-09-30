@@ -72,7 +72,62 @@ docker run --rm --entrypoint sh \
   -c 'cp /build/app/outputs/flutter-apk/app-release.apk /out/'
 ```
 
-## Cached volumes
+## Verifying a build is actually correct
+
+`✓ Built ...` only proves the command exited zero. These are the checks worth
+running before trusting an artifact.
+
+**Both builds — confirm nothing was re-downloaded.** Search the log for
+`Downloading` and `Installing`. `flutter pub get` prints "Downloading packages..."
+on every run even when everything is cached, so ignore that; a line mentioning
+`ndk`, `platforms;` or `build-tools;` means a cache miss.
+
+**Both builds — confirm the artifact is real, not just present.**
+
+```bash
+# Web: a release bundle has canvaskit/, a minified main.dart.js and no *.map
+docker run --rm --entrypoint sh -v dls_build-output:/build dls-flutter:3.41.6 \
+  -c 'du -sh /build/web; head -c 200 /build/web/main.dart.js; ls /build/web'
+
+# APK: should be ~67 MB and a valid zip
+docker run --rm --entrypoint sh -v dls_build-output:/build dls-flutter:3.41.6 \
+  -c 'cd /build/app/outputs/flutter-apk && ls -lh app-release.apk && unzip -l app-release.apk | head'
+```
+
+**Web — serve it before shipping it.** Static bundles fail in ways a build step
+never catches (wrong `<base href>`, missing engine files):
+
+```bash
+cd docker && docker run --rm --entrypoint sh \
+  -v dls_build-output:/build dls-flutter:3.41.6 -c '
+    cd /build/web && python3 -m http.server 8099 &
+    sleep 3
+    for f in index.html main.dart.js flutter_bootstrap.js canvaskit/canvaskit.wasm; do
+      printf "%-32s %s\n" "$f" \
+        "$(curl -s -o /dev/null -w "HTTP %{http_code} %{size_download}b" http://localhost:8099/$f)"
+    done'
+```
+
+Every path should answer `HTTP 200` with a non-zero size.
+
+**Reproducibility.** Two consecutive builds should be byte-identical. If they
+differ, something in the environment is not pinned:
+
+```bash
+docker run --rm --entrypoint sh -v dls_build-output:/build dls-flutter:3.41.6 \
+  -c 'sha256sum /build/web/main.dart.js'
+```
+
+### Known limits of this setup
+
+- **No browser is installed in the image**, so the bundle is verified as
+  *buildable and serveable*, not *rendered*. Nothing here proves the app paints
+  in a real browser. The test suite is VM-only as well — there are no
+  `@TestOn('browser')` tests. Adding Chromium to the image would allow
+  `flutter test --platform chrome` and close this gap.
+- The release APK is signed with the **debug** key and keeps
+  `applicationId = com.example.dls_app`, so it is not store-submittable.
+
 
 `pub-cache`, `gradle-cache`, `android-sdk`, `build-output`, `dart-tool`.
 These survive container rebuilds; delete them with
