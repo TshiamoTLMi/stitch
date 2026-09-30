@@ -228,23 +228,21 @@ Firebase console access, and remain open:** T033-T039 above.
       persistence, weather caching/city override, `resolveItemImage()` fallbacks,
       upload compression, the analytics tab, and the analytics log itself.
 
-- [x] T054 **Containerised build environment**: `docker/Dockerfile.dev` pins Flutter
-      to 3.41.6 stable (the audited revision) on Ubuntu 22.04 with JDK 17, the
-      Android cmdline-tools, pre-accepted SDK licences, `android-35/36` platforms
-      and matching build-tools, web enabled and artefacts pre-cached.
-      `docker/docker-compose.yml` provides `test`, `build-web`, `build-apk` and
-      `shell` services over one shared image, with named volumes for pub, Gradle,
-      the Android SDK, `/app/build` and `/app/.dart_tool`. Docker files live in
-      `docker/`; `.dockerignore` stays at the project root because BuildKit only
-      reads it from the build-context root. Documented in `README.md` and
-      `docker/README.md`.
-      Status: compose schema validated from the new location
-      (`docker compose config` resolves `context: ..` to the project root); the
-      pinned Flutter archive URL verified against the official release index.
-      The full image build is BLOCKED on this host — the 1444 MB SDK downloads at
-      ~112 KB/s (3h38m ETA) and the first attempt failed with curl error 56. The
-      download is now resumable/retried, but the build needs a normal-bandwidth
-      host.
+- [x] T054 **Containerised build environment** — VERIFIED WORKING.
+      `docker/Dockerfile.dev` builds on `ghcr.io/cirruslabs/flutter:3.41.6`,
+      which pins Flutter to the audited revision (3.41.6 / db50e20168, byte-identical
+      to the host SDK) and ships Android platform 36 + build-tools 36.0.0 + JDK 21.
+      A prebuilt base was chosen over installing the SDK in-image because the
+      ~1444 MB Linux archive downloaded at ~112 KB/s on this network (3h38m ETA)
+      and failed with curl error 56; the published image removes that failure mode
+      entirely. `docker/docker-compose.yml` provides `test`, `build-web`,
+      `build-apk` and `shell` over one image with YAML anchors; only `test`
+      carries `build:` so the services cannot race on the image tag.
+      `.dockerignore` stays at the project root (BuildKit reads it from the
+      context root).
+      Evidence: image built (2.26 GB); `docker compose run --rm test` ->
+      `No issues found!` + `All tests passed!` (183 tests); `build-web` ->
+      `Built build/web`; artifact copy-out verified on the host.
 
 ## Traceability Notes
 

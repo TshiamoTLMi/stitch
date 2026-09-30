@@ -227,10 +227,11 @@ flutter test
 
 ## Containerised Builds (Docker)
 
-The release toolchain is pinned in `docker/Dockerfile.dev` so a container build
-cannot silently differ from a local one. Flutter is pinned to **3.41.6 stable** —
-the exact revision the release candidate was audited on. Bump it in lockstep
-with the team; never switch to `latest`.
+The release toolchain is pinned in `docker/Dockerfile.dev`, which builds on
+`ghcr.io/cirruslabs/flutter:3.41.6`. That tag pins Flutter to **the exact
+revision the release candidate was audited on — 3.41.6 / `db50e20168`**, identical
+to a developer machine, so a container build cannot silently differ from a local
+one. Bump it in lockstep with the team; never switch to `latest`.
 
 Prerequisites: Docker Desktop running (Linux containers mode).
 
@@ -253,9 +254,9 @@ docker compose run --rm build-apk
 docker compose run --rm shell
 ```
 
-See `docker/README.md` for the volume map and details. Note that
-`.dockerignore` intentionally stays at the project root, because BuildKit only
-reads it from the build-context root.
+See `docker/README.md` for the volume map and how to extract build artifacts.
+Note that `.dockerignore` intentionally stays at the project root, because
+BuildKit only reads it from the build-context root.
 
 ### What is cached
 
