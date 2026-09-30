@@ -56,7 +56,7 @@ services:
     command: >
       bash -c "flutter pub get &&
                flutter analyze &&
-               flutter test"
+               flutter test --concurrency=1"
 
   # Production web bundle. Copy build/web/ to any static host (Firebase
   # Hosting, Cloud Storage, nginx).
