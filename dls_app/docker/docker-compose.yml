@@ -9,9 +9,10 @@
 #   docker compose run --rm build-apk # build/app/outputs/flutter-apk/
 #   docker compose run --rm shell     # interactive bash in the toolchain
 #
-# `context: ..` is the Flutter project root, which is the repository bind-mounted
-# at /app. Note that `.dockerignore` must stay at the context root (the project
-# root) because BuildKit only reads it from there.
+# `context: ..` is the Flutter project root. The Git checkout is its parent,
+# mounted at /workspace so Git metadata is available from /workspace/dls_app.
+# `.dockerignore` must stay at the context root because BuildKit only reads it
+# from there.
 #
 # All services share ONE image. Only `test` carries the `build:` stanza: if every
 # service declared it they would race to create the same tag and the build would
@@ -20,17 +21,21 @@ name: dls
 
 x-flutter: &flutter
   image: dls-flutter:3.41.6
-  working_dir: /app
+  working_dir: /workspace/dls_app
   environment: &env
     CI: "true"
     PUB_CACHE: /root/.pub-cache
     GRADLE_USER_HOME: /root/.gradle
+    GIT_CONFIG_GLOBAL: /dev/null
+    GIT_CONFIG_COUNT: "1"
+    GIT_CONFIG_KEY_0: core.autocrlf
+    GIT_CONFIG_VALUE_0: "true"
   volumes: &volumes
-    - ..:/app
+    - ../..:/workspace
     # Keep generated output off the host bind mount: a Windows bind mount is
     # slow and thousands of small files crawl through it.
-    - build-output:/app/build
-    - dart-tool:/app/.dart_tool
+    - build-output:/workspace/dls_app/build
+    - dart-tool:/workspace/dls_app/.dart_tool
     - pub-cache:/root/.pub-cache
     - gradle-cache:/root/.gradle
     # MUST match the base image ANDROID_HOME, which is /opt/android-sdk-linux

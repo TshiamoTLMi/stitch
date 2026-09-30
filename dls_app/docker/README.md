@@ -48,6 +48,24 @@ From the project root, pass the file explicitly instead:
 docker compose -f docker/docker-compose.yml run --rm test
 ```
 
+## Git and source control
+
+Compose mounts the repository root at `/workspace` and opens the Flutter app at
+`/workspace/dls_app`, so Git commands in `shell` use the same checkout as VS
+Code. Git is included in the image. The container sets `core.autocrlf=true` to
+match this Windows checkout and hides the image's default global Git identity;
+this prevents false line-ending changes and commits attributed to `Cirrus CI`.
+
+Before committing from the container, configure an identity for this checkout:
+
+```bash
+git config --local user.name "Your Name"
+git config --local user.email "you@example.com"
+```
+
+The local identity is stored in the shared `.git/config`. No Git credentials or
+SSH keys are mounted, so use VS Code on the host for authenticated fetch/push.
+
 ## Extracting build artifacts
 
 `build/` lives in a **named volume**, not on the host — that is deliberate, so
@@ -150,8 +168,8 @@ The table below is verified against the built image, not assumed:
 | `pub-cache` | `/root/.pub-cache` | `PUB_CACHE` (set in `Dockerfile.dev`) |
 | `gradle-cache` | `/root/.gradle` | `GRADLE_USER_HOME` (set in `Dockerfile.dev`) |
 | `android-sdk` | `/opt/android-sdk-linux` | `ANDROID_HOME` (set by the **base image**) |
-| `build-output` | `/app/build` | Flutter's build dir |
-| `dart-tool` | `/app/.dart_tool` | Flutter's package config |
+| `build-output` | `/workspace/dls_app/build` | Flutter's build dir |
+| `dart-tool` | `/workspace/dls_app/.dart_tool` | Flutter's package config |
 
 `ANDROID_SDK_ROOT` is set to the same path as `ANDROID_HOME`, because some
 Gradle/AGP versions read the former and others the latter; they must not drift
