@@ -33,7 +33,12 @@ x-flutter: &flutter
     - dart-tool:/app/.dart_tool
     - pub-cache:/root/.pub-cache
     - gradle-cache:/root/.gradle
-    - android-sdk:/opt/android-sdk
+    # MUST match the base image ANDROID_HOME, which is /opt/android-sdk-linux
+    # (note the "-linux" suffix). Mounting this at /opt/android-sdk silently
+    # does nothing: the NDK, CMake and platform downloads (~1 GB) land in the
+    # throwaway container layer and are destroyed on `run --rm`, forcing a full
+    # re-download every run.
+    - android-sdk:/opt/android-sdk-linux
 
 services:
   # Analyze + full unit test suite. This is the gate that must pass before any
@@ -65,11 +70,18 @@ services:
                flutter build apk --release"
 
   # Interactive shell for one-off commands (codegen, doctor, adb, manual tests).
+  #
+  # `bash` is the entrypoint rather than the command on purpose. The base image
+  # has no entrypoint, so if `bash` were the command then
+  # `docker compose run --rm shell -c '<cmd>'` would REPLACE it with `-c ...`
+  # and fail with: exec: "-c": executable file not found in $PATH.
+  # As an entrypoint the args are appended instead, giving `bash -c '<cmd>'`.
   shell:
     <<: *flutter
     stdin_open: true
     tty: true
-    command: bash
+    entrypoint: ["bash"]
+    command: ["-i"]
 
 # Named volumes keep the expensive downloads (pub packages, Gradle
 # distribution, Android platform images) across container rebuilds.

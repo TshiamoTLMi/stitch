@@ -240,9 +240,35 @@ Firebase console access, and remain open:** T033-T039 above.
       carries `build:` so the services cannot race on the image tag.
       `.dockerignore` stays at the project root (BuildKit reads it from the
       context root).
-      Evidence: image built (2.26 GB); `docker compose run --rm test` ->
+      Evidence: image built; `docker compose run --rm test` ->
       `No issues found!` + `All tests passed!` (183 tests); `build-web` ->
-      `Built build/web`; artifact copy-out verified on the host.
+      `Built build/web`; `build-apk` -> `app-release.apk (67.6MB)`;
+      artifact copy-out verified on the host.
+
+- [x] T055 **Container build-cache correctness** — FIXED. An APK build was
+      taking 4213 s because the `android-sdk` volume was mounted at
+      `/opt/android-sdk` while the base image sets
+      `ANDROID_HOME=/opt/android-sdk-linux`. The volume stayed empty (4.0 K) and
+      ~1 GB of NDK/CMake/platform packages were written to the throwaway
+      container layer, then destroyed by `run --rm` — so every APK build
+      re-downloaded them. Two further defects fixed alongside it: `shell` used
+      `command: bash`, so `run shell -c '<cmd>'` replaced the binary and died
+      with `exec: "-c": executable file not found`; and `ANDROID_SDK_ROOT` was
+      unset, so AGP versions reading it instead of `ANDROID_HOME` resolved to an
+      empty SDK.
+      Fixes: volume now targets `/opt/android-sdk-linux`; `ANDROID_SDK_ROOT` set
+      to match; `shell` uses `entrypoint: ["bash"]`; and the heavy SDK
+      components are baked into the image so a cold volume seeds to 3.9 GB even
+      after `docker volume rm`.
+      Evidence: `du -sh` on the volume before fix = 4.0 K, after = 3.9 GB with
+      NDK 28.2.13676358 + platforms 34/35/36 + build-tools 35/36 + CMake 3.22.1.
+      Identical APK rebuilt with zero SDK downloads in
+      `assembleRelease 370.5s` vs `4213.2s` — an 11.4x speed-up, same 67.6 MB
+      output. `docker compose run --rm shell -c '...'` now executes.
+      Full path/mount table is documented in `docker/README.md`.
+      Caveat: the release build still signs with the debug key and
+      `applicationId` is still `com.example.dls_app`, so it is not
+      store-submittable yet.
 
 ## Traceability Notes
 

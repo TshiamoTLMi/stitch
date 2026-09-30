@@ -25,12 +25,29 @@ USER root
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PUB_CACHE=/root/.pub-cache \
-    GRADLE_USER_HOME=/root/.gradle
+    GRADLE_USER_HOME=/root/.gradle \
+    ANDROID_SDK_ROOT=/opt/android-sdk-linux
 
 # Licences MUST be accepted at image build time. Without this the first Gradle
 # run in `build-apk` blocks forever waiting on an interactive prompt.
 # `--licenses` is idempotent: the base image already ships a licenses/ dir.
 RUN yes | sdkmanager --licenses > /dev/null 2>&1 || true
+
+# Pre-install the heavy Android components into the image so that the first
+# `build-apk` does not have to download ~1 GB of NDK/CMake/platform packages.
+# This is the single biggest build-time win: Gradle otherwise resolves these on
+# demand, and because the compose `android-sdk` volume is what persists them,
+# a missed mount turns every build back into a multi-hour download.
+RUN sdkmanager --install \
+        "platform-tools" \
+        "platforms;android-36" \
+        "platforms;android-35" \
+        "platforms;android-34" \
+        "build-tools;36.0.0" \
+        "build-tools;35.0.0" \
+        "ndk;28.2.13676358" \
+        "cmake;3.22.1" \
+    || echo "WARNING: an SDK component failed to install; build-apk will retry at build time"
 
 # Wire up web + point Flutter at the SDK the base image already provides.
 RUN flutter config --no-analytics \
