@@ -230,17 +230,16 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _resetCurrentUserData(String userId) async {
     final messenger = ScaffoldMessenger.of(context);
     final profileService = context.read<ProfileService>();
-    final authController = context.read<AuthController>();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Reset Test Data?'),
         content: const Text(
-          'This deletes your profile, closet items, outfits, events, and audit logs for a clean test run.',
+          'This clears your closet items, outfits, events, and audit logs. Your account, profile, and profile photo will stay intact.',
         ),
         actions: [
           TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          ElevatedButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete Data')),
+          ElevatedButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Clear Test Data')),
         ],
       ),
     );
@@ -258,7 +257,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       );
-      await authController.signOut();
     } catch (e) {
       if (!mounted) return;
       messenger.showSnackBar(

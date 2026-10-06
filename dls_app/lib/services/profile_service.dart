@@ -296,15 +296,6 @@ class ProfileService {
     deleted['events'] = await _deleteCollectionDocs('events', userId);
     deleted['audit_events'] = await _deleteCollectionDocs('audit_events', userId);
 
-    await _firestore.collection('users').doc(userId).delete();
-    deleted['users'] = 1;
-
-    try {
-      await _storage.ref().child('users/$userId/profile.jpg').delete();
-    } catch (_) {
-      // Ignore missing profile image objects.
-    }
-
     return deleted;
   }
 
