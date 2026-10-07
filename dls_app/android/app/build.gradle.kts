@@ -23,6 +23,15 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    System.getenv("ANDROID_DEBUG_KEYSTORE")?.takeIf { it.isNotBlank() }?.let { keystorePath ->
+        signingConfigs.getByName("debug").apply {
+            storeFile = file(keystorePath)
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.dls_app"
