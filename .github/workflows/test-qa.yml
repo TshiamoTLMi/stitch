@@ -55,6 +55,15 @@ jobs:
           printf '%s' "$ANDROID_DEBUG_KEYSTORE_BASE64" | base64 --decode > "$HOME/.android/debug.keystore"
           chmod 600 "$HOME/.android/debug.keystore"
 
+      - name: Verify Firebase-compatible Android debug key
+        run: |
+          actual_sha1="$(keytool -list -v -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey | awk -F': ' '/SHA1: / { print $2 }' | tr -d ':' | tr '[:upper:]' '[:lower:]')"
+          expected_sha1='ec80aeae2291ff233c23f7fed1d7a990389fe383'
+          if [ "$actual_sha1" != "$expected_sha1" ]; then
+            printf 'Unexpected Android debug keystore SHA-1: %s\n' "${actual_sha1:-<missing>}" >&2
+            exit 1
+          fi
+
       - name: Build Android QA APK
         run: flutter build apk --debug
 
