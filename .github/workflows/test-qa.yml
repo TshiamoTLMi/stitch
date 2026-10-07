@@ -64,7 +64,7 @@ jobs:
           test -n "$sdk_root"
           apksigner="$(find "$sdk_root/build-tools" -maxdepth 2 -type f -name apksigner | sort -V | tail -n 1)"
           test -n "$apksigner"
-          actual_sha1="$("$apksigner" verify --print-certs build/app/outputs/flutter-apk/app-debug.apk | awk -F': ' '/certificate SHA-1 digest:/ { print $2 }' | tr -d ':' | tr '[:upper:]' '[:lower:]')"
+          actual_sha1="$("$apksigner" verify --print-certs build/app/outputs/flutter-apk/app-debug.apk | awk -F': ' '/certificate SHA-1 digest:/ { print $NF }' | tr -d ':' | tr '[:upper:]' '[:lower:]')"
           expected_sha1='ec80aeae2291ff233c23f7fed1d7a990389fe383'
           if [ "$actual_sha1" != "$expected_sha1" ]; then
             printf 'Unexpected Android QA APK SHA-1: %s\n' "$actual_sha1" >&2
