@@ -69,3 +69,6 @@ analyze_machine_output.txt
 # Incoming third-party fashion dataset. Rights unverified; must never be committed.
 /training_data/
 
+# Local test persona logins (plain-text passwords). Never commit.
+/.local/
+

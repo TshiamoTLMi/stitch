@@ -191,25 +191,64 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _seedDemoData(String userId) async {
     final messenger = ScaffoldMessenger.of(context);
+    final demoService = context.read<DemoDataService>();
+
+    final List<DemoPersona> personas;
+    try {
+      personas = await demoService.loadPersonas();
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text('Unable to load test personas: $e')),
+      );
+      return;
+    }
+    if (!mounted) return;
+
+    final personaId = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Choose a test persona'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final persona in personas)
+                ListTile(
+                  title: Text(persona.displayName),
+                  onTap: () => Navigator.of(ctx).pop(persona.id),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+    if (personaId == null || !mounted) return;
+
     setState(() => _seeding = true);
     try {
-      final result = await context.read<DemoDataService>().seedForUser(userId);
+      final result = await demoService.seedForUser(userId, personaId: personaId);
       if (!mounted) return;
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            result.itemsRepaired > 0 || result.historyRepaired > 0 || result.eventsRepaired > 0
-                ? 'Demo data repaired: ${result.itemsRepaired} items, ${result.historyRepaired} outfits, ${result.eventsRepaired} events.'
-                : result.itemsCreated == 0 && result.historyCreated == 0 && result.eventsCreated == 0
-                    ? 'Demo data already exists for this user.'
-                    : 'Demo data seeded: ${result.itemsCreated} items, ${result.historyCreated} outfits, ${result.eventsCreated} events.',
+            'Persona ${result.personaId} seeded: ${result.itemsCreated} items, '
+            '${result.outfitsCreated} outfits, ${result.eventsCreated} events '
+            '(replaced ${result.replacedDocs} old test docs).',
           ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
       messenger.showSnackBar(
-        SnackBar(content: Text('Unable to seed demo data: $e')),
+        SnackBar(content: Text('Unable to seed test persona: $e')),
       );
     } finally {
       if (mounted) setState(() => _seeding = false);
@@ -448,7 +487,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 12),
                     const ContextTipCard(
                       title: 'Profile Shortcuts',
-                      message: 'Use Seed Demo Data for quick showcases, or Clear My Test Data when you want a clean test run before tomorrow\'s app checks.',
+                      message: 'Seed Test Persona fills this account with a 120-item test closet. Clear My Test Data removes it again.',
                       icon: Icons.insights_outlined,
                     ),
                     const SizedBox(height: 12),
@@ -523,7 +562,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               )
                             : const Icon(Icons.data_array),
                         label: Text(
-                            _seeding ? 'Seeding Demo Data...' : 'Seed Demo Data'),
+                            _seeding ? 'Seeding Test Persona...' : 'Seed Test Persona'),
                       ),
                     const SizedBox(height: 8),
                     if (DemoDataService.isDemoEnabled)

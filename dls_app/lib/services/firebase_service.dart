@@ -9,6 +9,8 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../core/constants/wardrobe_taxonomy.dart';
+
 class FirebaseService {
   FirebaseStorage get _storage => FirebaseStorage.instance;
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
@@ -120,15 +122,35 @@ class FirebaseService {
     });
   }
 
+  MapEntry<String, String>? _taxonomyMatch(String value) {
+    final needle = value.trim().toLowerCase();
+    for (final entry in categoryTaxonomy.entries) {
+      for (final sub in entry.value) {
+        if (sub.toLowerCase() == needle) return MapEntry(entry.key, sub);
+      }
+    }
+    return null;
+  }
+
   Future<void> updateClothingItem(
     String id, {
-    required String category,
+    required String subcategory,
     required String status,
   }) async {
     final docRef = await _resolveItemDocRef(id);
     final userId = _auth.currentUser?.uid;
+    final match = _taxonomyMatch(subcategory);
     await docRef.update({
-      'category': category.trim().toLowerCase(),
+      // Values outside the taxonomy leave the category fields unchanged.
+      if (match != null) ...{
+        'parentCategory': match.key,
+        'subcategory': match.value,
+        'categoryType': deriveCategoryType(
+          parentCategory: match.key,
+          subcategory: match.value,
+        ),
+        'category': match.value.toLowerCase(),
+      },
       'status': status.trim().toLowerCase(),
       if (userId != null) 'userId': userId,
       if (userId != null) 'user_id': userId,

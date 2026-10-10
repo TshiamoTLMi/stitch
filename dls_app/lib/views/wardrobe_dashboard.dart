@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../services/firebase_service.dart';
+import '../core/constants/wardrobe_taxonomy.dart';
 import '../services/wardrobe_repository.dart';
 
 class WardrobeDashboard extends StatefulWidget {
@@ -589,14 +590,9 @@ class _WardrobeDetailSheet extends StatefulWidget {
 class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   final FirebaseService _service = FirebaseService();
   final ImagePicker _picker = ImagePicker();
-  static const _categories = [
-    'shirt',
-    'outerwear',
-    'pants',
-    'shoes',
-    'accessory'
-  ];
-  static const _statuses = ['clean', 'in_wash', 'in the wash'];
+  static final _subcategories = <String>{
+    for (final subs in categoryTaxonomy.values) ...subs,
+  }.toList();
 
   late String _category;
   late String _status;
@@ -605,7 +601,7 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   Uint8List? _localImageBytes;
 
   List<String> get _categoryOptions {
-    final options = _categories.toList();
+    final options = _subcategories.toList();
     if (_category.isNotEmpty && !options.contains(_category)) {
       options.add(_category);
     }
@@ -613,7 +609,7 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   }
 
   List<String> get _statusOptions {
-    final options = _statuses.toList();
+    final options = statusOptions.toList();
     if (_status.isNotEmpty && !options.contains(_status)) {
       options.add(_status);
     }
@@ -623,7 +619,14 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   @override
   void initState() {
     super.initState();
-    _category = ((widget.data['category'] as String?) ?? 'shirt').toLowerCase();
+    final raw = ((widget.data['subcategory'] as String?) ??
+            (widget.data['category'] as String?) ??
+            '')
+        .trim();
+    _category = _subcategories.firstWhere(
+      (s) => s.toLowerCase() == raw.toLowerCase(),
+      orElse: () => raw.isEmpty ? _subcategories.first : raw,
+    );
     _status = ((widget.data['status'] as String?) ?? 'clean').toLowerCase();
   }
 
@@ -710,7 +713,7 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
     setState(() => _saving = true);
     try {
       await _service.updateClothingItem(id,
-          category: _category, status: _status);
+          subcategory: _category, status: _status);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Item updated.')),
