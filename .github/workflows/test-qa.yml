@@ -65,6 +65,12 @@ jobs:
             exit 1
           fi
 
+      - name: Free runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo apt-get clean
+          df -h /
+
       - name: Build Android QA APK
         run: flutter build apk --debug
 
