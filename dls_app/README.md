@@ -16,7 +16,6 @@ Detailed implementation/audit logs:
 - `AUDIT_TRACKING_PLAN.md`
 - `SCREENS.md`
 - `IOS_SETUP.md`
-- `TOMORROW_TEST_FLOW.md`
 - `FEATURE_PLANS.md`
 - `PRE_GO_LIVE_CHECKLIST.md`
 
@@ -180,9 +179,8 @@ Full iOS setup and validation steps are documented in `IOS_SETUP.md`.
 
 ## Testing Follow-Up
 
-For tomorrow's physical-device testing flow and next AI phase planning, use:
+For next AI phase planning, use:
 
-- `TOMORROW_TEST_FLOW.md`
 - `FEATURE_PLANS.md`
 - `PRE_GO_LIVE_CHECKLIST.md`
 

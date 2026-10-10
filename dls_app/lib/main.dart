@@ -7,6 +7,7 @@ import 'controllers/auth_controller.dart';
 import 'services/notification_service.dart';
 import 'controllers/wardrobe_controller.dart';
 import 'firebase_options.dart';
+import 'services/account_deletion_service.dart';
 import 'services/auth_service.dart';
 import 'services/demo_data_service.dart';
 import 'services/event_service.dart';
@@ -45,6 +46,9 @@ class DlsBootstrap extends StatelessWidget {
         Provider<OutfitHistoryService>(create: (_) => OutfitHistoryService()),
         Provider<DemoDataService>(create: (_) => DemoDataService()),
         Provider<ProfileService>(create: (_) => ProfileService()),
+        Provider<AccountDeletionService>(
+          create: (_) => AccountDeletionService(),
+        ),
         ChangeNotifierProvider<AuthController>(
           create: (context) => AuthController(context.read<AuthService>()),
         ),

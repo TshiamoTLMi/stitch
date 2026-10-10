@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -9,12 +10,15 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../controllers/wardrobe_controller.dart';
+import '../../core/legal/legal_content.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/profile_analytics_state.dart';
+import '../../services/account_deletion_service.dart';
 import '../../services/demo_data_service.dart';
 import '../../services/image_compression_service.dart';
 import '../../services/profile_service.dart';
 import '../../widgets/context_tip_card.dart';
+import '../legal/legal_page.dart';
 
 class ProfileAnalyticsSummary extends StatelessWidget {
   const ProfileAnalyticsSummary({
@@ -114,6 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   bool _seeding = false;
   bool _resetting = false;
+  bool _deletingAccount = false;
   Future<ProfileAnalyticsState>? _metricsFuture;
 
   Future<bool> _requestImagePermission(ImageSource source) async {
@@ -267,6 +272,54 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     } finally {
       if (mounted) setState(() => _resetting = false);
+    }
+  }
+
+  void _openLegal(LegalDocumentType type) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => LegalPage(type: type)),
+    );
+  }
+
+  Future<void> _confirmDeleteAccount(User user) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final deletionService = context.read<AccountDeletionService>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete your account?'),
+        content: const Text(
+          'This permanently deletes your account, wardrobe photos, outfits, events, insights, and profile photo. This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFB3261E),
+            ),
+            child: const Text('Delete Account'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _deletingAccount = true);
+    try {
+      await deletionService.deleteAccount(user);
+      // AppRouter returns to sign-in when the auth state clears.
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(AccountDeletionService.messageFor(e))),
+      );
+    } finally {
+      if (mounted) setState(() => _deletingAccount = false);
     }
   }
 
@@ -497,6 +550,48 @@ class _ProfilePageState extends State<ProfilePage> {
                       onPressed: auth.signOut,
                       icon: const Icon(Icons.logout),
                       label: const Text('Sign Out'),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.privacy_tip_outlined,
+                          color: AppTheme.primary,
+                        ),
+                        title: const Text('Privacy Policy'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _openLegal(LegalDocumentType.privacy),
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.gavel_outlined,
+                          color: AppTheme.primary,
+                        ),
+                        title: const Text('Terms of Service'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _openLegal(LegalDocumentType.terms),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _deletingAccount || auth.user == null
+                          ? null
+                          : () => _confirmDeleteAccount(auth.user!),
+                      icon: _deletingAccount
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.person_remove_outlined),
+                      label: Text(
+                        _deletingAccount ? 'Deleting Account...' : 'Delete Account',
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFB3261E),
+                      ),
                     ),
                   ],
                 );
