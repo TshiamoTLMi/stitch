@@ -61,3 +61,6 @@ analyze_machine_output.txt
 # the APK is a build output and the web bundle is reproducible.
 /docker-out/
 
+# Incoming third-party fashion dataset. Rights unverified; must never be committed.
+/training_data/
+

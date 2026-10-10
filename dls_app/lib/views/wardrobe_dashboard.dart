@@ -1,12 +1,10 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../core/utils/item_image.dart';
-import '../core/widgets/responsive_body.dart';
 import '../services/firebase_service.dart';
 import '../services/wardrobe_repository.dart';
 
@@ -156,10 +154,8 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBody(
-      maxWidth: 1100,
-      child: CustomScrollView(
-        slivers: [
+    return CustomScrollView(
+      slivers: [
         // ── Header ───────────────────────────────────────────────────────
         SliverToBoxAdapter(
           child: Padding(
@@ -331,10 +327,8 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
             return SliverPadding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
               sliver: SliverGrid(
-                // Responsive: 2 columns on a phone, more as the window widens,
-                // so desktop web does not stretch two giant cards.
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 240,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,
                   childAspectRatio: 0.70,
@@ -365,7 +359,6 @@ class _WardrobeDashboardState extends State<WardrobeDashboard> {
           },
         ),
       ],
-      ),
     );
   }
 }
@@ -381,11 +374,6 @@ class _WardrobeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageUrl =
         (data['imageUrl'] as String?) ?? (data['image_url'] as String?) ?? '';
-    final imageProvider = resolveImageSource(
-      url: imageUrl,
-      localPath: (data['localImagePath'] as String?) ??
-          (data['local_image_path'] as String?),
-    );
     final category = (data['category'] as String?) ?? 'Item';
     final status = ((data['status'] as String?) ?? 'clean').toLowerCase();
     final isClean = status == 'clean';
@@ -405,7 +393,7 @@ class _WardrobeCard extends StatelessWidget {
           // Image area
           Positioned.fill(
             bottom: 52,
-            child: imageProvider == null
+            child: imageUrl.isEmpty
                 ? const ColoredBox(
                     color: Color(0xFF0E0E0E),
                     child: Center(
@@ -416,9 +404,10 @@ class _WardrobeCard extends StatelessWidget {
                       ),
                     ),
                   )
-                : Image(
-                    image: ResizeImage(imageProvider, width: 420),
+                : Image.network(
+                    imageUrl,
                     fit: BoxFit.cover,
+                    cacheWidth: 420,
                     filterQuality: FilterQuality.low,
                     loadingBuilder: (_, child, prog) => prog == null
                         ? child
@@ -613,7 +602,7 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
   late String _status;
   bool _saving = false;
   bool _replacingPhoto = false;
-  String? _localImagePath; // preview of newly selected photo before upload
+  Uint8List? _localImageBytes;
 
   List<String> get _categoryOptions {
     final options = _categories.toList();
@@ -687,18 +676,20 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
 
     setState(() {
       _replacingPhoto = true;
-      _localImagePath = picked.path;
+      _localImageBytes = null;
     });
 
     try {
-      await _service.replaceItemImage(id, File(picked.path));
+      final imageBytes = await picked.readAsBytes();
+      await _service.replaceItemImage(id, imageBytes);
+      if (mounted) setState(() => _localImageBytes = imageBytes);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Photo updated!')),
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() => _localImagePath = null);
+      setState(() => _localImageBytes = null);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Photo update failed: $e')),
       );
@@ -821,8 +812,8 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                     aspectRatio: 3 / 4,
                     child: ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(22)),
-                      child: _localImagePath != null
-                          ? Image.file(File(_localImagePath!),
+                        child: _localImageBytes != null
+                          ? Image.memory(_localImageBytes!,
                               fit: BoxFit.cover)
                           : imageUrl.isEmpty
                               ? const ColoredBox(
@@ -834,12 +825,7 @@ class _WardrobeDetailSheetState extends State<_WardrobeDetailSheet> {
                                         size: 44),
                                   ),
                                 )
-                              : Image(
-                                  image: resolveImageSource(
-                                          url: imageUrl,
-                                          localPath: _localImagePath) ??
-                                      NetworkImage(imageUrl),
-                                  fit: BoxFit.cover),
+                              : Image.network(imageUrl, fit: BoxFit.cover),
                     ),
                   ),
                   // Replace photo button — bottom-right corner of image

@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/clothing_item.dart';
 import '../models/profile_analytics_state.dart';
+import 'demo_data_service.dart';
 
 class ProfileService {
   FirebaseAuth get _auth => FirebaseAuth.instance;
@@ -290,6 +291,10 @@ class ProfileService {
   }
 
   Future<Map<String, int>> clearCurrentUserTestData(String userId) async {
+    if (!DemoDataService.isDemoEnabled) {
+      throw StateError('Clearing test data is only available in demo mode.');
+    }
+
     final deleted = <String, int>{};
     deleted['clothing_items'] = await _deleteCollectionDocs('clothing_items', userId);
     deleted['outfit_history'] = await _deleteCollectionDocs('outfit_history', userId);
@@ -300,8 +305,16 @@ class ProfileService {
   }
 
   Future<int> _deleteCollectionDocs(String collection, String userId) async {
-    final byUserId = await _firestore.collection(collection).where('userId', isEqualTo: userId).get();
-    final byLegacyUserId = await _firestore.collection(collection).where('user_id', isEqualTo: userId).get();
+    final byUserId = await _firestore
+      .collection(collection)
+      .where('userId', isEqualTo: userId)
+      .where('is_demo', isEqualTo: true)
+      .get();
+    final byLegacyUserId = await _firestore
+      .collection(collection)
+      .where('user_id', isEqualTo: userId)
+      .where('is_demo', isEqualTo: true)
+      .get();
 
     final uniqueDocs = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{
       for (final doc in byUserId.docs) doc.id: doc,

@@ -42,14 +42,9 @@ are listed separately and are never marked passed by source inspection alone.
 
 ## Phase 4: Weather (US: context sensitivity)
 
-- [x] T011 Add `lib/models/weather_context.dart` + `lib/core/services/weather_service.dart`
-  (Open-Meteo via the existing `http`, atomic local cache via `path_provider`, neutral
-  default fallback, WMO 0-99 code mapping into the engine's hot/warm/mild/cold/freezing/rain
-  vocabulary). `geolocator` deliberately not added; default coordinates are used.
-- [x] T012 Tests in `test/core/services/weather_service_test.dart`: temperature bands, WMO
-  mapping (clear/cloudy/rain/snow/unknown), live fetch + cache write, offline -> cache,
-  offline + uncached -> neutral default, non-200 response, corrupt cache recovery, and
-  staleness labelling.
+- [ ] T011 Add `lib/models/weather_context.dart` + `lib/services/weather_service.dart`
+  (Open-Meteo via existing `http`, local cache via `path_provider`, neutral fallback).
+- [ ] T012 Test cache hit, cache miss + offline, and neutral default.
 
 ## Phase 5: Affinity engine (US: explainable local fit)
 
@@ -85,59 +80,12 @@ are listed separately and are never marked passed by source inspection alone.
 
 ## Phase 7: Seeding + dev/prod separation
 
-- [x] T020 Add `lib/core/engine/candidate_generator.dart` (seed loader for runtime wardrobe
-  injection lands in Phase 7). Partitions the wardrobe into slot buckets, pre-ranks each bucket
-  with `AffinityEngine.itemPrior`, generates combinations for the four canonical templates,
-  validates and scores them, and returns `ScoredOutfit`s sorted by Style Match.
-- [x] T021 Candidate pruning verified: per-bucket cap (default 4) plus a scored-list cap
-  (default 60) keep a 332-item wardrobe bounded and deterministic.
-- [x] T022 Candidate generation tested against the real 332-item seed dataset in
-  `test/core/engine/candidate_generator_test.dart` (every candidate passes structural
-  validation, sorted descending, deterministic, occasion/weather change the winner).
-- [x] T023 Production-gating tests in `test/core/services/mock_wardrobe_seeder_test.dart`:
-  a production build never seeds (including with `force: true`), a dev build seeds 332
-  re-owned items, a populated wardrobe is skipped, and a forced re-seed creates no
-  duplicate ids. Seeding moved to `WardrobeController.initialize()` so every tab shares
-  the dataset on launch.
-- [x] T030 Run candidate generation and scoring on a background isolate via
-  `compute()`. `CandidateGenerator.rankInBackground` is a static entry point taking a
-  JSON-encodable payload (rules JSON, learned weights, encoded wardrobe, context); results are
-  decoded back to `ScoredOutfit` by item id. A synchronous fallback keeps web and plain unit
-  tests working. `AffinityEngine` now exposes `sourceJson` and accepts `weightOverrides` so
-  the matrix never has to be re-read off the main thread.
-- [x] T031 Expand the Weather selector to all six engine conditions (`Hot`, `Warm`, `Mild`,
-  `Cold`, `Freezing`, `Rainy`) via `AffinityEngine.weatherLabels`, so `mild`/`warm` and
-  `cold`/`freezing` no longer collapse. `WeatherService` output maps 1-to-1.
-- [x] T032 Fix `AffinityEngine._weights` regression: the field was `late final`, so
-  `applyWeights()` threw on its second write (silently degrading feedback to the default
-  vector). It is now mutable, with a regression test in
-  `test/core/engine/candidate_generator_test.dart`.
-- [x] T033 Purge legacy recommendation paths superseded by the affinity engine. Deleted
-  `lib/services/rule_engine.dart`, `lib/services/ai_stylist.dart` (Groq),
-  `lib/services/outfit_llm_service.dart` and `lib/services/outfit_feedback_service.dart`.
-  `outfit_generator_page.dart` now uses `AffinityEngine` as its only engine: the fallback
-  branch, `_toOutfitResult`, `_saveFeedback`, `_wearThis` and `_swapItem` are gone, and swipe
-  plus the action row now feed the local `FeedbackStore` through `_applyLikeOrDislike`.
-- [x] T034 Add an isolate performance threshold: `CandidateGenerator.rankAsync` ranks
-  synchronously when the wardrobe has fewer than `isolateThreshold` (default 20) items,
-  because the serialise + spawn cost exceeds the scoring work at that size.
-- [x] T035 **Remaining legacy consumer**: `event_planner_page.dart` no longer calls
-  `OutfitBotService.generateSuggestionsForEvent`. Added
-  `lib/core/services/event_outfit_suggester.dart`, which pre-loads the bundled 127-rule
-  matrix once per page and ranks with `CandidateGenerator.rank()` using the engine's
-  five-variable context (occasion + weather). Cards now render
-  `Style Match 87%: Blouse + Trousers + Loafers - <engine reason>`. `OutfitBotService`
-  was reduced to `checkReadiness()` only: `generate()`, `generateSuggestionsForEvent()`,
-  `_scoreItem()` and `_isAccessory()` are deleted, and the app has exactly one scoring
-  path. Covered by `test/core/services/event_outfit_suggester_test.dart` (8 tests).
-- [x] T036 **Location configuration**: added `lib/models/weather_location.dart` (6 curated SA
-  city presets, equality/JSON round-trip) and made `WeatherService` location-aware: the
-  selected place is persisted atomically to `weather_location.json`, restored on launch,
-  used for the Open-Meteo request, and surfaced on `WeatherContext.locationName` /
-  `locationLabel`. The generator page exposes a location chip picker and shows
-  `Auto weather: 24°C Rain - Cape Town (live|cache|default)`. `geolocator` is still
-  deliberately not a dependency; a device location can be wired in later by resolving it
-  to a `WeatherLocation`.
+- [ ] T020 Add `lib/services/seed_wardrobe_loader.dart` (load asset JSON + rules).
+- [ ] T021 Add `lib/services/mock_wardrobe_seeder.dart` using
+  `WardrobeRepository.seedLocalItems()`, idempotent by stable UUID.
+- [ ] T022 Dev/demo gating: first-launch seeding only outside production; production empty
+  wardrobes stay empty.
+- [ ] T023 Tests: seed disabled in production; no duplicate insert on re-seed.
 
 ## Phase 8: UI + offline
 

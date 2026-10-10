@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/wardrobe_controller.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/utils/item_image.dart';
 import '../../models/profile_analytics_state.dart';
 import '../../services/demo_data_service.dart';
 import '../../services/image_compression_service.dart';
@@ -149,27 +148,31 @@ class _ProfilePageState extends State<ProfilePage> {
     final image = await _picker.pickImage(source: source, imageQuality: 90);
     if (image == null) return null;
 
-    final cropped = await ImageCropper().cropImage(
-      sourcePath: image.path,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Photo',
-          toolbarColor: Colors.black,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.square,
-          lockAspectRatio: true,
-        ),
-        IOSUiSettings(
-          title: 'Crop Photo',
-          aspectRatioLockEnabled: true,
-          resetAspectRatioEnabled: false,
-        ),
-      ],
-    );
-    if (cropped == null) return null;
-
-    final bytes = await cropped.readAsBytes();
+    final Uint8List bytes;
+    if (kIsWeb) {
+      bytes = await image.readAsBytes();
+    } else {
+      final cropped = await ImageCropper().cropImage(
+        sourcePath: image.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Photo',
+            toolbarColor: Colors.black,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+          ),
+          IOSUiSettings(
+            title: 'Crop Photo',
+            aspectRatioLockEnabled: true,
+            resetAspectRatioEnabled: false,
+          ),
+        ],
+      );
+      if (cropped == null) return null;
+      bytes = await cropped.readAsBytes();
+    }
     final compressed = await _compression.compressBytes(bytes, maxWidth: 500, jpegQuality: 72);
     return compressed.bytes;
   }
@@ -341,12 +344,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             child: profileImageUrl.isNotEmpty
                                 ? ClipOval(
-                                    child: Image(
-                                      image: resolveImageSource(
-                                              url: profileImageUrl) ??
-                                          NetworkImage(profileImageUrl),
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: Image.network(profileImageUrl, fit: BoxFit.cover),
                                   )
                                 : const CircleAvatar(
                                     backgroundColor: AppTheme.surfaceHigh,
@@ -459,7 +457,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Sprint 9: never expose synthetic Firestore seeding in release.
                     if (DemoDataService.isDemoEnabled)
                       ElevatedButton.icon(
                         onPressed: _seeding || userId.isEmpty
@@ -472,22 +469,29 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Icon(Icons.data_array),
-                        label:
-                            Text(_seeding ? 'Seeding Demo Data...' : 'Seed Demo Data'),
+                        label: Text(
+                            _seeding ? 'Seeding Demo Data...' : 'Seed Demo Data'),
                       ),
                     const SizedBox(height: 8),
-                    ElevatedButton.icon(
-                      onPressed: _resetting || userId.isEmpty ? null : () => _resetCurrentUserData(userId),
-                      icon: _resetting
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.delete_forever_outlined),
-                      label: Text(_resetting ? 'Clearing Test Data...' : 'Clear My Test Data'),
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF7C2417)),
-                    ),
+                    if (DemoDataService.isDemoEnabled)
+                      ElevatedButton.icon(
+                        onPressed: _resetting || userId.isEmpty
+                            ? null
+                            : () => _resetCurrentUserData(userId),
+                        icon: _resetting
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.delete_forever_outlined),
+                        label: Text(
+                          _resetting ? 'Clearing Test Data...' : 'Clear My Test Data',
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF7C2417),
+                        ),
+                      ),
                     const SizedBox(height: 8),
                     ElevatedButton.icon(
                       onPressed: auth.signOut,

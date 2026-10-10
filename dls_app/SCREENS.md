@@ -175,10 +175,7 @@
 
 ### Key Elements
 - `Outfit Choice Bot` headline
-- Weather card: `surfaceLow`, `wb_sunny` gold icon, **auto-detected** via `WeatherService`
-  (Open-Meteo) with source badge (`live` / `cached` / `default`) and a neutral fallback of
-  22°C Warm. Options map 1-to-1 to the engine's six conditions: `Hot`, `Warm`, `Mild`,
-  `Cold`, `Freezing`, `Rainy` — manual override always available.
+- Weather card: `surfaceLow`, `wb_sunny` gold icon, hardcoded "Johannesburg: 24°C, Sunny"
 - Dropdowns: Occasion · Mood · Weather (pill-shaped, `surfaceLow` fill)
 - `Find My Fit` elevated button (gold, full width)
 - Result card: style score, top/bottom/shoes/outerwear items, caption
@@ -255,8 +252,6 @@ Process audit tracking reference:
 | **Sprint 5** ✅ | Event planner with outfit suggestions wired to wardrobe | Screen 6 (Events) |
 | **Sprint 6** ✅ | Profile / Style DNA with real user data, AI caption display | Screen 7 (Profile) |
 | **Sprint 7** ✅ (code phase) | Automated QA + release prep docs + final physical-test handoff | All screens |
-| **Sprint 8** 🟡 ACTIVE — preflight gate CLEARED ✅ | Release Readiness & Preflight Verification | All screens (no visual change) |
-| **Sprint 9** 🚧 IN-PROGRESS | P1 AI Personalization & On-Device Outfit Engine | Screen 5 (Generate), Screen 7 (Profile) |
 
 ---
 
@@ -353,57 +348,3 @@ Process audit tracking reference:
 1. Android cmdline-tools installed.
 2. Android SDK licenses accepted.
 3. Physical device visible to ADB but currently `unauthorized` until on-device prompt is accepted.
-
----
-
-## Sprint 8 Execution Status (ACTIVE — Preflight Gate CLEARED)
-
-**Focus:** Release Readiness & Preflight Verification
-**Status:** 🟡 ACTIVE — baseline preflight gate cleared (2026-09-29)
-**Screens affected:** All screens (no visual change — design contract remains frozen)
-
-### Scope
-1. Re-verify the repository baseline build/test gate before any Sprint 9 feature work.
-2. Confirm branch hygiene: keep development on `dev` and promote `dev` into `test` for pre-prod testing.
-3. Keep release-readiness evidence current for the remaining physical/external gates.
-
-### Preflight Evidence (2026-09-29)
-`tooling\preflight_check.ps1` executed end-to-end → **`All preflight checks passed.`**
-
-| Gate | Result |
-|---|---|
-| `flutter analyze` | ✅ Passed |
-| `flutter test` (full suite) | ✅ Passed |
-| Focused story tests (9 files) | ✅ Passed |
-| `flutter build apk --debug` | ✅ Passed |
-| `flutter build apk --release` | ✅ Passed (`app-release.apk`, 61.6MB) |
-| `flutter build web --release` | ✅ Passed (`Built build\web`) |
-
-### Branch Verification
-- Branch model (per `AUDIT_TRACKING_PLAN.md` §3): `dev` = coding development → `test` = pre-prod testing → `main` = production.
-- Development commits are authored on `dev`, then promoted `dev` → `test` for pre-prod validation.
-- Sprint 8 docs landed on `dev`; `test` was fast-forwarded from `dev` so pre-prod reflects the latest development baseline.
-
-### Remaining before close
-1. Android physical notification / launcher / upgrade + account-preservation checks.
-2. Production-like Web reset / OAuth / upload / PWA install / low-network checks.
-3. Firebase Console + deployed-rules verification (release owner).
-
----
-
-## Sprint 9 Execution Status (IN-PROGRESS)
-
-**Focus:** P1 AI Personalization & On-Device Outfit Engine
-**Status:** 🚧 IN-PROGRESS
-**Screens affected:** Screen 5 (Generate), Screen 7 (Profile)
-
-### Planned scope (from `FEATURE_PLANS.md` P1)
-1. **AI Style DNA v1** — derive an explainable style profile from onboarding + closet metadata.
-2. **AI Outfit Ranking v2** — improve scoring using weather/event context and preference history.
-3. **Feedback Loop** — like/dislike on suggestions, feeding future ranking.
-4. **On-Device Outfit Engine** — keep generation serverless/on-device with the existing rule engine and offline fallbacks.
-5. **Onboarding retention** — save interrupted onboarding progress and show completion state.
-
-### Constraint
-Work must be **additive** to this contract. No screen redesign, navigation change, or token change
-without updating this document first. Services remain UID-scoped and deterministic/offline-safe.

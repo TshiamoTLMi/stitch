@@ -2,6 +2,7 @@
 # and the Gradle caches are uploaded to the daemon on every `docker compose build`.
 .git
 .gitignore
+training_data/
 
 # Build output and tool caches (regenerated inside the container).
 build/

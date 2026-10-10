@@ -57,6 +57,30 @@ services:
       bash -c "flutter pub get &&
                flutter analyze &&
                flutter test --concurrency=1"
+  
+  # Opt-in, offline test environment for approved local training-data work.
+  # The source is bind-mounted read-only and is never part of the image build
+  # context. No real-data mapper currently runs automatically in this service.
+  training-data-test:
+    <<: *flutter
+    profiles: ["training-data"]
+    network_mode: none
+    environment:
+      <<: *env
+      TRAINING_DATA_DIR: /training_data
+      TRAINING_DATA_READ_ONLY: "true"
+    volumes:
+      - ../..:/workspace
+      - ../training_data:/training_data:ro
+      - build-output:/workspace/dls_app/build
+      - dart-tool:/workspace/dls_app/.dart_tool
+      - pub-cache:/root/.pub-cache
+      - gradle-cache:/root/.gradle
+      - android-sdk:/opt/android-sdk-linux
+    command: >
+      bash -c "flutter pub get --offline &&
+               flutter analyze --no-pub &&
+               flutter test --no-pub --concurrency=1"
 
   # Production web bundle. Copy build/web/ to any static host (Firebase
   # Hosting, Cloud Storage, nginx).

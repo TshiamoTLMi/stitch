@@ -131,8 +131,19 @@ class WeatherService {
     } catch (_) {
       // Offline, timed out, or malformed payload: fall through.
     }
-    return await readCache() ?? defaultContext(locationName: locationName);
+    // A cached reading is only reused for the same city it was taken for, so
+    // switching city never shows another place's weather.
+    final cached = await readCache();
+    if (cached != null && _sameCity(cached.locationName, locationName)) {
+      return cached;
+    }
+    return defaultContext(locationName: locationName);
   }
+
+  /// Null means the curated default city, so a missing name matches it.
+  static bool _sameCity(String? a, String? b) =>
+      (a ?? WeatherLocation.defaultLocation.name) ==
+      (b ?? WeatherLocation.defaultLocation.name);
 
   Future<WeatherContext?> _fetchLive() async {
     final uri = Uri.parse(

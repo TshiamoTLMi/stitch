@@ -35,6 +35,27 @@ docker compose run --rm test      # analyze + full unit suite
 docker compose run --rm build-web # -> build/web/
 docker compose run --rm build-apk # -> build/app/outputs/flutter-apk/
 docker compose run --rm shell     # interactive bash
+  
+### Isolated training-data test environment
+
+The optional `training-data-test` service is not started by the normal Compose
+workflow. It mounts `../training_data` at `/training_data` as read-only, sets
+`TRAINING_DATA_DIR=/training_data`, and disables container networking. The
+dataset is excluded from the Docker build context and is never copied into the
+image. The service only resolves dependencies offline, analyzes the app, and
+runs the existing synthetic/unit tests; it does not parse or train on the
+incoming dataset.
+
+Run it only after the source is complete and the applicable provenance and use
+permissions are verified:
+
+```bash
+docker compose --profile training-data run --rm training-data-test
+```
+
+Real dataset profiling/mapping is not implemented yet. Do not treat this test
+service as evidence that the incoming data is complete, licensed for training,
+or mapped to the DLS closet taxonomy.
 docker compose run --rm shell -c 'flutter doctor -v'   # one-off command
 ```
 

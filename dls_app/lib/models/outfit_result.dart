@@ -18,19 +18,14 @@ class OutfitResult {
   final ClothingItem? shoes;
   final ClothingItem? accessory;
   final ClothingItem? outerwear;
-
-  /// A dress or jumpsuit that covers the whole body, instead of a top+bottom
-  /// pairing. Rendered in its own full-height slot.
   final ClothingItem? onePiece;
-
   final List<ClothingItem> accessories;
   final int score;
   final List<String> reasoning;
 
   bool get isOnePiece => onePiece != null;
 
-  bool get isValid =>
-      (top != null || bottom != null || onePiece != null) && shoes != null;
+  bool get isValid => (top != null || bottom != null || onePiece != null) && shoes != null;
 
   Map<String, dynamic> toJson() {
     return {

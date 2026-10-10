@@ -52,6 +52,30 @@ class WeatherContext {
     }
   }
 
+  /// The generator's Weather dropdown option for this reading.
+  String get generatorWeather => generatorWeatherFor(condition);
+
+  /// Maps a DLS condition to the generator's Weather dropdown option.
+  /// Unknown conditions fall back to `Mild`, which is always a valid option.
+  static String generatorWeatherFor(String condition) {
+    switch (condition) {
+      case 'hot':
+        return 'Hot';
+      case 'warm':
+        return 'Warm';
+      case 'mild':
+        return 'Mild';
+      case 'cold':
+        return 'Cold';
+      case 'freezing':
+        return 'Freezing';
+      case 'rain':
+        return 'Rainy';
+      default:
+        return 'Mild';
+    }
+  }
+
   String get label => '${temperatureC.round()}°C $conditionLabel';
 
   /// Label including the active place, e.g. `24°C Rain - Cape Town`.

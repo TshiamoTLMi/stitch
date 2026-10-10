@@ -6,6 +6,7 @@ class Outfit {
     this.bottom,
     this.shoes,
     this.outerwear,
+    this.onePiece,
     this.accessories = const <ClothingItem>[],
     required this.styleScore,
     required this.reason,
@@ -15,15 +16,17 @@ class Outfit {
   final ClothingItem? bottom;
   final ClothingItem? shoes;
   final ClothingItem? outerwear;
+  final ClothingItem? onePiece;
   final List<ClothingItem> accessories;
   final int styleScore;
   final String reason;
 
-  bool get isComplete => top != null && bottom != null && shoes != null;
+  bool get isComplete =>
+      shoes != null && (onePiece != null || (top != null && bottom != null));
 
   List<String> get missingItems => <String>[
-        if (top == null) 'top',
-        if (bottom == null) 'bottom',
+        if (onePiece == null && top == null) 'top',
+        if (onePiece == null && bottom == null) 'bottom',
         if (shoes == null) 'shoes',
       ];
 
@@ -46,6 +49,7 @@ class Outfit {
       'bottom': itemJson(bottom),
       'shoes': itemJson(shoes),
       'outerwear': itemJson(outerwear),
+      'onePiece': itemJson(onePiece),
       'accessories': accessories.map(itemJson).toList(),
       'styleScore': styleScore,
       'reason': reason,

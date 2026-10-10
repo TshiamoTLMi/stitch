@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -24,26 +23,8 @@ class _UploadScreenState extends State<UploadScreen> {
   final ImagePicker _picker = ImagePicker();
   final FirebaseService _firebaseService = FirebaseService();
   late final VisionEngine _visionEngine;
-  File? _selectedImage;
-
-  /// Picked image path/URL. On web `image_picker` yields a `blob:` URL, not a
-  /// filesystem path, so this is the platform-neutral handle used for
-  /// "is something selected" checks and for staleness guards.
-  String? _selectedPath;
-
-  /// Raw bytes of the pick, used for the preview and vision analysis on every
-  /// platform (Safari has no app-owned file system to read from).
-  Uint8List? _previewBytes;
-
-  bool get _hasSelection => _selectedPath != null;
-
-  void _clearSelection() {
-    setState(() {
-      _selectedImage = null;
-      _selectedPath = null;
-      _previewBytes = null;
-    });
-  }
+  XFile? _selectedImage;
+  Uint8List? _selectedImageBytes;
   bool _isUploading = false;
   bool _isAiThinking = false;
   final Set<String> _lockedFields = <String>{};
@@ -89,7 +70,7 @@ class _UploadScreenState extends State<UploadScreen> {
       return;
     }
 
-    _selectImage(image);
+    await _selectImage(image);
   }
 
   Future<void> _pickFromGallery() async {
@@ -102,16 +83,14 @@ class _UploadScreenState extends State<UploadScreen> {
     final image = await _picker.pickImage(source: ImageSource.gallery);
     if (image == null) return;
 
-    _selectImage(image);
+    await _selectImage(image);
   }
 
-  /// Accepts an [XFile] so the same code path works on Android (a real file)
-  /// and on web (a `blob:` URL that can only be read as bytes).
-  Future<void> _selectImage(XFile picked) async {
-    final path = picked.path;
+  Future<void> _selectImage(XFile image) async {
+    final bytes = await image.readAsBytes();
     setState(() {
-      _selectedImage = kIsWeb ? null : File(path);
-      _selectedPath = path;
+      _selectedImage = image;
+      _selectedImageBytes = bytes;
       _selectedParentCategory = null;
       _selectedSubcategory = null;
       _selectedFit = null;
@@ -120,31 +99,18 @@ class _UploadScreenState extends State<UploadScreen> {
       _isAiThinking = true;
       _lastUploadError = null;
     });
-
-    Uint8List? bytes;
-    try {
-      bytes = await picked.readAsBytes();
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _isAiThinking = false;
-        _lastUploadError = 'Could not read that image. Try another.';
-      });
-      return;
-    }
-    if (!mounted || _selectedPath != path) return;
-    setState(() => _previewBytes = bytes);
-    unawaited(_runVisionAnalysis(path, bytes));
+    unawaited(_runVisionAnalysis(image, bytes));
   }
 
-  Future<void> _runVisionAnalysis(String path, Uint8List bytes) async {
+  Future<void> _runVisionAnalysis(XFile image, Uint8List bytes) async {
     try {
       final result = await _visionEngine.analyzeClothingItem(bytes);
-      if (!mounted || _selectedPath != path) return;
+      if (!mounted || _selectedImage?.path != image.path) return;
 
       if (result.isNotClothing) {
-        _clearSelection();
         setState(() {
+          _selectedImage = null;
+          _selectedImageBytes = null;
           _isAiThinking = false;
           _selectedParentCategory = null;
           _selectedSubcategory = null;
@@ -158,7 +124,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
       _applyVisionAnalysis(result);
     } catch (_) {
-      if (mounted && _selectedPath == path) {
+      if (mounted && _selectedImage?.path == image.path) {
         setState(() => _isAiThinking = false);
       }
     }
@@ -293,7 +259,7 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _uploadImage() async {
-    if (!_hasSelection) {
+    if (_selectedImage == null) {
       _showMessage('Select an image first.');
       return;
     }
@@ -322,8 +288,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
     try {
       await _firebaseService.uploadClothingItem(
-        _selectedImage,
-        preReadBytes: _previewBytes,
+        _selectedImageBytes!,
         parentCategory: _selectedParentCategory!,
         subcategory: _selectedSubcategory!,
         categoryType: deriveCategoryType(
@@ -372,22 +337,13 @@ class _UploadScreenState extends State<UploadScreen> {
         fit: StackFit.expand,
         children: [
           // Background: selected image or dark
-          if (_hasSelection)
-            _selectedImage != null
-                ? Image.file(
-                    _selectedImage!,
-                    fit: BoxFit.cover,
-                    color: Colors.black.withValues(alpha: 0.4),
-                    colorBlendMode: BlendMode.darken,
-                  )
-                : (_previewBytes != null
-                    ? Image.memory(
-                        _previewBytes!,
-                        fit: BoxFit.cover,
-                        color: Colors.black.withValues(alpha: 0.4),
-                        colorBlendMode: BlendMode.darken,
-                      )
-                    : const ColoredBox(color: Color(0xFF0E0E0E)))
+          if (_selectedImage != null)
+            Image.memory(
+              _selectedImageBytes!,
+              fit: BoxFit.cover,
+              color: Colors.black.withValues(alpha: 0.4),
+              colorBlendMode: BlendMode.darken,
+            )
           else
             const ColoredBox(color: Color(0xFF0E0E0E)),
 
@@ -442,7 +398,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 // Viewfinder
                 Expanded(
                   child: Center(
-                    child: _ViewfinderBox(hasImage: _hasSelection),
+                    child: _ViewfinderBox(hasImage: _selectedImage != null),
                   ),
                 ),
 
@@ -451,12 +407,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   child: SingleChildScrollView(
                     physics: const ClampingScrollPhysics(),
                     child: Padding(
-                      // Keep the form readable on a wide desktop browser
-                      // instead of stretching inputs across the whole window.
-                      padding: EdgeInsets.symmetric(
-                        horizontal:
-                            MediaQuery.sizeOf(context).width > 900 ? 160 : 32,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: Column(
                         children: [
                           // Instruction text
@@ -469,7 +420,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                   color: const Color(0xFF4D4635)),
                               const SizedBox(width: 10),
                               Text(
-                                _hasSelection
+                                _selectedImage != null
                                     ? 'REVIEW YOUR PIECE'
                                     : 'ALIGN YOUR PIECE WITHIN THE FRAME',
                                 style: const TextStyle(
@@ -488,7 +439,7 @@ class _UploadScreenState extends State<UploadScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          if (_hasSelection) ...[
+                          if (_selectedImage != null) ...[
                             if (_lastUploadError != null) ...[
                               Container(
                                 width: double.infinity,
@@ -818,7 +769,7 @@ class _UploadScreenState extends State<UploadScreen> {
                               ),
 
                               // Main action
-                              if (!_hasSelection)
+                              if (_selectedImage == null)
                                 // Shutter button
                                 GestureDetector(
                                   onTap: _pickFromCamera,
@@ -901,12 +852,12 @@ class _UploadScreenState extends State<UploadScreen> {
 
                               // Flip / retake
                               _CircleControl(
-                                onTap: _hasSelection
+                                onTap: _selectedImage != null
                                     ? () =>
-                                        setState(_clearSelection)
+                                        setState(() => _selectedImage = null)
                                     : _pickFromCamera,
                                 child: Icon(
-                                  _hasSelection
+                                  _selectedImage != null
                                       ? Icons.refresh_rounded
                                       : Icons.flip_camera_ios_outlined,
                                   color: const Color(0xFFD0C5AF),

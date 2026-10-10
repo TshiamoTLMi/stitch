@@ -25,18 +25,13 @@ class ClothingItem {
     this.lastWornDate,
   }) : colorGroup = _resolveColorGroup(colorGroup, color);
 
-  /// Colour groups written by pre-Sprint-9 data. They are re-derived from the
-  /// colour so the harmony engine never sees a stale group.
   static const Set<String> legacyColorGroups = <String>{'dark', 'light', 'bright'};
 
-  /// Returns a current colour group, re-deriving it from [color] when the stored
-  /// value is missing or a legacy `dark`/`light`/`bright` value.
   static String _resolveColorGroup(String? stored, String color) {
     final value = (stored ?? '').trim().toLowerCase();
     if (value.isNotEmpty && !legacyColorGroups.contains(value)) return value;
     return deriveColorGroup(color);
   }
-
 
   final String id;
   final String parentCategory;
@@ -55,12 +50,7 @@ class ClothingItem {
   final String userId;
   final DateTime createdAt;
   final DateTime updatedAt;
-
-  /// How many times this garment has been logged as worn. Drives the
-  /// utilisation-rate and "unworn shelf" analytics.
   final int wearCount;
-
-  /// When this garment was last logged as worn. `null` means never worn.
   final DateTime? lastWornDate;
 
   // Legacy convenience alias used by older screens.
@@ -87,9 +77,6 @@ class ClothingItem {
       'createdAt': Timestamp.fromDate(createdAt),
       'updated_at': Timestamp.fromDate(updatedAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
-
-      // Wear tracking (Sprint 11 analytics). `wearCount` is always written so
-      // Firestore and the local analytics log agree on a garment's history.
       'wearCount': wearCount,
       if (lastWornDate != null)
         'lastWornDate': Timestamp.fromDate(lastWornDate!),
@@ -150,8 +137,6 @@ class ClothingItem {
     );
   }
 
-  /// Returns a copy with the supplied fields replaced. Used when development
-  /// seed rows are re-owned by the signed-in user.
   ClothingItem copyWith({
     String? userId,
     String? imageUrl,

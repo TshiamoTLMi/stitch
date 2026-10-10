@@ -2,6 +2,26 @@ import 'package:flutter/foundation.dart' show compute, kIsWeb;
 
 import '../../models/clothing_item.dart';
 import 'affinity_engine.dart';
+import 'outfit_theme.dart';
+
+/// The primary outfit for the requested weather, plus a backup outfit for a
+/// contrasting weather condition (for example rain when the forecast is dry).
+class OutfitRecommendation {
+  const OutfitRecommendation({
+    this.primary,
+    this.alternate,
+    this.alternateWeather,
+  });
+
+  /// Best outfit for the requested weather, or null when none is possible.
+  final ScoredOutfit? primary;
+
+  /// Best outfit for [alternateWeather], distinct from [primary].
+  final ScoredOutfit? alternate;
+
+  /// Engine condition id the [alternate] was ranked for, such as `rain`.
+  final String? alternateWeather;
+}
 
 /// A structurally valid outfit candidate together with its computed score.
 class ScoredOutfit {
@@ -152,11 +172,14 @@ class CandidateGenerator {
     String occasion = '',
     String? weather,
     String? targetStyle,
+    OutfitTheme theme = OutfitTheme.none,
     int limit = 3,
     int? candidateCap,
   }) {
+    final pool =
+        theme.isActive ? wardrobe.where(theme.accepts).toList() : wardrobe;
     final buckets = partition(
-      wardrobe,
+      pool,
       occasion: occasion,
       weather: weather,
       targetStyle: targetStyle,
@@ -194,6 +217,51 @@ class CandidateGenerator {
     return capped;
   }
 
+  /// Ranks the primary outfit for [weather] and a backup outfit for the
+  /// contrasting condition from [AffinityEngine.alternateWeatherFor]. The backup
+  /// is never the same outfit as the primary.
+  OutfitRecommendation recommend({
+    required List<ClothingItem> wardrobe,
+    String occasion = '',
+    String? weather,
+    String? targetStyle,
+    OutfitTheme theme = OutfitTheme.none,
+  }) {
+    final primaryRanked = rank(
+      wardrobe: wardrobe,
+      occasion: occasion,
+      weather: weather,
+      targetStyle: targetStyle,
+      theme: theme,
+      limit: 1,
+    );
+    if (primaryRanked.isEmpty) return const OutfitRecommendation();
+    final primary = primaryRanked.first;
+
+    final alternateWeather = AffinityEngine.alternateWeatherFor(weather);
+    final alternatives = rank(
+      wardrobe: wardrobe,
+      occasion: occasion,
+      weather: alternateWeather,
+      targetStyle: targetStyle,
+      theme: theme,
+      limit: 5,
+    );
+    ScoredOutfit? alternate;
+    for (final candidate in alternatives) {
+      if (candidate.id != primary.id) {
+        alternate = candidate;
+        break;
+      }
+    }
+
+    return OutfitRecommendation(
+      primary: primary,
+      alternate: alternate,
+      alternateWeather: alternate == null ? null : alternateWeather,
+    );
+  }
+
   // --- Background (isolate) ranking -----------------------------------------
   //
   // Only JSON-encodable values cross the isolate boundary, so the request and
@@ -224,6 +292,7 @@ class CandidateGenerator {
     required String occasion,
     String? weather,
     String? targetStyle,
+    OutfitTheme theme = OutfitTheme.none,
     int limit = 3,
     int bucketCap = 4,
     int maxCandidates = 60,
@@ -236,6 +305,7 @@ class CandidateGenerator {
       'occasion': occasion,
       'weather': weather,
       'targetStyle': targetStyle,
+      'theme': theme.name,
       'limit': limit,
       'bucketCap': bucketCap,
       'maxCandidates': maxCandidates,
@@ -263,6 +333,7 @@ class CandidateGenerator {
       occasion: (payload['occasion'] as String?) ?? '',
       weather: payload['weather'] as String?,
       targetStyle: payload['targetStyle'] as String?,
+      theme: OutfitTheme.fromName(payload['theme'] as String?),
       limit: (payload['limit'] as num?)?.toInt() ?? 3,
       candidateCap: (payload['candidateCap'] as num?)?.toInt(),
     );
@@ -356,6 +427,7 @@ class CandidateGenerator {
     String occasion = '',
     String? weather,
     String? targetStyle,
+    OutfitTheme theme = OutfitTheme.none,
     int limit = 3,
     int? candidateCap,
   }) async {
@@ -364,6 +436,7 @@ class CandidateGenerator {
           occasion: occasion,
           weather: weather,
           targetStyle: targetStyle,
+          theme: theme,
           limit: limit,
           candidateCap: candidateCap,
         );
@@ -380,6 +453,7 @@ class CandidateGenerator {
       occasion: occasion,
       weather: weather,
       targetStyle: targetStyle,
+      theme: theme,
       limit: limit,
       bucketCap: bucketCap,
       maxCandidates: maxCandidates,

@@ -257,6 +257,7 @@ class DemoDataService {
     final auditDoc = _firestore.collection('audit_events').doc();
     batch.set(auditDoc, {
       'user_id': userId,
+      'is_demo': true,
       'type': 'demo_seed',
       'sprint': 6,
       'message': 'Demo data seeded for sprint validation.',

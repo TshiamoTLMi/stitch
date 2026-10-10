@@ -278,5 +278,52 @@ void main() {
       expect(context.isDefault, isTrue);
       expect(context.locationName, 'Pretoria');
     });
+
+    test('never reuses a cached reading taken for a different city', () async {
+      await serviceWith(_live(18, 0), tempDir).current(); // Johannesburg default
+
+      final durban = serviceWith(_offline, tempDir);
+      await durban.setLocation(
+        const WeatherLocation(name: 'Durban', latitude: -29.8587, longitude: 31.0218),
+      );
+      final context = await durban.current();
+      expect(context.isCached, isFalse);
+      expect(context.isDefault, isTrue);
+      expect(context.locationName, 'Durban');
+    });
+
+    test('reuses the cache for the same city offline', () async {
+      const capeTown = WeatherLocation(
+        name: 'Cape Town',
+        latitude: -33.9249,
+        longitude: 18.4241,
+      );
+      final online = serviceWith(_live(16, 61), tempDir);
+      await online.setLocation(capeTown);
+      await online.current();
+
+      final offline = serviceWith(_offline, tempDir);
+      await offline.setLocation(capeTown);
+      final context = await offline.current();
+      expect(context.isCached, isTrue);
+      expect(context.condition, 'rain');
+      expect(context.locationName, 'Cape Town');
+    });
+  });
+
+  group('generator weather mapping', () {
+    test('maps each DLS condition to a valid generator option', () {
+      expect(WeatherContext.generatorWeatherFor('hot'), 'Hot');
+      expect(WeatherContext.generatorWeatherFor('warm'), 'Warm');
+      expect(WeatherContext.generatorWeatherFor('mild'), 'Mild');
+      expect(WeatherContext.generatorWeatherFor('cold'), 'Cold');
+      expect(WeatherContext.generatorWeatherFor('freezing'), 'Freezing');
+      expect(WeatherContext.generatorWeatherFor('rain'), 'Rainy');
+    });
+
+    test('unknown conditions fall back to Mild, never the removed Sunny', () {
+      expect(WeatherContext.generatorWeatherFor('sunny'), 'Mild');
+      expect(WeatherContext.generatorWeatherFor(''), 'Mild');
+    });
   });
 }

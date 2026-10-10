@@ -99,9 +99,7 @@ class WardrobeRepository {
   }
 
   Future<void> _deleteLocalImage(ClothingItem? item) async {
-    // Web has no app-owned file system; Storage deletion handles cleanup there.
     if (kIsWeb) return;
-
     final directory = await getApplicationDocumentsDirectory();
     final candidates = <String>{
       '${directory.path}/wardrobe_items/${item?.id ?? ''}.jpg'

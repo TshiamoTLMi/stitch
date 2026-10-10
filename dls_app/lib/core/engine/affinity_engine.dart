@@ -417,6 +417,11 @@ class AffinityEngine {
     return weatherAliases[key] ?? key;
   }
 
+  /// The contrasting condition offered as a backup outfit: rain when the
+  /// forecast is dry, and a dry mild fit when it is already raining.
+  static String alternateWeatherFor(String? weather) =>
+      canonicalWeather(weather ?? '') == 'rain' ? 'mild' : 'rain';
+
   static String _normStyle(String value) => _normalizeStyleKey(value);
 
   static double _clamp01(double value) => value.clamp(0.0, 1.0);

@@ -29,14 +29,8 @@ class FirebaseService {
     }
   }
 
-  /// Uploads a picked photo.
-  ///
-  /// Pass [preReadBytes] on web, where `image_picker` hands back a `blob:` URL
-  /// that has no [File] on disk. Compression goes through `compressWithList`
-  /// because `compressWithFile` has no web implementation.
   Future<void> uploadClothingItem(
-    File? imageFile, {
-    Uint8List? preReadBytes,
+    Uint8List imageBytes, {
     required String parentCategory,
     required String subcategory,
     required String categoryType,
@@ -48,19 +42,11 @@ class FirebaseService {
     String status = 'clean',
     String gender = 'Unisex',
   }) async {
-    final rawBytes = preReadBytes ??
-        (imageFile != null ? await imageFile.readAsBytes() : null);
-    if (rawBytes == null || rawBytes.isEmpty) {
-      throw Exception('No image data to upload.');
-    }
-
     final id = _uuid.v4();
-    // [QA TEST POINT] Compression limits are enforced here, before upload:
-    // 1080px long edge and 80% JPEG quality, targeting < 300 KB per item.
     final compressedBytes = await FlutterImageCompress.compressWithList(
-      rawBytes,
+      imageBytes,
       minWidth: 1080,
-      quality: 80,
+      quality: 70,
       format: CompressFormat.jpeg,
     );
 
@@ -102,8 +88,9 @@ class FirebaseService {
       throw Exception('Image upload failed: $uploadError');
     }
 
-    // Web has no app-owned documents directory; the Storage URL is the source.
-    final localImagePath = kIsWeb ? null : await _saveLocalImage(id, compressedBytes);
+    final localImagePath = kIsWeb
+      ? null
+      : await _saveLocalImage(id, compressedBytes);
 
     await _firestore.collection('clothing_items').doc(id).set({
       'id': id,
@@ -119,7 +106,7 @@ class FirebaseService {
       'gender': gender,
       'userId': userId,
       'imageUrl': imageUrl,
-      'localImagePath': localImagePath,
+      if (localImagePath != null) 'localImagePath': localImagePath,
       'storagePath': storagePath,
       'createdAt': FieldValue.serverTimestamp(),
 
@@ -152,15 +139,15 @@ class FirebaseService {
 
   /// Compresses [imageFile], uploads it to Storage, then updates the Firestore
   /// doc so the item shows the new photo immediately.
-  Future<void> replaceItemImage(String id, File imageFile) async {
-    final compressedBytes = await FlutterImageCompress.compressWithFile(
-      imageFile.absolute.path,
+  Future<void> replaceItemImage(String id, Uint8List imageBytes) async {
+    final compressedBytes = await FlutterImageCompress.compressWithList(
+      imageBytes,
       minWidth: 1080,
       quality: 70,
       format: CompressFormat.jpeg,
     );
 
-    if (compressedBytes == null || compressedBytes.isEmpty) {
+    if (compressedBytes.isEmpty) {
       throw Exception('Image compression failed.');
     }
 
