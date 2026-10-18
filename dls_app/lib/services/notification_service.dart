@@ -68,7 +68,7 @@ class NotificationService {
     // Timezone data must be loaded before scheduling.
     tz.initializeTimeZones();
 
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const android = AndroidInitializationSettings('@mipmap/launcher_icon');
     const darwin = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -181,7 +181,7 @@ class NotificationService {
         channelDescription: _channelDesc,
         importance: Importance.high,
         priority: Priority.high,
-        icon: '@mipmap/ic_launcher',
+        icon: '@mipmap/launcher_icon',
       ),
       iOS: DarwinNotificationDetails(
         presentAlert: true,

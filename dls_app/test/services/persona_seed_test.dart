@@ -64,4 +64,43 @@ void main() {
       );
     }
   });
+
+  test('every persona has a profile whose email maps back to it', () {
+    for (final persona in personas) {
+      final profile = kPersonaProfiles[persona.id];
+      expect(profile, isNotNull, reason: persona.id);
+      expect(personaIdForEmail(profile!.email), persona.id);
+    }
+    expect(personaIdForEmail('someone@gmail.com'), isNull);
+  });
+
+  test('persona write plan writes a complete onboarding profile', () {
+    final plan = buildPersonaWrites(
+      persona: personas.first,
+      userId: 'uid-1',
+      now: DateTime(2026, 10, 10),
+      newId: () => 'x',
+    );
+    final user = plan.writes.singleWhere((w) => w.collection == 'users');
+    expect(user.id, 'uid-1');
+    expect(user.merge, isTrue);
+    for (final key in [
+      'email',
+      'displayName',
+      'firstName',
+      'lastName',
+      'birthdate',
+      'age',
+      'gender',
+      'stylePreferences',
+      'createdAt',
+    ]) {
+      expect(user.data.containsKey(key), isTrue, reason: key);
+    }
+  });
+
+  test('ageOn counts whole years and respects the birthday', () {
+    expect(ageOn(DateTime(1994, 3, 12), DateTime(2026, 10, 10)), 32);
+    expect(ageOn(DateTime(1994, 3, 12), DateTime(2026, 3, 11)), 31);
+  });
 }

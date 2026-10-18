@@ -78,6 +78,83 @@ class PersonaWritePlan {
   final int eventCount;
 }
 
+/// Profile fields onboarding would collect for a test persona.
+class PersonaProfile {
+  const PersonaProfile({
+    required this.email,
+    required this.firstName,
+    required this.lastName,
+    required this.nickname,
+    required this.gender,
+    required this.birthdate,
+  });
+
+  final String email;
+  final String firstName;
+  final String lastName;
+  final String nickname;
+  /// Onboarding values: 'Male', 'Female', 'Non-binary' or 'Prefer not to say'.
+  final String gender;
+  /// ISO date, yyyy-MM-dd.
+  final String birthdate;
+}
+
+/// Test account profiles keyed by persona id. Emails match `.local/persona_logins.json`.
+const Map<String, PersonaProfile> kPersonaProfiles = {
+  'man_street': PersonaProfile(
+    email: 'persona-man-street@example.com',
+    firstName: 'Sipho',
+    lastName: 'Dlamini',
+    nickname: 'Sip',
+    gender: 'Male',
+    birthdate: '1994-03-12',
+  ),
+  'man_smart': PersonaProfile(
+    email: 'persona-man-smart@example.com',
+    firstName: 'Daniel',
+    lastName: 'Naidoo',
+    nickname: 'Dan',
+    gender: 'Male',
+    birthdate: '1988-07-02',
+  ),
+  'woman_casual': PersonaProfile(
+    email: 'persona-woman-casual@example.com',
+    firstName: 'Zanele',
+    lastName: 'Khumalo',
+    nickname: 'Zee',
+    gender: 'Female',
+    birthdate: '1996-11-20',
+  ),
+  'woman_smart': PersonaProfile(
+    email: 'persona-woman-smart@example.com',
+    firstName: 'Naledi',
+    lastName: 'Mokoena',
+    nickname: 'Nals',
+    gender: 'Female',
+    birthdate: '1990-05-18',
+  ),
+};
+
+/// Returns the persona id whose test account uses [email], or null.
+String? personaIdForEmail(String? email) {
+  if (email == null) return null;
+  final wanted = email.trim().toLowerCase();
+  for (final entry in kPersonaProfiles.entries) {
+    if (entry.value.email == wanted) return entry.key;
+  }
+  return null;
+}
+
+/// Whole years between [birth] and [now].
+int ageOn(DateTime birth, DateTime now) {
+  var age = now.year - birth.year;
+  if (now.month < birth.month ||
+      (now.month == birth.month && now.day < birth.day)) {
+    age--;
+  }
+  return age;
+}
+
 /// Builds every Firestore write needed to give one account a persona wardrobe.
 ///
 /// [newId] supplies document ids (Firestore auto-ids in production, fixed ids
@@ -220,18 +297,31 @@ PersonaWritePlan buildPersonaWrites({
     ));
   }
 
+  final profile = kPersonaProfiles[persona.id];
+  if (profile == null) {
+    throw StateError('No test profile for ${persona.id}.');
+  }
+  final birthdate = DateTime.parse(profile.birthdate);
   writes.add(PlannedWrite(
     collection: 'users',
     id: userId,
     merge: true,
     data: {
-      'gender': persona.gender,
-      'genderFilterEnabled': true,
+      'email': profile.email,
+      'displayName': '${profile.firstName} ${profile.lastName}',
+      'firstName': profile.firstName,
+      'lastName': profile.lastName,
+      'nickname': profile.nickname,
+      'gender': profile.gender,
+      'birthdate': Timestamp.fromDate(birthdate),
+      'age': ageOn(birthdate, now),
       'stylePreferences': persona.stylePreferences,
+      'profileImageUrl': '',
+      'genderFilterEnabled': true,
       'style_dna': persona.stylePreferences.first,
       'demo_persona': persona.id,
-      'last_seeded_at': Timestamp.fromDate(now),
-      'updated_at': Timestamp.fromDate(now),
+      'createdAt': Timestamp.fromDate(now),
+      'updatedAt': Timestamp.fromDate(now),
     },
   ));
 

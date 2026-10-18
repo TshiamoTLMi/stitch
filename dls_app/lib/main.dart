@@ -25,7 +25,13 @@ Future<void> main() async {
   } catch (_) {
     debugPrint('[DLS] Firebase not configured — running in demo mode.');
   }
-  await NotificationService().init();
+  // Notifications are optional. A failure here must never block the first
+  // frame, otherwise the app stays on the native splash screen.
+  try {
+    await NotificationService().init();
+  } catch (error) {
+    debugPrint('[DLS] Notification init skipped: $error');
+  }
   runApp(const DlsBootstrap());
 }
 
