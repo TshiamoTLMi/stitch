@@ -99,6 +99,31 @@ void main() {
     }
   });
 
+  test('persona profile uses onboarding style labels', () {
+    final persona = personas.singleWhere((p) => p.id == 'man_street');
+    final plan = buildPersonaWrites(
+      persona: persona,
+      userId: 'uid-1',
+      now: DateTime(2026, 10, 10),
+      newId: () => 'x',
+    );
+    final user = plan.writes.singleWhere((w) => w.collection == 'users');
+    expect(user.data['stylePreferences'], ['Casual', 'Street Flex']);
+    expect(user.data['style_dna'], 'Casual');
+  });
+
+  test('re-seeding an existing profile keeps its original createdAt', () {
+    final plan = buildPersonaWrites(
+      persona: personas.first,
+      userId: 'uid-1',
+      now: DateTime(2026, 10, 10),
+      newId: () => 'x',
+      isNewProfile: false,
+    );
+    final user = plan.writes.singleWhere((w) => w.collection == 'users');
+    expect(user.data.containsKey('createdAt'), isFalse);
+  });
+
   test('ageOn counts whole years and respects the birthday', () {
     expect(ageOn(DateTime(1994, 3, 12), DateTime(2026, 10, 10)), 32);
     expect(ageOn(DateTime(1994, 3, 12), DateTime(2026, 3, 11)), 31);

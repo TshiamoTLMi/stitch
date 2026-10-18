@@ -165,6 +165,7 @@ PersonaWritePlan buildPersonaWrites({
   required String userId,
   required DateTime now,
   required String Function() newId,
+  bool isNewProfile = true,
 }) {
   final idByLocal = <String, String>{};
   for (final item in persona.items) {
@@ -302,6 +303,20 @@ PersonaWritePlan buildPersonaWrites({
     throw StateError('No test profile for ${persona.id}.');
   }
   final birthdate = DateTime.parse(profile.birthdate);
+  const onboardingLabels = {
+    'casual': 'Casual',
+    'formal': 'Formal',
+    'smart_casual': 'Clean Drip',
+    'streetwear': 'Street Flex',
+    'sportswear': 'Street Flex',
+  };
+  final profileStyles = persona.stylePreferences.map((style) {
+    final label = onboardingLabels[style];
+    if (label == null) {
+      throw StateError('No onboarding label for style $style in ${persona.id}.');
+    }
+    return label;
+  }).toSet().toList(growable: false);
   writes.add(PlannedWrite(
     collection: 'users',
     id: userId,
@@ -315,12 +330,12 @@ PersonaWritePlan buildPersonaWrites({
       'gender': profile.gender,
       'birthdate': Timestamp.fromDate(birthdate),
       'age': ageOn(birthdate, now),
-      'stylePreferences': persona.stylePreferences,
+      'stylePreferences': profileStyles,
       'profileImageUrl': '',
       'genderFilterEnabled': true,
-      'style_dna': persona.stylePreferences.first,
+      'style_dna': profileStyles.first,
       'demo_persona': persona.id,
-      'createdAt': Timestamp.fromDate(now),
+      if (isNewProfile) 'createdAt': Timestamp.fromDate(now),
       'updatedAt': Timestamp.fromDate(now),
     },
   ));

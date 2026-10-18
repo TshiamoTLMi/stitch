@@ -82,11 +82,13 @@ class DemoDataService {
     }
 
     final now = DateTime.now();
+    final existingUser = await _firestore.collection('users').doc(userId).get();
     final replaced = await _deleteExistingDemoDocs(userId);
     final plan = buildPersonaWrites(
       persona: persona,
       userId: userId,
       now: now,
+      isNewProfile: !existingUser.exists,
       newId: () => _firestore.collection('clothing_items').doc().id,
     );
     await _writeAll(plan.writes);

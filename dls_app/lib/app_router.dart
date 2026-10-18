@@ -34,6 +34,11 @@ class _AppRouterState extends State<AppRouter> {
     return _profileFuture!;
   }
 
+  void _clearProfileCache() {
+    _profileUid = null;
+    _profileFuture = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthController>();
@@ -58,6 +63,12 @@ class _AppRouterState extends State<AppRouter> {
             if (profileSnapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (profileSnapshot.hasError) {
+              return _ProfileErrorScreen(
+                onRetry: () => setState(_clearProfileCache),
               );
             }
 
@@ -86,6 +97,28 @@ Future<bool> _resolveProfile(
   if (personaId == null || !DemoDataService.isDemoEnabled) return false;
   await demo.seedForUser(uid, personaId: personaId);
   return true;
+}
+
+class _ProfileErrorScreen extends StatelessWidget {
+  const _ProfileErrorScreen({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Could not load your profile. Check your connection.'),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _AuthSwitcher extends StatefulWidget {

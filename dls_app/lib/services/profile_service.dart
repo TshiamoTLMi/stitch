@@ -197,7 +197,11 @@ class ProfileService {
   }
 
   Future<bool> hasProfile(String userId) async {
-    final doc = await _firestore.collection('users').doc(userId).get();
+    final doc = await _firestore
+        .collection('users')
+        .doc(userId)
+        .get()
+        .timeout(const Duration(seconds: 15));
     return doc.exists;
   }
 
