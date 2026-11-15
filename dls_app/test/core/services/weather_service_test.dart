@@ -292,6 +292,40 @@ void main() {
       expect(context.locationName, 'Durban');
     });
 
+    test('works with an arbitrary non-preset location, with no snapping to '
+        'the nearest preset city - needed for auto-detected device location',
+        () async {
+      late String requested;
+      final client = MockClient((request) async {
+        requested = request.url.toString();
+        return http.Response(
+          jsonEncode(<String, dynamic>{
+            'current_weather': <String, dynamic>{
+              'temperature': 26.0,
+              'weathercode': 1,
+            },
+          }),
+          200,
+        );
+      });
+      final service = serviceWith(client, tempDir);
+      // Nairobi: not one of WeatherLocation.presets' 6 South African cities.
+      const nairobi = WeatherLocation(
+        name: 'Nairobi',
+        latitude: -1.286389,
+        longitude: 36.817223,
+      );
+      expect(WeatherLocation.presets, isNot(contains(nairobi)));
+
+      await service.setLocation(nairobi);
+      final context = await service.current();
+
+      expect(requested, contains('-1.286389'));
+      expect(requested, contains('36.817223'));
+      expect(context.locationName, 'Nairobi');
+      expect(context.temperatureC, 26.0);
+    });
+
     test('reuses the cache for the same city offline', () async {
       const capeTown = WeatherLocation(
         name: 'Cape Town',

@@ -48,6 +48,11 @@ class WardrobeController extends ChangeNotifier {
     return _wardrobeRepository.deleteClothingItem(id);
   }
 
+  /// Marks [itemIds] worn today - see [WardrobeRepository.markItemsWorn].
+  Future<void> markWorn(List<String> itemIds) {
+    return _wardrobeRepository.markItemsWorn(itemIds, DateTime.now());
+  }
+
   void clearCache() {
     _cachedItems = <ClothingItem>[];
     notifyListeners();

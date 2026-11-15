@@ -55,15 +55,24 @@ class LegalContent {
           'receive your name and email address from that provider.',
     ]),
     LegalSection('Permissions the app uses', [
-      'Camera and photo library: to add wardrobe and profile photos.',
+      'Camera and photo library: to add wardrobe and profile photos, '
+          'including an on-device body-pose scan that auto-crops a full '
+          'outfit photo into separate wardrobe items. That scan runs '
+          'entirely on your device; the photo is not sent anywhere for it.',
+      'Location (optional, coarse only): only if you tap "Use My Location" '
+          'for weather. It is used once to look up your approximate city and '
+          'is never collected in the background. You can decline and pick a '
+          'city manually instead.',
       'Calendar: only if you allow it, the app reads and writes events on '
           'your device calendar for event planning.',
       'Notifications: to remind you about planned events.',
-      'The app does not read your device location.',
     ]),
     LegalSection('Weather', [
-      'Weather forecasts are requested from Open-Meteo using a default '
-          'location. Your device location is not sent.',
+      'By default, weather forecasts are requested from Open-Meteo using a '
+          'preset or manually chosen city, and your device location is not '
+          'sent. If you tap "Use My Location", your approximate coordinates '
+          'are sent to Open-Meteo for that forecast and to your device\'s '
+          'own location service to look up a city name.',
     ]),
     LegalSection('How we use information', [
       'To run the app: generate outfit suggestions, show wardrobe insights, '
@@ -73,8 +82,8 @@ class LegalContent {
     LegalSection('Who processes your data', [
       'Google Firebase (Authentication, Cloud Firestore, Cloud Storage) stores '
           'and processes account and app data.',
-      'Open-Meteo receives the default location coordinates used for '
-          'forecasts.',
+      'Open-Meteo receives the city coordinates (preset, manually chosen, or '
+          'your detected location) used for forecasts; it is not stored by us.',
     ]),
     LegalSection('Deleting your data', [
       'Profile > Delete Account permanently deletes your account, wardrobe '

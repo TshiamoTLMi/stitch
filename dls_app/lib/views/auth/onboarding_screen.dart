@@ -10,7 +10,7 @@ import '../../core/theme/app_theme.dart';
 import '../../services/image_compression_service.dart';
 import '../../services/onboarding_validator.dart';
 import '../../services/profile_service.dart';
-import '../home/home_shell.dart';
+import 'guided_first_action_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -23,6 +23,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _nicknameController = TextEditingController();
+  final _lastNameFocus = FocusNode();
+  final _nicknameFocus = FocusNode();
   final _picker = ImagePicker();
   final _compressionService = ImageCompressionService();
 
@@ -64,6 +66,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _nicknameController.dispose();
+    _lastNameFocus.dispose();
+    _nicknameFocus.dispose();
     super.dispose();
   }
 
@@ -210,7 +214,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(builder: (_) => const HomeShell()),
+        MaterialPageRoute<void>(
+          builder: (_) => GuidedFirstActionScreen(userId: user.uid),
+        ),
       );
     } catch (e) {
       _showMessage('Could not save your profile right now. Please retry.');
@@ -257,6 +263,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: TextField(
                       controller: _firstNameController,
                       textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.next,
+                      onSubmitted: (_) => _lastNameFocus.requestFocus(),
                       decoration: const InputDecoration(
                         labelText: 'First Name *',
                         hintText: 'First name',
@@ -267,7 +275,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Expanded(
                     child: TextField(
                       controller: _lastNameController,
+                      focusNode: _lastNameFocus,
                       textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.next,
+                      onSubmitted: (_) => _nicknameFocus.requestFocus(),
                       decoration: const InputDecoration(
                         labelText: 'Last Name *',
                         hintText: 'Last name',
@@ -279,7 +290,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 14),
               TextField(
                 controller: _nicknameController,
+                focusNode: _nicknameFocus,
                 textCapitalization: TextCapitalization.words,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _nicknameFocus.unfocus(),
                 decoration: const InputDecoration(
                   labelText: 'Display Name / Nickname',
                   hintText: 'What should we call you? (optional)',
@@ -396,17 +410,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             child: Image.memory(_profileBytes!, fit: BoxFit.cover, width: double.infinity),
                           ),
                           Positioned(
-                            top: 8,
-                            right: 8,
-                            child: GestureDetector(
-                              onTap: () => setState(() => _profileBytes = null),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black54,
-                                  borderRadius: BorderRadius.circular(20),
+                            top: 0,
+                            right: 0,
+                            child: Semantics(
+                              button: true,
+                              label: 'Remove photo',
+                              child: GestureDetector(
+                                onTap: () => setState(() => _profileBytes = null),
+                                child: Container(
+                                  width: 44,
+                                  height: 44,
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black54,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    padding: const EdgeInsets.all(4),
+                                    child: const Icon(Icons.close,
+                                        color: Colors.white, size: 18),
+                                  ),
                                 ),
-                                padding: const EdgeInsets.all(4),
-                                child: const Icon(Icons.close, color: Colors.white, size: 18),
                               ),
                             ),
                           ),

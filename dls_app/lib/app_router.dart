@@ -3,11 +3,14 @@ import 'package:provider/provider.dart';
 
 import 'controllers/auth_controller.dart';
 import 'services/demo_data_service.dart';
+import 'services/first_launch_service.dart';
 import 'services/profile_service.dart';
 import 'views/auth/login_screen.dart';
 import 'views/auth/onboarding_screen.dart';
 import 'views/auth/signup_screen.dart';
 import 'views/home/home_shell.dart';
+import 'views/legal/legal_consent_screen.dart';
+import 'views/onboarding/value_prop_carousel.dart';
 
 class AppRouter extends StatefulWidget {
   const AppRouter({super.key});
@@ -19,6 +22,35 @@ class AppRouter extends StatefulWidget {
 class _AppRouterState extends State<AppRouter> {
   String? _profileUid;
   Future<bool>? _profileFuture;
+  final _firstLaunchService = FirstLaunchService();
+  Future<bool>? _carouselSeenFuture;
+  bool _carouselDone = false;
+  Future<bool>? _legalAcceptedFuture;
+  bool _legalAcceptedThisSession = false;
+  String? _legalCheckedForUid;
+
+  Future<bool> _carouselSeen() =>
+      _carouselSeenFuture ??= _firstLaunchService.hasSeenValuePropCarousel();
+
+  void _markCarouselDone() {
+    setState(() => _carouselDone = true);
+    _firstLaunchService.markValuePropCarouselSeen();
+  }
+
+  /// One check per signed-in uid; a fresh sign-in (different user on the
+  /// same device) must re-check rather than reuse another account's answer.
+  Future<bool> _legalAcceptedFor(String uid) {
+    if (_legalCheckedForUid != uid || _legalAcceptedFuture == null) {
+      _legalCheckedForUid = uid;
+      _legalAcceptedFuture = _firstLaunchService.hasAcceptedLegalTerms();
+    }
+    return _legalAcceptedFuture!;
+  }
+
+  Future<void> _markLegalAccepted() async {
+    await _firstLaunchService.markLegalTermsAccepted();
+    if (mounted) setState(() => _legalAcceptedThisSession = true);
+  }
 
   /// Reuses one check per uid; rebuilds must not start a second persona seed.
   Future<bool> _profileFor(String uid, String? email) {
@@ -54,30 +86,61 @@ class _AppRouterState extends State<AppRouter> {
 
         final user = snapshot.data;
         if (user == null) {
-          return const _AuthSwitcher();
+          if (_carouselDone) return const _AuthSwitcher();
+          return FutureBuilder<bool>(
+            future: _carouselSeen(),
+            builder: (context, carouselSnapshot) {
+              if (carouselSnapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (carouselSnapshot.data ?? false) {
+                return const _AuthSwitcher();
+              }
+              return ValuePropCarousel(onDone: _markCarouselDone);
+            },
+          );
         }
 
         return FutureBuilder<bool>(
-          future: _profileFor(user.uid, user.email),
-          builder: (context, profileSnapshot) {
-            if (profileSnapshot.connectionState == ConnectionState.waiting) {
+          future: _legalAcceptedFor(user.uid),
+          builder: (context, legalSnapshot) {
+            if (legalSnapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );
             }
-
-            if (profileSnapshot.hasError) {
-              return _ProfileErrorScreen(
-                onRetry: () => setState(_clearProfileCache),
-              );
+            final legalAccepted =
+                _legalAcceptedThisSession || (legalSnapshot.data ?? false);
+            if (!legalAccepted) {
+              return LegalConsentScreen(onAccept: _markLegalAccepted);
             }
 
-            final hasProfile = profileSnapshot.data ?? false;
-            if (!hasProfile) {
-              return const OnboardingScreen();
-            }
+            return FutureBuilder<bool>(
+              future: _profileFor(user.uid, user.email),
+              builder: (context, profileSnapshot) {
+                if (profileSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
 
-            return const HomeShell();
+                if (profileSnapshot.hasError) {
+                  return _ProfileErrorScreen(
+                    onRetry: () => setState(_clearProfileCache),
+                  );
+                }
+
+                final hasProfile = profileSnapshot.data ?? false;
+                if (!hasProfile) {
+                  return const OnboardingScreen();
+                }
+
+                return const HomeShell();
+              },
+            );
           },
         );
       },

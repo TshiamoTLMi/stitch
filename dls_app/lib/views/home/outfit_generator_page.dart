@@ -6,12 +6,15 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../controllers/wardrobe_controller.dart';
+import '../../core/analytics/analytics_store.dart';
 import '../../core/engine/affinity_engine.dart';
 import '../../core/engine/candidate_generator.dart';
 import '../../core/engine/feedback_store.dart';
 import '../../core/engine/outfit_theme.dart';
+import '../../core/services/location_service.dart';
 import '../../core/services/weather_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/clothing_item.dart';
@@ -23,7 +26,6 @@ import '../../services/caption_service.dart';
 import '../../services/outfit_history_service.dart';
 import '../../services/outfit_bot_service.dart';
 import '../../services/outfit_image_service.dart';
-import '../../services/virtual_tryon_service.dart';
 
 class OutfitGeneratorPage extends StatefulWidget {
   const OutfitGeneratorPage({super.key, required this.userId});
@@ -35,6 +37,7 @@ class OutfitGeneratorPage extends StatefulWidget {
 }
 
 class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
+  static const _useMyLocationValue = '__use_my_location__';
   static const occasions = ['Work', 'Date', 'Groove', 'Braai', 'Event'];
   static const moods = ['Minimal', 'Clean Drip', 'Street Flex', 'Soft Life'];
   static const weathers = ['Hot', 'Warm', 'Mild', 'Cold', 'Freezing', 'Rainy'];
@@ -42,7 +45,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   final _outfitBot = OutfitBotService();
   final _captionService = CaptionService();
   final _outfitImageService = OutfitImageService();
-  final _virtualTryOnService = VirtualTryOnService();
+  final _analyticsStore = AnalyticsStore();
   static const String _rulesAsset = 'assets/ml_seed_rules.json';
   AffinityEngine? _affinityEngine;
   CandidateGenerator? _candidateGenerator;
@@ -54,14 +57,9 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   OutfitResult? _result;
   Outfit? _engineOutfit;
   String? _caption;
-  String? _stylingTip;
-  String? _swapSuggestion;
-  bool _aiUnavailable = false;
   int _resultVersion = 0;
   bool _isGenerating = false;
-  bool _isAiEnhancing = false;
   bool _isRenderingImage = false;
-  bool _isGeneratingTryOn = false;
   final _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _isOffline = false;
@@ -72,8 +70,10 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
   OutfitTheme _theme = OutfitTheme.none;
 
   final _weatherService = WeatherService();
+  final _locationService = const LocationService();
   WeatherContext? _forecast;
   bool _forecastLoading = true;
+  bool _detectingLocation = false;
   // Once the user picks a weather by hand, forecast refreshes stop overriding it.
   bool _weatherTouched = false;
 
@@ -149,6 +149,37 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     await _loadForecast(refresh: true);
   }
 
+  /// Detects the device's current city and switches to it; on any failure
+  /// (denied/disabled/unavailable) the manual preset list is left untouched
+  /// and the user is told why, rather than silently failing.
+  Future<void> _useDeviceLocation() async {
+    if (_detectingLocation) return;
+    setState(() => _detectingLocation = true);
+    final detected = await _locationService.detectCurrentLocation();
+    if (!mounted) return;
+    setState(() => _detectingLocation = false);
+
+    if (detected == null) {
+      final permanentlyDenied = await _locationService.isPermanentlyDenied();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+              'Could not detect your location. Pick a city instead.'),
+          action: permanentlyDenied
+              ? SnackBarAction(
+                  label: 'Open Settings',
+                  onPressed: _locationService.openSettings,
+                )
+              : null,
+        ),
+      );
+      return;
+    }
+
+    await _selectLocation(detected);
+  }
+
   String _forecastSourceTag(WeatherContext forecast) {
     if (forecast.isLive) return 'Live';
     if (forecast.isCached) return '(cached)';
@@ -196,14 +227,39 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                 _forecastLoading ? null : () => _loadForecast(refresh: true),
             icon: const Icon(Icons.refresh),
           ),
-          PopupMenuButton<WeatherLocation>(
+          PopupMenuButton<String>(
             tooltip: 'Choose city',
-            icon: const Icon(Icons.location_on_outlined),
-            onSelected: _selectLocation,
+            icon: _detectingLocation
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.location_on_outlined),
+            onSelected: (value) {
+              if (value == _useMyLocationValue) {
+                _useDeviceLocation();
+                return;
+              }
+              final place = WeatherLocation.presets
+                  .firstWhere((p) => p.name == value);
+              _selectLocation(place);
+            },
             itemBuilder: (context) => [
+              const PopupMenuItem<String>(
+                value: _useMyLocationValue,
+                child: Row(
+                  children: [
+                    Icon(Icons.my_location, size: 18),
+                    SizedBox(width: 8),
+                    Text('Use My Location'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
               for (final place in WeatherLocation.presets)
-                PopupMenuItem<WeatherLocation>(
-                  value: place,
+                PopupMenuItem<String>(
+                  value: place.name,
                   child: Text(place.name),
                 ),
             ],
@@ -248,7 +304,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
     setState(() {
       _isGenerating = true;
-      _isAiEnhancing = false;
     });
 
     final recommendation = generator.recommend(
@@ -298,11 +353,7 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
       _alternateOutfit = recommendation.alternate;
       _alternateWeather = recommendation.alternateWeather;
       _caption = finalCaption;
-      _stylingTip = null;
-      _swapSuggestion = null;
-      _aiUnavailable = true;
       _resultVersion++;
-      _isAiEnhancing = false;
       _isGenerating = false;
     });
 
@@ -408,10 +459,51 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
 
   Future<void> _wearThis() async {
     await _saveFeedback('accepted');
+    await _recordWear();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Saved to your lookbook.')),
       );
+    }
+  }
+
+  /// Marks every item in the current outfit as worn (so Cost-Per-Wear and
+  /// Wardrobe Utilization reflect real usage, not just closet contents) and
+  /// logs the outfit to the Style History analytics log.
+  ///
+  /// Best-effort: a failure here must never block the "Wear This" action the
+  /// user actually asked for.
+  Future<void> _recordWear() async {
+    final scored = _scoredOutfit;
+    if (scored == null || scored.items.isEmpty || !mounted) return;
+
+    final itemIds = scored.items.map((item) => item.id).toList();
+    final now = DateTime.now();
+
+    try {
+      await context.read<WardrobeController>().markWorn(itemIds);
+    } catch (_) {
+      // Wear tracking is best-effort; the outfit is still saved either way.
+    }
+
+    try {
+      await _analyticsStore.logOutfit(
+        OutfitLogEntry(
+          timestamp: now,
+          occasion: _occasion,
+          weather: _weather,
+          styleMatchPercent: scored.styleMatchPercent,
+          scoreStyle: scored.breakdown.style,
+          scoreEvent: scored.breakdown.event,
+          scoreWeather: scored.breakdown.weather,
+          scoreColor: scored.breakdown.color,
+          scoreCategory: scored.breakdown.category,
+          itemIds: itemIds,
+          occasionLabel: _occasion,
+        ),
+      );
+    } catch (_) {
+      // Analytics logging is best-effort.
     }
   }
 
@@ -486,94 +578,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
     }
   }
 
-  Future<void> _generateTryOn() async {
-    final result = _result;
-    if (result == null || !result.isValid || _isGeneratingTryOn) {
-      return;
-    }
-
-    if (!_virtualTryOnService.isConfigured) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'Try-on backend is not configured. Add DLS_TRYON_ENDPOINT to enable this feature.'),
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isGeneratingTryOn = true);
-    try {
-      final imageUrl = await _virtualTryOnService.generateTryOnImage(
-        result: result,
-        occasion: _occasion,
-        mood: _mood,
-        weather: _weather,
-      );
-
-      if (!mounted) {
-        return;
-      }
-
-      if (imageUrl == null || imageUrl.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Try-on service did not return an image.')),
-        );
-        return;
-      }
-
-      await showDialog<void>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Virtual Try-On (Beta)'),
-            content: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                loadingBuilder: (_, child, progress) {
-                  if (progress == null) {
-                    return child;
-                  }
-                  return const SizedBox(
-                    width: 280,
-                    height: 320,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                },
-                errorBuilder: (_, __, ___) => const SizedBox(
-                  width: 280,
-                  height: 320,
-                  child: Center(child: Text('Could not load try-on image.')),
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Close'),
-              ),
-            ],
-          );
-        },
-      );
-    } catch (_) {
-      if (!mounted) {
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Try-on generation failed. Please retry.')),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isGeneratingTryOn = false);
-      }
-    }
-  }
-
   Future<void> _showGeneratedImageDialog({
     required String title,
     required Uint8List bytes,
@@ -593,6 +597,11 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
             ),
           ),
           actions: [
+            TextButton.icon(
+              onPressed: () => _shareOutfitImage(bytes),
+              icon: const Icon(Icons.share_outlined),
+              label: const Text('Share'),
+            ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Close'),
@@ -600,6 +609,17 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
           ],
         );
       },
+    );
+  }
+
+  /// Hands the already-rendered outfit board bytes straight to the native
+  /// share sheet - no re-rendering, no network call, no API cost.
+  Future<void> _shareOutfitImage(Uint8List bytes) async {
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile.fromData(bytes, mimeType: 'image/png', name: 'outfit.png')],
+        text: 'My outfit from Digital Lesela Sete',
+      ),
     );
   }
 
@@ -746,21 +766,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
             ],
           ),
         ),
-        if (_isAiEnhancing) ...[
-          const SizedBox(height: 8),
-          const Text(
-            'AI stylist polishing your fit...',
-            style: TextStyle(
-                color: AppTheme.onSurfaceVariant, fontWeight: FontWeight.w600),
-          ),
-        ],
-        if (_aiUnavailable) ...[
-          const SizedBox(height: 8),
-          const Text(
-            'Using basic mode. AI stylist unavailable.',
-            style: TextStyle(color: AppTheme.onSurfaceVariant),
-          ),
-        ],
         const SizedBox(height: 16),
         if (_result != null)
           Column(
@@ -850,21 +855,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                         ),
                         child: Text(_caption ?? ''),
                       ),
-                      if ((_stylingTip ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        const Text('Styling Tip',
-                            style: TextStyle(fontWeight: FontWeight.w700)),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppTheme.surfaceHigh,
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: Text(_stylingTip!),
-                        ),
-                      ],
                       const SizedBox(height: 10),
                       const Text('Reasoning',
                           style: TextStyle(fontWeight: FontWeight.w700)),
@@ -876,20 +866,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
               if (_alternateOutfit != null) ...[
                 const SizedBox(height: 10),
                 _alternateCard(),
-              ],
-              if (_swapSuggestion != null) ...[
-                const SizedBox(height: 10),
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.swap_horiz),
-                    title: const Text('AI suggests a swap'),
-                    subtitle: Text(_swapSuggestion!),
-                    trailing: TextButton(
-                      onPressed: _swapItem,
-                      child: const Text('Apply Swap'),
-                    ),
-                  ),
-                ),
               ],
               const SizedBox(height: 12),
               Row(
@@ -940,30 +916,6 @@ class _OutfitGeneratorPageState extends State<OutfitGeneratorPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: _isGeneratingTryOn ? null : _generateTryOn,
-                  icon: _isGeneratingTryOn
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.auto_fix_high_outlined),
-                  label: Text(_isGeneratingTryOn
-                      ? 'Generating Try-On...'
-                      : 'Virtual Try-On (Beta)'),
-                ),
-              ),
-              if (!_virtualTryOnService.isConfigured) ...[
-                const SizedBox(height: 8),
-                const Text(
-                  'Tip: add DLS_TRYON_ENDPOINT to enable backend try-on rendering.',
-                  style: TextStyle(color: AppTheme.onSurfaceVariant),
-                ),
-              ],
             ],
           ),
         const SizedBox(height: 16),

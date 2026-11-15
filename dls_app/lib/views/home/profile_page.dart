@@ -18,6 +18,7 @@ import '../../services/demo_data_service.dart';
 import '../../services/image_compression_service.dart';
 import '../../services/profile_service.dart';
 import '../../widgets/context_tip_card.dart';
+import '../analytics/wardrobe_analytics_page.dart';
 import '../legal/legal_page.dart';
 
 class ProfileAnalyticsSummary extends StatelessWidget {
@@ -475,7 +476,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('AI Stylist Insight', style: TextStyle(color: AppTheme.tertiary, fontWeight: FontWeight.w700)),
+                          const Text('Style Insight', style: TextStyle(color: AppTheme.tertiary, fontWeight: FontWeight.w700)),
                           const SizedBox(height: 8),
                           Text(
                             _buildInsightMessage(metrics),
@@ -496,7 +497,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         leading: const Icon(Icons.bar_chart, color: AppTheme.primary),
                         title: const Text('Wardrobe Analytics'),
                         trailing: const Icon(Icons.chevron_right),
-                        onTap: () {},
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const WardrobeAnalyticsPage(),
+                          ),
+                        ),
                       ),
                     ),
                     Card(

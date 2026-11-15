@@ -78,6 +78,24 @@ class WardrobeService {
     await _collection.doc(id).delete();
   }
 
+  /// Increments `wearCount` and sets `lastWornDate` for every id in
+  /// [itemIds], in one batch - the write path behind "Wear This" on the
+  /// outfit generator, so Cost-Per-Wear/Wardrobe Utilization reflect real
+  /// usage rather than always reading "unworn".
+  Future<void> markItemsWorn(List<String> itemIds, DateTime when) async {
+    if (itemIds.isEmpty) return;
+    final batch = _firestore.batch();
+    final timestamp = Timestamp.fromDate(when);
+    for (final id in itemIds) {
+      batch.update(_collection.doc(id), {
+        'wearCount': FieldValue.increment(1),
+        'lastWornDate': timestamp,
+        'updated_at': timestamp,
+      });
+    }
+    await batch.commit();
+  }
+
   Future<ClothingItem?> getItem(String id) async {
     final directSnapshot = await _collection.doc(id).get();
     if (directSnapshot.exists) return ClothingItem.fromDoc(directSnapshot);

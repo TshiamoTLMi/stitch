@@ -1,19 +1,16 @@
 import 'dart:async';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../core/constants/wardrobe_taxonomy.dart';
-import '../models/vision_analysis.dart';
 import '../services/firebase_service.dart';
-import '../services/vision_engine.dart';
 
 class UploadScreen extends StatefulWidget {
-  const UploadScreen({super.key, this.visionEngine});
-
-  final VisionEngine? visionEngine;
+  const UploadScreen({super.key});
 
   @override
   State<UploadScreen> createState() => _UploadScreenState();
@@ -22,12 +19,9 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   final ImagePicker _picker = ImagePicker();
   final FirebaseService _firebaseService = FirebaseService();
-  late final VisionEngine _visionEngine;
   XFile? _selectedImage;
   Uint8List? _selectedImageBytes;
   bool _isUploading = false;
-  bool _isAiThinking = false;
-  final Set<String> _lockedFields = <String>{};
   String? _selectedParentCategory;
   String? _selectedSubcategory;
   String? _selectedFit;
@@ -39,6 +33,16 @@ class _UploadScreenState extends State<UploadScreen> {
   final List<String> _selectedStyleTags = <String>['casual'];
   String? _lastUploadError;
 
+  // Live in-app camera preview. `image_picker`'s camera source only launches
+  // the OS camera app (no preview surface of its own), which looked like a
+  // broken black screen behind the viewfinder guide - this gives the
+  // viewfinder an actual feed to frame.
+  List<CameraDescription> _cameras = const <CameraDescription>[];
+  CameraController? _cameraController;
+  int _cameraIndex = 0;
+  bool _cameraReady = false;
+  String? _cameraError;
+
   List<String> get _subcategoryOptions =>
       categoryTaxonomy[_selectedParentCategory] ?? const <String>[];
 
@@ -46,15 +50,93 @@ class _UploadScreenState extends State<UploadScreen> {
       _selectedSubcategory != null && requiresFit(_selectedSubcategory!);
 
   @override
-  void dispose() {
-    _colorController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    unawaited(_initCamera());
   }
 
   @override
-  void initState() {
-    super.initState();
-    _visionEngine = widget.visionEngine ?? GeminiVisionEngine();
+  void dispose() {
+    _colorController.dispose();
+    _cameraController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initCamera() async {
+    setState(() => _cameraError = null);
+    final granted = await _requestCameraPermission();
+    if (!granted) {
+      if (mounted) setState(() => _cameraError = 'Camera permission denied.');
+      return;
+    }
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        if (mounted) {
+          setState(() => _cameraError = 'No camera available on this device.');
+        }
+        return;
+      }
+      _cameras = cameras;
+      final backIndex = cameras
+          .indexWhere((c) => c.lensDirection == CameraLensDirection.back);
+      await _startCamera(backIndex >= 0 ? backIndex : 0);
+    } catch (e) {
+      if (mounted) setState(() => _cameraError = 'Camera unavailable: $e');
+    }
+  }
+
+  Future<void> _startCamera(int index) async {
+    final previous = _cameraController;
+    final controller = CameraController(
+      _cameras[index],
+      ResolutionPreset.high,
+      enableAudio: false,
+    );
+    try {
+      await controller.initialize();
+    } catch (e) {
+      await controller.dispose();
+      if (mounted) setState(() => _cameraError = 'Camera unavailable: $e');
+      return;
+    }
+    await previous?.dispose();
+    if (!mounted) {
+      await controller.dispose();
+      return;
+    }
+    setState(() {
+      _cameraController = controller;
+      _cameraIndex = index;
+      _cameraReady = true;
+      _cameraError = null;
+    });
+  }
+
+  Future<void> _switchCamera() async {
+    if (_cameras.length < 2) {
+      _showMessage('Only one camera is available on this device.');
+      return;
+    }
+    final nextIndex = (_cameraIndex + 1) % _cameras.length;
+    setState(() => _cameraReady = false);
+    await _startCamera(nextIndex);
+  }
+
+  Future<void> _capturePhoto() async {
+    final controller = _cameraController;
+    if (controller == null || !controller.value.isInitialized) {
+      _showMessage('Camera is still starting up. Try again in a moment.');
+      return;
+    }
+    if (controller.value.isTakingPicture) return;
+    try {
+      final file = await controller.takePicture();
+      unawaited(controller.pausePreview());
+      await _selectImage(file);
+    } catch (e) {
+      _showMessage('Could not capture photo: $e');
+    }
   }
 
   Future<void> _pickFromCamera() async {
@@ -95,149 +177,14 @@ class _UploadScreenState extends State<UploadScreen> {
       _selectedSubcategory = null;
       _selectedFit = null;
       _colorController.clear();
-      _lockedFields.clear();
-      _isAiThinking = true;
       _lastUploadError = null;
     });
-    unawaited(_runVisionAnalysis(image, bytes));
   }
 
-  Future<void> _runVisionAnalysis(XFile image, Uint8List bytes) async {
-    try {
-      final result = await _visionEngine.analyzeClothingItem(bytes);
-      if (!mounted || _selectedImage?.path != image.path) return;
-
-      if (result.isNotClothing) {
-        setState(() {
-          _selectedImage = null;
-          _selectedImageBytes = null;
-          _isAiThinking = false;
-          _selectedParentCategory = null;
-          _selectedSubcategory = null;
-          _selectedFit = null;
-          _colorController.clear();
-        });
-        _showMessage(
-            'That does not look like clothing. Please choose a clothing photo.');
-        return;
-      }
-
-      _applyVisionAnalysis(result);
-    } catch (_) {
-      if (mounted && _selectedImage?.path == image.path) {
-        setState(() => _isAiThinking = false);
-      }
-    }
+  void _retakePhoto() {
+    setState(() => _selectedImage = null);
+    unawaited(_cameraController?.resumePreview());
   }
-
-  void _applyVisionAnalysis(VisionAnalysis result) {
-    String? parent = _findParent(result.parentCategory ?? result.subcategory);
-    String? subcategory = _findSubcategory(result.subcategory);
-    if (subcategory != null) {
-      parent = categoryTaxonomy.entries
-          .firstWhere((entry) => entry.value.contains(subcategory))
-          .key;
-    }
-
-    setState(() {
-      if (!_lockedFields.contains('category')) {
-        _selectedParentCategory = parent;
-        _selectedSubcategory = subcategory;
-      }
-      if (!_lockedFields.contains('color') && result.color != null) {
-        _colorController.text = result.color!;
-      }
-      if (!_lockedFields.contains('fit')) {
-        _selectedFit = _findFit(result.fit);
-      }
-      _isAiThinking = false;
-    });
-  }
-
-  String? _findSubcategory(String? value) {
-    if (value == null || value.trim().isEmpty) return null;
-    final normalized = _normalize(value);
-    for (final option in categoryTaxonomy.values.expand((items) => items)) {
-      final optionNormalized = _normalize(option);
-      if (optionNormalized == normalized ||
-          optionNormalized == '${normalized}s' ||
-          normalized == '${optionNormalized}s') {
-        return option;
-      }
-    }
-    const aliases = <String, String>{
-      'shirt': 'T-shirts',
-      'tshirt': 'T-shirts',
-      'tee': 'T-shirts',
-      'blazer': 'Blazers',
-      'jumpsuit': 'Jumpsuits',
-      'pants': 'Trousers',
-      'trouser': 'Trousers',
-      'shoes': 'Sneakers',
-      'shoe': 'Sneakers',
-      'sneaker': 'Sneakers',
-      'boot': 'Boots',
-      'jacket': 'Puffer jackets',
-      'coat': 'Trench coats',
-      'hat': 'Hats',
-      'bag': 'Bags',
-      'purse': 'Bags',
-      'jewellery': 'Jewelry',
-    };
-    return aliases[normalized];
-  }
-
-  String? _findParent(String? value) {
-    if (value == null || value.trim().isEmpty) return null;
-    final normalized = _normalize(value);
-    for (final parent in categoryTaxonomy.keys) {
-      if (_normalize(parent) == normalized) return parent;
-    }
-    const aliases = <String, String>{
-      'top': 'Tops',
-      'shirt': 'Tops',
-      'tshirt': 'Tops',
-      'blouse': 'Tops',
-      'sweater': 'Tops',
-      'knitwear': 'Tops',
-      'bottom': 'Bottoms',
-      'pants': 'Bottoms',
-      'trousers': 'Bottoms',
-      'jeans': 'Bottoms',
-      'skirt': 'Bottoms',
-      'dress': 'Dresses & Jumpsuits',
-      'dresses': 'Dresses & Jumpsuits',
-      'jumpsuit': 'Dresses & Jumpsuits',
-      'fullbody': 'Dresses & Jumpsuits',
-      'outerwear': 'Outerwear',
-      'jacket': 'Outerwear',
-      'coat': 'Outerwear',
-      'activewear': 'Activewear & Leisure',
-      'sportswear': 'Activewear & Leisure',
-      'accessory': 'Accessories',
-      'accessories': 'Accessories',
-      'bag': 'Accessories',
-      'hat': 'Accessories',
-      'footwear': 'Footwear',
-      'shoe': 'Footwear',
-      'shoes': 'Footwear',
-      'sneaker': 'Footwear',
-      'boot': 'Footwear',
-    };
-    return aliases[normalized];
-  }
-
-  String? _findFit(String? value) {
-    if (value == null) return null;
-    final normalized = _normalize(value);
-    for (final fit in fitOptions) {
-      if (_normalize(fit) == normalized) return fit;
-    }
-    return null;
-  }
-
-  String _normalize(String value) =>
-      value.trim().toLowerCase().replaceAll(RegExp(r'[\s_-]+'), '');
 
   Future<bool> _requestCameraPermission() async {
     if (kIsWeb) return true;
@@ -329,6 +276,64 @@ class _UploadScreenState extends State<UploadScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
+  Widget _cameraBackground() {
+    final controller = _cameraController;
+    if (_cameraReady && controller != null && controller.value.isInitialized) {
+      final previewSize = controller.value.previewSize;
+      return ColoredBox(
+        color: Colors.black,
+        child: previewSize == null
+            ? const SizedBox.shrink()
+            : Center(
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: SizedBox(
+                    // Camera preview buffers report landscape dimensions even
+                    // in portrait mode - swap width/height or the feed shows
+                    // sideways and cropped wrong.
+                    width: previewSize.height,
+                    height: previewSize.width,
+                    child: CameraPreview(controller),
+                  ),
+                ),
+              ),
+      );
+    }
+
+    return ColoredBox(
+      color: const Color(0xFF0E0E0E),
+      child: Center(
+        child: _cameraError == null
+            ? const SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFFD0C5AF),
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _cameraError!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Color(0xFFD0C5AF)),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: _initCamera,
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -336,7 +341,7 @@ class _UploadScreenState extends State<UploadScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background: selected image or dark
+          // Background: selected image, or the live camera preview.
           if (_selectedImage != null)
             Image.memory(
               _selectedImageBytes!,
@@ -345,7 +350,7 @@ class _UploadScreenState extends State<UploadScreen> {
               colorBlendMode: BlendMode.darken,
             )
           else
-            const ColoredBox(color: Color(0xFF0E0E0E)),
+            _cameraBackground(),
 
           // Vignette overlay
           Container(
@@ -374,6 +379,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     children: [
                       _CircleControl(
                         onTap: () => Navigator.of(context).pop(),
+                        semanticLabel: 'Close',
                         child: const Icon(Icons.close,
                             color: Colors.white, size: 20),
                       ),
@@ -386,11 +392,9 @@ class _UploadScreenState extends State<UploadScreen> {
                           letterSpacing: 3,
                         ),
                       ),
-                      _CircleControl(
-                        onTap: () {},
-                        child: const Icon(Icons.flash_on,
-                            color: Color(0xFFF2CA50), size: 20),
-                      ),
+                      // Balances the close button so the title stays
+                      // centered.
+                      const SizedBox(width: 48, height: 48),
                     ],
                   ),
                 ),
@@ -486,46 +490,39 @@ class _UploadScreenState extends State<UploadScreen> {
                                         ),
                                       ),
                                       const Spacer(),
-                                      _VisionField(
-                                        isThinking: _isAiThinking,
-                                        child: DropdownButtonHideUnderline(
-                                          child: DropdownButton<String>(
-                                            value: _selectedParentCategory,
-                                            hint: const Text('Select'),
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            dropdownColor:
-                                                const Color(0xFF2A2A2A),
-                                            style: const TextStyle(
-                                              color: Color(0xFFE5E2E1),
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                            iconEnabledColor:
-                                                const Color(0xFFF2CA50),
-                                            items: categoryTaxonomy.keys
-                                                .map(
-                                                  (c) =>
-                                                      DropdownMenuItem<String>(
-                                                    value: c,
-                                                    child: Text(c),
-                                                  ),
-                                                )
-                                                .toList(),
-                                            onChanged: _isUploading
-                                                ? null
-                                                : (value) {
-                                                    if (value == null) return;
-                                                    setState(() {
-                                                      _lockedFields
-                                                          .add('category');
-                                                      _selectedParentCategory =
-                                                          value;
-                                                      _selectedSubcategory =
-                                                          null;
-                                                      _selectedFit = null;
-                                                    });
-                                                  },
+                                      DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          value: _selectedParentCategory,
+                                          hint: const Text('Select'),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          dropdownColor:
+                                              const Color(0xFF2A2A2A),
+                                          style: const TextStyle(
+                                            color: Color(0xFFE5E2E1),
+                                            fontWeight: FontWeight.w700,
                                           ),
+                                          iconEnabledColor:
+                                              const Color(0xFFF2CA50),
+                                          items: categoryTaxonomy.keys
+                                              .map(
+                                                (c) => DropdownMenuItem<String>(
+                                                  value: c,
+                                                  child: Text(c),
+                                                ),
+                                              )
+                                              .toList(),
+                                          onChanged: _isUploading
+                                              ? null
+                                              : (value) {
+                                                  if (value == null) return;
+                                                  setState(() {
+                                                    _selectedParentCategory =
+                                                        value;
+                                                    _selectedSubcategory = null;
+                                                    _selectedFit = null;
+                                                  });
+                                                },
                                         ),
                                       ),
                                     ],
@@ -545,46 +542,40 @@ class _UploadScreenState extends State<UploadScreen> {
                                         ),
                                       ),
                                       const Spacer(),
-                                      _VisionField(
-                                        isThinking: _isAiThinking,
-                                        child: DropdownButtonHideUnderline(
-                                          child: DropdownButton<String>(
-                                            value: _selectedSubcategory,
-                                            hint: const Text('Select'),
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            dropdownColor:
-                                                const Color(0xFF2A2A2A),
-                                            style: const TextStyle(
-                                              color: Color(0xFFE5E2E1),
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                            iconEnabledColor:
-                                                const Color(0xFFF2CA50),
-                                            items: _subcategoryOptions
-                                                .map(
-                                                  (s) =>
-                                                      DropdownMenuItem<String>(
-                                                    value: s,
-                                                    child: Text(s),
-                                                  ),
-                                                )
-                                                .toList(),
-                                            onChanged: _isUploading
-                                                ? null
-                                                : (value) => setState(() {
-                                                      _lockedFields
-                                                          .add('category');
-                                                      _selectedSubcategory =
-                                                          value;
-                                                      _selectedFit = null;
-                                                    }),
+                                      DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          value: _selectedSubcategory,
+                                          hint: const Text('Select'),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          dropdownColor:
+                                              const Color(0xFF2A2A2A),
+                                          style: const TextStyle(
+                                            color: Color(0xFFE5E2E1),
+                                            fontWeight: FontWeight.w700,
                                           ),
+                                          iconEnabledColor:
+                                              const Color(0xFFF2CA50),
+                                          items: _subcategoryOptions
+                                              .map(
+                                                (s) => DropdownMenuItem<String>(
+                                                  value: s,
+                                                  child: Text(s),
+                                                ),
+                                              )
+                                              .toList(),
+                                          onChanged: _isUploading
+                                              ? null
+                                              : (value) => setState(() {
+                                                    _selectedSubcategory =
+                                                        value;
+                                                    _selectedFit = null;
+                                                  }),
                                         ),
                                       ),
                                     ],
                                   ),
-                                  if (_needsFit || _isAiThinking) ...[
+                                  if (_needsFit) ...[
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
@@ -600,58 +591,47 @@ class _UploadScreenState extends State<UploadScreen> {
                                           ),
                                         ),
                                         const Spacer(),
-                                        _VisionField(
-                                          isThinking: _isAiThinking,
-                                          child: DropdownButtonHideUnderline(
-                                            child: DropdownButton<String>(
-                                              value: _selectedFit,
-                                              hint: const Text('Select fit'),
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              dropdownColor:
-                                                  const Color(0xFF2A2A2A),
-                                              style: const TextStyle(
-                                                color: Color(0xFFE5E2E1),
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                              iconEnabledColor:
-                                                  const Color(0xFFF2CA50),
-                                              items: fitOptions
-                                                  .map(
-                                                    (f) => DropdownMenuItem<
-                                                        String>(
-                                                      value: f,
-                                                      child: Text(f),
-                                                    ),
-                                                  )
-                                                  .toList(),
-                                              onChanged: _isUploading
-                                                  ? null
-                                                  : (value) => setState(() {
-                                                        _lockedFields
-                                                            .add('fit');
-                                                        _selectedFit = value;
-                                                      }),
+                                        DropdownButtonHideUnderline(
+                                          child: DropdownButton<String>(
+                                            value: _selectedFit,
+                                            hint: const Text('Select fit'),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            dropdownColor:
+                                                const Color(0xFF2A2A2A),
+                                            style: const TextStyle(
+                                              color: Color(0xFFE5E2E1),
+                                              fontWeight: FontWeight.w700,
                                             ),
+                                            iconEnabledColor:
+                                                const Color(0xFFF2CA50),
+                                            items: fitOptions
+                                                .map(
+                                                  (f) =>
+                                                      DropdownMenuItem<String>(
+                                                    value: f,
+                                                    child: Text(f),
+                                                  ),
+                                                )
+                                                .toList(),
+                                            onChanged: _isUploading
+                                                ? null
+                                                : (value) => setState(
+                                                    () => _selectedFit = value),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ],
                                   const SizedBox(height: 8),
-                                  _VisionField(
-                                    isThinking: _isAiThinking,
-                                    child: TextField(
-                                      controller: _colorController,
-                                      onChanged: (_) =>
-                                          _lockedFields.add('color'),
-                                      style: const TextStyle(
-                                          color: Color(0xFFE5E2E1)),
-                                      decoration: const InputDecoration(
-                                        labelText: 'Color',
-                                        labelStyle:
-                                            TextStyle(color: Color(0xFFD0C5AF)),
-                                      ),
+                                  TextField(
+                                    controller: _colorController,
+                                    style: const TextStyle(
+                                        color: Color(0xFFE5E2E1)),
+                                    decoration: const InputDecoration(
+                                      labelText: 'Color',
+                                      labelStyle:
+                                          TextStyle(color: Color(0xFFD0C5AF)),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -764,6 +744,7 @@ class _UploadScreenState extends State<UploadScreen> {
                               // Gallery button
                               _CircleControl(
                                 onTap: _pickFromGallery,
+                                semanticLabel: 'Choose from gallery',
                                 child: const Icon(Icons.photo_library_outlined,
                                     color: Color(0xFFD0C5AF), size: 22),
                               ),
@@ -771,32 +752,38 @@ class _UploadScreenState extends State<UploadScreen> {
                               // Main action
                               if (_selectedImage == null)
                                 // Shutter button
-                                GestureDetector(
-                                  onTap: _pickFromCamera,
-                                  child: Container(
-                                    width: 84,
-                                    height: 84,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: const Color(0xFFD4AF37)
-                                            .withValues(alpha: 0.8),
-                                        width: 3,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
+                                Semantics(
+                                  button: true,
+                                  label: 'Take photo',
+                                  child: GestureDetector(
+                                    onTap: _cameraReady
+                                        ? _capturePhoto
+                                        : _pickFromCamera,
+                                    child: Container(
+                                      width: 84,
+                                      height: 84,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
                                           color: const Color(0xFFD4AF37)
-                                              .withValues(alpha: 0.25),
-                                          blurRadius: 20,
+                                              .withValues(alpha: 0.8),
+                                          width: 3,
                                         ),
-                                      ],
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(6),
-                                      child: Container(
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFE5E2E1),
-                                          shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xFFD4AF37)
+                                                .withValues(alpha: 0.25),
+                                            blurRadius: 20,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(6),
+                                        child: Container(
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xFFE5E2E1),
+                                            shape: BoxShape.circle,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -853,9 +840,11 @@ class _UploadScreenState extends State<UploadScreen> {
                               // Flip / retake
                               _CircleControl(
                                 onTap: _selectedImage != null
-                                    ? () =>
-                                        setState(() => _selectedImage = null)
-                                    : _pickFromCamera,
+                                    ? _retakePhoto
+                                    : _switchCamera,
+                                semanticLabel: _selectedImage != null
+                                    ? 'Retake photo'
+                                    : 'Switch camera',
                                 child: Icon(
                                   _selectedImage != null
                                       ? Icons.refresh_rounded
@@ -875,31 +864,6 @@ class _UploadScreenState extends State<UploadScreen> {
               ],
             ),
           ),
-
-          // AI pulse orb (decorative)
-          Positioned(
-            right: 20,
-            bottom: 140,
-            child: Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: const Color(0xFF2A2A2A).withValues(alpha: 0.85),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(
-                  color: const Color(0xFF96E400).withValues(alpha: 0.3),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF96E400).withValues(alpha: 0.2),
-                    blurRadius: 16,
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.auto_awesome,
-                  color: Color(0xFF96E400), size: 20),
-            ),
-          ),
         ],
       ),
     );
@@ -908,54 +872,33 @@ class _UploadScreenState extends State<UploadScreen> {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-class _VisionField extends StatelessWidget {
-  const _VisionField({required this.isThinking, required this.child});
-
-  final bool isThinking;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        child,
-        if (isThinking)
-          const Positioned(
-            left: 0,
-            right: 0,
-            bottom: -2,
-            child: SizedBox(
-              height: 2,
-              child: LinearProgressIndicator(
-                backgroundColor: Color(0x334D4635),
-                color: Color(0xFFF2CA50),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
 class _CircleControl extends StatelessWidget {
-  const _CircleControl({required this.onTap, required this.child});
+  const _CircleControl({
+    required this.onTap,
+    required this.child,
+    required this.semanticLabel,
+  });
 
   final VoidCallback onTap;
   final Widget child;
+  final String semanticLabel;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.38),
-          borderRadius: BorderRadius.circular(999),
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.38),
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Center(child: child),
         ),
-        child: Center(child: child),
       ),
     );
   }
@@ -1051,25 +994,6 @@ class _ViewfinderBox extends StatelessWidget {
                   ],
                 ),
               ),
-
-            // AI tag chips (decorative)
-            if (!hasImage)
-              Positioned(
-                right: 8,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      _AiTag('TYPE: ...'),
-                      SizedBox(height: 8),
-                      _AiTag('TEXTURE: ...'),
-                    ],
-                  ),
-                ),
-              ),
           ],
         ),
       ),
@@ -1118,47 +1042,4 @@ class _CornerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _AiTag extends StatelessWidget {
-  const _AiTag(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A).withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(999),
-        border: Border(
-          left: BorderSide(color: const Color(0xFF96E400), width: 2),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 4,
-            height: 4,
-            decoration: const BoxDecoration(
-              color: Color(0xFF96E400),
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Color(0xFFE5E2E1),
-              fontSize: 8,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

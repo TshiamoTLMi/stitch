@@ -10,6 +10,7 @@ import '../../models/event_model.dart';
 import '../../services/event_service.dart';
 import '../../services/notification_service.dart';
 import '../upload_screen.dart';
+import '../wardrobe/outfit_scan_launcher.dart';
 import '../wardrobe_dashboard.dart';
 import 'dashboard_page.dart';
 import 'event_planner_page.dart';
@@ -88,26 +89,32 @@ class _HomeShellState extends State<HomeShell> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: GestureDetector(
-              onTap: () => _openNotifPanel(context, userId),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  const Icon(Icons.notifications_none_rounded),
-                  if (_unreadCount > 0)
-                    Positioned(
-                      top: -2,
-                      right: -2,
-                      child: Container(
-                        width: 9,
-                        height: 9,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFFB4A5),
-                          shape: BoxShape.circle,
+            child: Semantics(
+              button: true,
+              label: _unreadCount > 0
+                  ? 'Notifications, $_unreadCount unread'
+                  : 'Notifications',
+              child: GestureDetector(
+                onTap: () => _openNotifPanel(context, userId),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(Icons.notifications_none_rounded),
+                    if (_unreadCount > 0)
+                      Positioned(
+                        top: -2,
+                        right: -2,
+                        child: Container(
+                          width: 9,
+                          height: 9,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFFB4A5),
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -115,30 +122,33 @@ class _HomeShellState extends State<HomeShell> {
       ),
       body: SafeArea(top: false, child: pages[_index]),
       floatingActionButton: _index == 1
-          ? GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const UploadScreen()),
-              ),
-              child: Container(
-                width: 64,
-                height: 64,
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFF2CA50), Color(0xFFD4AF37)],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFD4AF37).withValues(alpha: 0.4),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
+          ? Semantics(
+              button: true,
+              label: 'Add to wardrobe',
+              child: GestureDetector(
+                onTap: () => _showAddOptions(context),
+                child: Container(
+                  width: 64,
+                  height: 64,
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFFF2CA50), Color(0xFFD4AF37)],
                     ),
-                  ],
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFD4AF37).withValues(alpha: 0.4),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child:
+                      const Icon(Icons.add, color: Color(0xFF3C2F00), size: 28),
                 ),
-                child: const Icon(Icons.add, color: Color(0xFF3C2F00), size: 28),
               ),
             )
           : null,
@@ -160,6 +170,47 @@ class _HomeShellState extends State<HomeShell> {
             NavigationDestination(icon: Icon(Icons.auto_awesome), label: 'Generate'),
             NavigationDestination(icon: Icon(Icons.calendar_today), label: 'Events'),
             NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddOptions(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.add_photo_alternate_outlined),
+              title: const Text('Add Single Item'),
+              subtitle: const Text('Photograph or pick one garment'),
+              onTap: () {
+                Navigator.of(sheetContext).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const UploadScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.accessibility_new),
+              title: const Text('Scan Full Outfit'),
+              subtitle: const Text('Photograph yourself wearing an outfit'),
+              onTap: () {
+                Navigator.of(sheetContext).pop();
+                OutfitScanLauncher.captureOne(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Scan Outfit Photos'),
+              subtitle: const Text('Batch-import outfit photos from your gallery'),
+              onTap: () {
+                Navigator.of(sheetContext).pop();
+                OutfitScanLauncher.pickBatch(context);
+              },
+            ),
           ],
         ),
       ),
