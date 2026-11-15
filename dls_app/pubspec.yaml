@@ -2,7 +2,7 @@ name: dls_app
 description: Digital Lesela Sete - AI-powered wardrobe and personal stylist app.
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -15,12 +15,11 @@ dependencies:
   firebase_auth: ^5.5.0
   cloud_firestore: ^5.6.6
   firebase_storage: ^12.4.5
-  firebase_remote_config: ^5.4.3
   image_picker: ^1.1.2
   image_cropper: ^12.2.0
   flutter_image_compress: ^2.4.0
   uuid: ^4.5.1
-  # Web-only: localStorage backing for KvStore (Safari on iPhone).
+  # Web-only localStorage backing for KvStore.
   web: ^1.1.1
   permission_handler: ^11.3.1
   provider: ^6.1.2
@@ -34,6 +33,11 @@ dependencies:
   timezone: ^0.9.4
   device_calendar: ^4.3.2
   path_provider: ^2.1.5
+  google_mlkit_pose_detection: ^0.15.0
+  geolocator: ^14.1.2
+  geocoding: ^5.0.1
+  share_plus: ^13.3.1
+  camera: ^0.12.0+2
 
 dev_dependencies:
   flutter_test:
@@ -42,10 +46,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.4
+  geocoding_platform_interface: ^5.0.0
+  geolocator_platform_interface: ^4.4.1
+  flutter_native_splash: ^2.4.7
 
 flutter:
   uses-material-design: true
-
   assets:
     - assets/ml_seed_rules.json
     - assets/seed/
@@ -61,3 +67,11 @@ flutter_launcher_icons:
     background_color: "#000000"
     theme_color: "#000000"
   image_path: "assets/icons/dls_logo.png"
+
+flutter_native_splash:
+  color: "#000000"
+  image: "assets/icons/dls_logo.png"
+  android_12:
+    color: "#000000"
+    image: "assets/icons/dls_logo.png"
+  web: false

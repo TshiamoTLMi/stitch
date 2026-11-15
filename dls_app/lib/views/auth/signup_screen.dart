@@ -17,12 +17,18 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
+  final FocusNode _passwordFocus = FocusNode();
+  final FocusNode _confirmFocus = FocusNode();
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
+    _passwordFocus.dispose();
+    _confirmFocus.dispose();
     super.dispose();
   }
 
@@ -96,19 +102,51 @@ class _SignupScreenState extends State<SignupScreen> {
                         TextField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(hintText: 'Email'),
+                          textInputAction: TextInputAction.next,
+                          onSubmitted: (_) => _passwordFocus.requestFocus(),
+                          decoration: const InputDecoration(labelText: 'Email'),
                         ),
                         const SizedBox(height: 10),
                         TextField(
                           controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(hintText: 'Password'),
+                          focusNode: _passwordFocus,
+                          obscureText: _obscurePassword,
+                          textInputAction: TextInputAction.next,
+                          onSubmitted: (_) => _confirmFocus.requestFocus(),
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            suffixIcon: IconButton(
+                              tooltip: _obscurePassword
+                                  ? 'Show password'
+                                  : 'Hide password',
+                              icon: Icon(_obscurePassword
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined),
+                              onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 10),
                         TextField(
                           controller: _confirmController,
-                          obscureText: true,
-                          decoration: const InputDecoration(hintText: 'Confirm password'),
+                          focusNode: _confirmFocus,
+                          obscureText: _obscureConfirm,
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) => _submit(auth),
+                          decoration: InputDecoration(
+                            labelText: 'Confirm password',
+                            suffixIcon: IconButton(
+                              tooltip: _obscureConfirm
+                                  ? 'Show password'
+                                  : 'Hide password',
+                              icon: Icon(_obscureConfirm
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined),
+                              onPressed: () => setState(
+                                  () => _obscureConfirm = !_obscureConfirm),
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 14),
                         ElevatedButton(

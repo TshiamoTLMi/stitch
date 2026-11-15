@@ -76,6 +76,12 @@ class WardrobeRepository {
     }).toList(growable: false);
   }
 
+  /// Marks [itemIds] worn at [when]. Best-effort by design: callers (e.g. the
+  /// "Wear This" action) should treat a failure as non-fatal.
+  Future<void> markItemsWorn(List<String> itemIds, DateTime when) {
+    return _service.markItemsWorn(itemIds, when);
+  }
+
   Future<void> deleteClothingItem(String itemId) async {
     final item = _localItems[itemId] ?? await _service.getItem(itemId);
 
@@ -99,9 +105,7 @@ class WardrobeRepository {
   }
 
   Future<void> _deleteLocalImage(ClothingItem? item) async {
-    // Web has no app-owned file system; Storage deletion handles cleanup there.
     if (kIsWeb) return;
-
     final directory = await getApplicationDocumentsDirectory();
     final candidates = <String>{
       '${directory.path}/wardrobe_items/${item?.id ?? ''}.jpg'

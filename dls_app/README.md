@@ -16,7 +16,6 @@ Detailed implementation/audit logs:
 - `AUDIT_TRACKING_PLAN.md`
 - `SCREENS.md`
 - `IOS_SETUP.md`
-- `TOMORROW_TEST_FLOW.md`
 - `FEATURE_PLANS.md`
 - `PRE_GO_LIVE_CHECKLIST.md`
 
@@ -47,7 +46,7 @@ Profile document creation is intentionally delayed until onboarding completion.
 - Rule-based generation from live wardrobe
 - Persisted generation history (`outfit_history`)
 - Recent history retrieval UI
-- Optional LLM stylist enhancement (Gemini/DeepSeek) with fallback to rule engine
+- 100% on-device, rule-based generation (no LLM, no cloud AI cost)
 
 4. Event Planner
 - Event create/list from Firestore
@@ -90,29 +89,9 @@ flutterfire configure
 flutter run
 ```
 
-## Optional LLM Stylist Boost (Gemini or DeepSeek)
+## Zero-Cost AI Architecture
 
-The generator now supports an optional LLM enhancement pass for better caption and reasoning quality.
-
-No key is hardcoded in source. Configure via runtime `--dart-define` values:
-
-```bash
-flutter run \
-	--dart-define=DLS_LLM_PROVIDER=gemini \
-	--dart-define=DLS_LLM_API_KEY=YOUR_KEY_HERE \
-	--dart-define=DLS_LLM_MODEL=gemini-1.5-flash
-```
-
-DeepSeek example:
-
-```bash
-flutter run \
-	--dart-define=DLS_LLM_PROVIDER=deepseek \
-	--dart-define=DLS_LLM_API_KEY=YOUR_KEY_HERE \
-	--dart-define=DLS_LLM_MODEL=deepseek-chat
-```
-
-If `DLS_LLM_API_KEY` is missing or device is offline, app automatically falls back to local rule-based generation.
+Outfit generation and captioning run entirely on-device via `AffinityEngine` (a local rule matrix) and `FeedbackStore` (adaptive weight learning from Like/Dislike), both in `lib/core/engine/`. There is no LLM call, no cloud AI API, and no API key anywhere in this app — zero runtime AI cost by design.
 
 ## Git Exposure and Ignore Hygiene
 
@@ -180,9 +159,8 @@ Full iOS setup and validation steps are documented in `IOS_SETUP.md`.
 
 ## Testing Follow-Up
 
-For tomorrow's physical-device testing flow and next AI phase planning, use:
+For next AI phase planning, use:
 
-- `TOMORROW_TEST_FLOW.md`
 - `FEATURE_PLANS.md`
 - `PRE_GO_LIVE_CHECKLIST.md`
 

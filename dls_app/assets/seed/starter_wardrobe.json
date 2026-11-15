@@ -1,0 +1,115 @@
+{
+  "items": [
+    {
+      "parentCategory": "Tops",
+      "subcategory": "T-shirts",
+      "color": "white",
+      "styleTags": ["casual"],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/T-shirt%20(drawing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-t-shirt.jpg"
+    },
+    {
+      "parentCategory": "Tops",
+      "subcategory": "Blouses",
+      "color": "white",
+      "styleTags": ["smart_casual"],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Blouse.jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-blouse.jpg"
+    },
+    {
+      "parentCategory": "Tops",
+      "subcategory": "Sweaters",
+      "color": "grey",
+      "styleTags": ["casual"],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sweater%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/tops-sweater.jpg"
+    },
+    {
+      "parentCategory": "Outerwear",
+      "subcategory": "Hoodies",
+      "color": "navy",
+      "styleTags": ["casual", "streetwear"],
+      "season": "Autumn",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anorak.jpg?width=500",
+      "localImagePath": "assets/seed/images/outerwear-anorak.jpg"
+    },
+    {
+      "parentCategory": "Bottoms",
+      "subcategory": "Shorts",
+      "color": "tan",
+      "styleTags": ["casual"],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bermuda%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-bermuda.jpg"
+    },
+    {
+      "parentCategory": "Bottoms",
+      "subcategory": "Trousers",
+      "fit": "Regular",
+      "color": "black",
+      "styleTags": ["smart_casual", "formal"],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Breeches.jpg?width=500",
+      "localImagePath": "assets/seed/images/bottoms-breeches.jpg"
+    },
+    {
+      "parentCategory": "Footwear",
+      "subcategory": "Sneakers",
+      "color": "white",
+      "styleTags": ["sportswear", "casual"],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sport%20shoes.jpg?width=500",
+      "localImagePath": "assets/seed/images/footwear-sport-shoes.jpg"
+    },
+    {
+      "parentCategory": "Footwear",
+      "subcategory": "Boots",
+      "color": "brown",
+      "styleTags": ["casual"],
+      "season": "Winter",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bluchers.tif?width=500",
+      "localImagePath": "assets/seed/images/footwear-bluchers.jpg"
+    },
+    {
+      "parentCategory": "Dresses & Jumpsuits",
+      "subcategory": "Casual dresses",
+      "color": "pink",
+      "styleTags": ["casual", "smart_casual"],
+      "season": "Summer",
+      "status": "clean",
+      "gender": "Womenswear",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20dress.tif?width=500",
+      "localImagePath": "assets/seed/images/dresses-sun-dress.jpg"
+    },
+    {
+      "parentCategory": "Accessories",
+      "subcategory": "Belts",
+      "color": "brown",
+      "styleTags": ["casual", "formal"],
+      "season": "All Season",
+      "status": "clean",
+      "gender": "Unisex",
+      "imageUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Belt%20(clothing).jpg?width=500",
+      "localImagePath": "assets/seed/images/accessories-belt.jpg"
+    }
+  ]
+}

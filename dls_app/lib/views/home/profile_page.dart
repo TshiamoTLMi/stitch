@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -9,13 +10,16 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../controllers/wardrobe_controller.dart';
+import '../../core/legal/legal_content.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/utils/item_image.dart';
 import '../../models/profile_analytics_state.dart';
+import '../../services/account_deletion_service.dart';
 import '../../services/demo_data_service.dart';
 import '../../services/image_compression_service.dart';
 import '../../services/profile_service.dart';
 import '../../widgets/context_tip_card.dart';
+import '../analytics/wardrobe_analytics_page.dart';
+import '../legal/legal_page.dart';
 
 class ProfileAnalyticsSummary extends StatelessWidget {
   const ProfileAnalyticsSummary({
@@ -115,6 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   bool _seeding = false;
   bool _resetting = false;
+  bool _deletingAccount = false;
   Future<ProfileAnalyticsState>? _metricsFuture;
 
   Future<bool> _requestImagePermission(ImageSource source) async {
@@ -149,27 +154,31 @@ class _ProfilePageState extends State<ProfilePage> {
     final image = await _picker.pickImage(source: source, imageQuality: 90);
     if (image == null) return null;
 
-    final cropped = await ImageCropper().cropImage(
-      sourcePath: image.path,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Photo',
-          toolbarColor: Colors.black,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.square,
-          lockAspectRatio: true,
-        ),
-        IOSUiSettings(
-          title: 'Crop Photo',
-          aspectRatioLockEnabled: true,
-          resetAspectRatioEnabled: false,
-        ),
-      ],
-    );
-    if (cropped == null) return null;
-
-    final bytes = await cropped.readAsBytes();
+    final Uint8List bytes;
+    if (kIsWeb) {
+      bytes = await image.readAsBytes();
+    } else {
+      final cropped = await ImageCropper().cropImage(
+        sourcePath: image.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Photo',
+            toolbarColor: Colors.black,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+          ),
+          IOSUiSettings(
+            title: 'Crop Photo',
+            aspectRatioLockEnabled: true,
+            resetAspectRatioEnabled: false,
+          ),
+        ],
+      );
+      if (cropped == null) return null;
+      bytes = await cropped.readAsBytes();
+    }
     final compressed = await _compression.compressBytes(bytes, maxWidth: 500, jpegQuality: 72);
     return compressed.bytes;
   }
@@ -183,25 +192,64 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _seedDemoData(String userId) async {
     final messenger = ScaffoldMessenger.of(context);
+    final demoService = context.read<DemoDataService>();
+
+    final List<DemoPersona> personas;
+    try {
+      personas = await demoService.loadPersonas();
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text('Unable to load test personas: $e')),
+      );
+      return;
+    }
+    if (!mounted) return;
+
+    final personaId = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Choose a test persona'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final persona in personas)
+                ListTile(
+                  title: Text(persona.displayName),
+                  onTap: () => Navigator.of(ctx).pop(persona.id),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+    if (personaId == null || !mounted) return;
+
     setState(() => _seeding = true);
     try {
-      final result = await context.read<DemoDataService>().seedForUser(userId);
+      final result = await demoService.seedForUser(userId, personaId: personaId);
       if (!mounted) return;
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            result.itemsRepaired > 0 || result.historyRepaired > 0 || result.eventsRepaired > 0
-                ? 'Demo data repaired: ${result.itemsRepaired} items, ${result.historyRepaired} outfits, ${result.eventsRepaired} events.'
-                : result.itemsCreated == 0 && result.historyCreated == 0 && result.eventsCreated == 0
-                    ? 'Demo data already exists for this user.'
-                    : 'Demo data seeded: ${result.itemsCreated} items, ${result.historyCreated} outfits, ${result.eventsCreated} events.',
+            'Persona ${result.personaId} seeded: ${result.itemsCreated} items, '
+            '${result.outfitsCreated} outfits, ${result.eventsCreated} events '
+            '(replaced ${result.replacedDocs} old test docs).',
           ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
       messenger.showSnackBar(
-        SnackBar(content: Text('Unable to seed demo data: $e')),
+        SnackBar(content: Text('Unable to seed test persona: $e')),
       );
     } finally {
       if (mounted) setState(() => _seeding = false);
@@ -264,6 +312,54 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     } finally {
       if (mounted) setState(() => _resetting = false);
+    }
+  }
+
+  void _openLegal(LegalDocumentType type) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => LegalPage(type: type)),
+    );
+  }
+
+  Future<void> _confirmDeleteAccount(User user) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final deletionService = context.read<AccountDeletionService>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete your account?'),
+        content: const Text(
+          'This permanently deletes your account, wardrobe photos, outfits, events, insights, and profile photo. This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFB3261E),
+            ),
+            child: const Text('Delete Account'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _deletingAccount = true);
+    try {
+      await deletionService.deleteAccount(user);
+      // AppRouter returns to sign-in when the auth state clears.
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(AccountDeletionService.messageFor(e))),
+      );
+    } finally {
+      if (mounted) setState(() => _deletingAccount = false);
     }
   }
 
@@ -341,12 +437,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             child: profileImageUrl.isNotEmpty
                                 ? ClipOval(
-                                    child: Image(
-                                      image: resolveImageSource(
-                                              url: profileImageUrl) ??
-                                          NetworkImage(profileImageUrl),
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: Image.network(profileImageUrl, fit: BoxFit.cover),
                                   )
                                 : const CircleAvatar(
                                     backgroundColor: AppTheme.surfaceHigh,
@@ -385,7 +476,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('AI Stylist Insight', style: TextStyle(color: AppTheme.tertiary, fontWeight: FontWeight.w700)),
+                          const Text('Style Insight', style: TextStyle(color: AppTheme.tertiary, fontWeight: FontWeight.w700)),
                           const SizedBox(height: 8),
                           Text(
                             _buildInsightMessage(metrics),
@@ -397,7 +488,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 12),
                     const ContextTipCard(
                       title: 'Profile Shortcuts',
-                      message: 'Use Seed Demo Data for quick showcases, or Clear My Test Data when you want a clean test run before tomorrow\'s app checks.',
+                      message: 'Seed Test Persona fills this account with a 120-item test closet. Clear My Test Data removes it again.',
                       icon: Icons.insights_outlined,
                     ),
                     const SizedBox(height: 12),
@@ -406,7 +497,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         leading: const Icon(Icons.bar_chart, color: AppTheme.primary),
                         title: const Text('Wardrobe Analytics'),
                         trailing: const Icon(Icons.chevron_right),
-                        onTap: () {},
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const WardrobeAnalyticsPage(),
+                          ),
+                        ),
                       ),
                     ),
                     Card(
@@ -459,7 +554,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Sprint 9: never expose synthetic Firestore seeding in release.
                     if (DemoDataService.isDemoEnabled)
                       ElevatedButton.icon(
                         onPressed: _seeding || userId.isEmpty
@@ -472,27 +566,76 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Icon(Icons.data_array),
-                        label:
-                            Text(_seeding ? 'Seeding Demo Data...' : 'Seed Demo Data'),
+                        label: Text(
+                            _seeding ? 'Seeding Test Persona...' : 'Seed Test Persona'),
                       ),
                     const SizedBox(height: 8),
-                    ElevatedButton.icon(
-                      onPressed: _resetting || userId.isEmpty ? null : () => _resetCurrentUserData(userId),
-                      icon: _resetting
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.delete_forever_outlined),
-                      label: Text(_resetting ? 'Clearing Test Data...' : 'Clear My Test Data'),
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF7C2417)),
-                    ),
+                    if (DemoDataService.isDemoEnabled)
+                      ElevatedButton.icon(
+                        onPressed: _resetting || userId.isEmpty
+                            ? null
+                            : () => _resetCurrentUserData(userId),
+                        icon: _resetting
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.delete_forever_outlined),
+                        label: Text(
+                          _resetting ? 'Clearing Test Data...' : 'Clear My Test Data',
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF7C2417),
+                        ),
+                      ),
                     const SizedBox(height: 8),
                     ElevatedButton.icon(
                       onPressed: auth.signOut,
                       icon: const Icon(Icons.logout),
                       label: const Text('Sign Out'),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.privacy_tip_outlined,
+                          color: AppTheme.primary,
+                        ),
+                        title: const Text('Privacy Policy'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _openLegal(LegalDocumentType.privacy),
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.gavel_outlined,
+                          color: AppTheme.primary,
+                        ),
+                        title: const Text('Terms of Service'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _openLegal(LegalDocumentType.terms),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _deletingAccount || auth.user == null
+                          ? null
+                          : () => _confirmDeleteAccount(auth.user!),
+                      icon: _deletingAccount
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.person_remove_outlined),
+                      label: Text(
+                        _deletingAccount ? 'Deleting Account...' : 'Delete Account',
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFB3261E),
+                      ),
                     ),
                   ],
                 );

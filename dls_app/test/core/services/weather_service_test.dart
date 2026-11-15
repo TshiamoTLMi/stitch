@@ -278,5 +278,86 @@ void main() {
       expect(context.isDefault, isTrue);
       expect(context.locationName, 'Pretoria');
     });
+
+    test('never reuses a cached reading taken for a different city', () async {
+      await serviceWith(_live(18, 0), tempDir).current(); // Johannesburg default
+
+      final durban = serviceWith(_offline, tempDir);
+      await durban.setLocation(
+        const WeatherLocation(name: 'Durban', latitude: -29.8587, longitude: 31.0218),
+      );
+      final context = await durban.current();
+      expect(context.isCached, isFalse);
+      expect(context.isDefault, isTrue);
+      expect(context.locationName, 'Durban');
+    });
+
+    test('works with an arbitrary non-preset location, with no snapping to '
+        'the nearest preset city - needed for auto-detected device location',
+        () async {
+      late String requested;
+      final client = MockClient((request) async {
+        requested = request.url.toString();
+        return http.Response(
+          jsonEncode(<String, dynamic>{
+            'current_weather': <String, dynamic>{
+              'temperature': 26.0,
+              'weathercode': 1,
+            },
+          }),
+          200,
+        );
+      });
+      final service = serviceWith(client, tempDir);
+      // Nairobi: not one of WeatherLocation.presets' 6 South African cities.
+      const nairobi = WeatherLocation(
+        name: 'Nairobi',
+        latitude: -1.286389,
+        longitude: 36.817223,
+      );
+      expect(WeatherLocation.presets, isNot(contains(nairobi)));
+
+      await service.setLocation(nairobi);
+      final context = await service.current();
+
+      expect(requested, contains('-1.286389'));
+      expect(requested, contains('36.817223'));
+      expect(context.locationName, 'Nairobi');
+      expect(context.temperatureC, 26.0);
+    });
+
+    test('reuses the cache for the same city offline', () async {
+      const capeTown = WeatherLocation(
+        name: 'Cape Town',
+        latitude: -33.9249,
+        longitude: 18.4241,
+      );
+      final online = serviceWith(_live(16, 61), tempDir);
+      await online.setLocation(capeTown);
+      await online.current();
+
+      final offline = serviceWith(_offline, tempDir);
+      await offline.setLocation(capeTown);
+      final context = await offline.current();
+      expect(context.isCached, isTrue);
+      expect(context.condition, 'rain');
+      expect(context.locationName, 'Cape Town');
+    });
+  });
+
+  group('generator weather mapping', () {
+    test('maps each DLS condition to a valid generator option', () {
+      expect(WeatherContext.generatorWeatherFor('hot'), 'Hot');
+      expect(WeatherContext.generatorWeatherFor('warm'), 'Warm');
+      expect(WeatherContext.generatorWeatherFor('mild'), 'Mild');
+      expect(WeatherContext.generatorWeatherFor('cold'), 'Cold');
+      expect(WeatherContext.generatorWeatherFor('freezing'), 'Freezing');
+      expect(WeatherContext.generatorWeatherFor('rain'), 'Rainy');
+    });
+
+    test('unknown conditions fall back to Mild, never the removed Sunny', () {
+      expect(WeatherContext.generatorWeatherFor('sunny'), 'Mild');
+      expect(WeatherContext.generatorWeatherFor(''), 'Mild');
+    });
   });
 }

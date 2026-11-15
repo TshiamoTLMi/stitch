@@ -131,6 +131,33 @@ void main() {
       );
     });
 
+    test('applyWear -> utilization round trip moves an item from unworn to '
+        'mostWorn - the real path behind the "Wear This" action', () {
+      final wardrobe = <ClothingItem>[_item('a'), _item('b')];
+      final before = service.utilization(wardrobe, now: now);
+      expect(before.unworn.map((i) => i.id), contains('a'));
+      expect(before.mostWorn, isEmpty);
+
+      final entry = OutfitLogEntry(
+        timestamp: now,
+        occasion: 'Work',
+        weather: 'Warm',
+        styleMatchPercent: 80,
+        scoreStyle: 0.5,
+        scoreEvent: 0.5,
+        scoreWeather: 0.5,
+        scoreColor: 0.5,
+        scoreCategory: 0.5,
+        itemIds: const <String>['a'],
+      );
+      final worn = AnalyticsStore.applyWear(wardrobe, entry, wornAt: now);
+
+      final after = service.utilization(worn, now: now);
+      expect(after.mostWorn.map((i) => i.id), contains('a'));
+      expect(after.unworn.map((i) => i.id), isNot(contains('a')));
+      expect(after.unworn.map((i) => i.id), contains('b'));
+    });
+
     test('a 90-day window is more forgiving than 30', () {
       final wardrobe = <ClothingItem>[
         _item('old',

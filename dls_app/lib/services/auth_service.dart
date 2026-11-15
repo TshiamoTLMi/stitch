@@ -4,8 +4,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthService {
+  // Web OAuth client (client_type 3) from google-services.json. Required so
+  // google_sign_in on Android returns an idToken that Firebase can verify.
+  static const String _googleServerClientId =
+      '357360805758-16416q15dq1b5p23si4eu9mhobh4bsu5.apps.googleusercontent.com';
+
   FirebaseAuth get _auth => FirebaseAuth.instance;
-  GoogleSignIn get _google => GoogleSignIn();
+  GoogleSignIn get _google => GoogleSignIn(serverClientId: _googleServerClientId);
   bool _webPersistenceReady = false;
 
   Future<void> _ensureWebPersistence() async {
